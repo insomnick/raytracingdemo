@@ -7,28 +7,29 @@
 
 class Camera {
 private:
-    std::vector<double> direction;
-    std::vector<double> position;
-    std::vector<double> plane;
+    Vector3 direction;
+    Vector3 position;
+    Vector3 plane;
 
 public:
     Camera() {
         direction = {1.0, 0.0, 0.0};
         position = {-1.0, 0.0, 0.0};
-        plane = {0.0, 0.5, 0.5};
+        plane = {0.0, 1.0, 1.0};
     }
 
-    std::vector<double> getDirection() {
+    Vector3 getDirection() {
         return direction;
     }
 
-    std::vector<double> getPosition() {
+    Vector3 getPosition() {
         return position;
     }
 
-    std::vector<double> getPlane() {
+    Vector3 getPlane() {
         return plane;
     }
+
 };
 
 #endif //RAYTRACINGDEMO_CAMERA_H

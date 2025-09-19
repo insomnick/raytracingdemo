@@ -1,14 +1,13 @@
 #ifndef RAYTRACINGDEMO_RAY_H
 #define RAYTRACINGDEMO_RAY_H
 
-#include <vector>
+#include "vector3.h"
 
 struct Ray {
-    std::vector<double> origin;
-    std::vector<double> direction;
+    Vector3 origin;
+    Vector3 direction;
     Ray(): origin({0.0,0.0,0.0}), direction({0.0,0.0,0.0}) {}
-    Ray(double ox, double oy, double oz, double dx, double dy, double dz)
-        : origin({ox, oy, oz}), direction({dx, dy, dz}) {}
+    Ray(Vector3 origin, Vector3 direction) : origin(origin), direction(direction) {}
 };
 
 #endif //RAYTRACINGDEMO_RAY_H

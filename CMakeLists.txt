@@ -10,6 +10,7 @@ add_executable(raytracingdemo
         ray.h
         camera.h
         sphere.h
+        vector3.h
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---
