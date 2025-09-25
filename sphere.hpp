@@ -16,7 +16,7 @@ public:
     double getRadius() { return radius; }
 
     std::unique_ptr<Vector3> intersect(const Ray& ray) const {
-        Vector3 oc = Vector3::subtract(ray.getOrigin(), center);
+        Vector3 oc = (ray.getOrigin() - center);
         double a = Vector3::dot(ray.getDirection(), ray.getDirection());
         double b = 2.0 * Vector3::dot(oc, ray.getDirection());
         double c = Vector3::dot(oc, oc) - radius * radius;
@@ -25,7 +25,7 @@ public:
             return nullptr; // No intersection
         } else {
             double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
-            return std::make_unique<Vector3>(ray.getOrigin() + Vector3::multiply(ray.getDirection(), t));
+            return std::make_unique<Vector3>(ray.getOrigin() + (ray.getDirection() * t));
         }
     }
 
