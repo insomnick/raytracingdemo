@@ -1,10 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <valarray>
-#include "color.h"
-#include "camera.h"
-#include "sphere.h"
-#include "ray.h"
+#include "color.hpp"
+#include "camera.hpp"
+#include "sphere.hpp"
+#include "ray.hpp"
 
 static const int SCREEN_WIDTH = 720;
 static const int SCREEN_HEIGHT = 720;
@@ -88,7 +88,7 @@ int main(void)
 
 void calculateScreen() {
 
-        Camera camera;
+    Camera camera{};
 
     //1. Loop over every pixel of the screen with corresponding Ray
     //2. Loop over every object in the scene for Collision detection
@@ -100,25 +100,24 @@ void calculateScreen() {
             double y = mapToScreen(i, SCREEN_WIDTH) * camera.getPlane().getY();
             double z = mapToScreen(j, SCREEN_HEIGHT) * camera.getPlane().getZ();
 
-            const Vector3 offset = Vector3(x, y, z);
-            Vector3 ray_direction = Vector3::add(camera.getDirection(), offset);
+            auto ray_direction = camera.getDirection() + Vector3 {x, y, z}; //offset
 
             //Normalize ray direction
-            double length = Vector3::length(ray_direction);
+            auto length = ray_direction.length();
             ray_direction = Vector3::multiply(ray_direction, 1.0/length);
 
-            Ray ray(camera.getPosition() ,ray_direction);
-//            printf("Pixel: %d, %d ", i, j);
-//            printf("Ray Direction: %f, %f, %f\n", ray.direction.getX(), ray.direction.getY(), ray.direction.getZ());
+            Ray ray {camera.getPosition() ,ray_direction};
+            //printf("Pixel: %d, %d ", i, j);
+            //printf("Ray Direction: %f, %f, %f\n", ray.direction.getX(), ray.direction.getY(), ray.direction.getZ());
 
             //2. Loop over every object in the scene for Collision detection (dumb and slow way)
             // If Collision detected color the pixel with the color of the object (in this moment black) else white
             //s[i][j] = Color(ray_direction.getX()*ray_direction.getX(), ray_direction.getY()*ray_direction.getY(), ray_direction.getZ()*ray_direction.getZ());
 
-            for (auto & object : objects) {
-                const Vector3 intersection = object.intersect(ray.origin, ray.direction);
-                if(!Vector3::equals(intersection, {0.0, 0.0, 0.0})){
-                    double c = Vector3::length(Vector3::subtract(intersection, camera.getPosition()));
+            for (const auto & object : objects) {
+                const auto intersection = object.intersect(ray.origin, ray.direction);
+                if(!(intersection == nullptr)){
+                    double c = Vector3::subtract(*intersection, camera.getPosition()).length();
                     c = 1.0 - (c / 10.0);
                     if(c < 0.0) c = 0.0;
                     if(c > 1.0) c = 1.0;

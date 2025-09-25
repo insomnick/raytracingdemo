@@ -6,11 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(raytracingdemo
         main.cpp
-        color.h
-        ray.h
-        camera.h
-        sphere.h
-        vector3.h
+        color.hpp
+        ray.hpp
+        camera.hpp
+        sphere.hpp
+        vector3.hpp
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---

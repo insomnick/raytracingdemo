@@ -1,7 +1,8 @@
-#ifndef RAYTRACINGDEMO_SPHERE_H
-#define RAYTRACINGDEMO_SPHERE_H
+#ifndef RAYTRACINGDEMO_SPHERE_HPP
+#define RAYTRACINGDEMO_SPHERE_HPP
 
-#include "vector3.h"
+#include <memory>
+#include "vector3.hpp"
 
 class Sphere {
 private:
@@ -13,20 +14,20 @@ public:
     Vector3 getCenter() { return center; }
     double getRadius() { return radius; }
 
-    Vector3 intersect(const Vector3& ray_origin, const Vector3& ray_direction) {
+    std::unique_ptr<Vector3> intersect(const Vector3& ray_origin, const Vector3& ray_direction) const {
         Vector3 oc = Vector3::subtract(ray_origin, center);
         double a = Vector3::dot(ray_direction, ray_direction);
         double b = 2.0 * Vector3::dot(oc, ray_direction);
         double c = Vector3::dot(oc, oc) - radius * radius;
         double discriminant = b * b - 4 * a * c;
         if (discriminant < 0) {
-            return {0.0, 0.0, 0.0}; // No intersection
+            return nullptr; // No intersection
         } else {
             double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
-            return Vector3::add(ray_origin, Vector3::multiply(ray_direction, t));
+            return std::make_unique<Vector3>(ray_origin + Vector3::multiply(ray_direction, t));
         }
     }
 
 };
 
-#endif //RAYTRACINGDEMO_SPHERE_H
+#endif //RAYTRACINGDEMO_SPHERE_HPP

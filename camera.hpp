@@ -1,5 +1,5 @@
-#ifndef RAYTRACINGDEMO_CAMERA_H
-#define RAYTRACINGDEMO_CAMERA_H
+#ifndef RAYTRACINGDEMO_CAMERA_HPP
+#define RAYTRACINGDEMO_CAMERA_HPP
 
 #include <numbers>
 #include <vector>
@@ -32,4 +32,4 @@ public:
 
 };
 
-#endif //RAYTRACINGDEMO_CAMERA_H
+#endif //RAYTRACINGDEMO_CAMERA_HPP

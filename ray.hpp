@@ -1,7 +1,7 @@
-#ifndef RAYTRACINGDEMO_RAY_H
-#define RAYTRACINGDEMO_RAY_H
+#ifndef RAYTRACINGDEMO_RAY_HPP
+#define RAYTRACINGDEMO_RAY_HPP
 
-#include "vector3.h"
+#include "vector3.hpp"
 
 struct Ray {
     Vector3 origin;
@@ -10,4 +10,4 @@ struct Ray {
     Ray(Vector3 origin, Vector3 direction) : origin(origin), direction(direction) {}
 };
 
-#endif //RAYTRACINGDEMO_RAY_H
+#endif //RAYTRACINGDEMO_RAY_HPP

@@ -1,8 +1,8 @@
-#ifndef RAYTRACINGDEMO_COLOR_H
-#define RAYTRACINGDEMO_COLOR_H
+#ifndef RAYTRACINGDEMO_COLOR_HPP
+#define RAYTRACINGDEMO_COLOR_HPP
 
 #include <vector>
-#include "vector3.h"
+#include "vector3.hpp"
 
 struct Color {
     Vector3 c;
@@ -13,4 +13,4 @@ struct Color {
     double b() { return c.getZ(); }
 };
 
-#endif //RAYTRACINGDEMO_COLOR_H
+#endif //RAYTRACINGDEMO_COLOR_HPP
