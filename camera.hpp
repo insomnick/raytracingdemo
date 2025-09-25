@@ -14,8 +14,8 @@ private:
 
 public:
     Camera() {
-        direction = {1, 0.0, 0.0};
-        position = {-1.0, 0.0, 0.0};
+        direction = {-1.0, 0.0, 0.0};
+        position = {-4.0, -3.0, -3.0};
         //plane = {0.0, 1.0, 1.0};
         fov = 90.0 * (std::numbers::pi / 180.0); //Convert to Radians
     }
@@ -35,9 +35,7 @@ public:
     void rotateVertical(double angle) {
         // Rotate around Y axis for simplicity
         double cos_angle = std::cos(angle);
-        printf("cos_angle: %f \n", cos_angle);
         double sin_angle = std::sin(angle);
-        printf("sin_angle: %f \n", sin_angle);
         double new_x = direction.getX() * cos_angle - direction.getZ() * sin_angle;
         double new_z = direction.getX() * sin_angle + direction.getZ() * cos_angle;
         direction = {new_x, direction.getY(), new_z};
@@ -45,12 +43,16 @@ public:
     }
 
     void rotateHorizontal(double angle) {
-        // Rotate relative to current direction's right vector
+        // Rotate relative to current direction's right vector, also considering not rotating the wrong direction relative to y axis
+        Vector3 world_up = {0.0, 1.0, 0.0};
+        Vector3 right = Vector3::cross(direction, world_up).normalize();
+        Vector3 up = Vector3::cross(right, direction).normalize();
         double cos_angle = std::cos(angle);
         double sin_angle = std::sin(angle);
-        double new_y = direction.getY() * cos_angle - direction.getZ() * sin_angle;
-        double new_z = direction.getY() * sin_angle + direction.getZ() * cos_angle;
-        direction = {direction.getX(), new_y, new_z};
+        double new_x = direction.getX() * cos_angle + up.getX() * sin_angle;
+        double new_y = direction.getY() * cos_angle + up.getY() * sin_angle;
+        double new_z = direction.getZ() * cos_angle + up.getZ() * sin_angle;
+        direction = {new_x, new_y, new_z};
         //printf("Camera length: %f\n", direction.length());
     }
 

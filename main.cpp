@@ -14,7 +14,7 @@ static const int SCREEN_HEIGHT = 500;
 //Building Screen with Color
 //An Array with Dimensions of Screen and color
 Color s[SCREEN_WIDTH][SCREEN_HEIGHT];
-const int obj_size = 2;
+const int obj_size = 4;
 Sphere objects [obj_size*obj_size*obj_size]; //512 objects in the scene
 
 Camera camera{};
@@ -49,19 +49,19 @@ int main(void)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         if (key == GLFW_KEY_KP_2 && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
             camera.rotateHorizontal(0.1);
-            printf("2: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
+            //printf("2: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
         }
         if (key == GLFW_KEY_KP_8 && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
             camera.rotateHorizontal(-0.1);
-            printf("8: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
+            //printf("8: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
         }
         if (key == GLFW_KEY_KP_4 && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
             camera.rotateVertical(-0.1);
-            printf("4: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
+            //printf("4: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
         }
         if (key == GLFW_KEY_KP_6 && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
             camera.rotateVertical(0.1);
-            printf("6: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
+            //printf("6: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
         }
     });
 
@@ -98,15 +98,21 @@ int main(void)
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-        //Time every frame
-        static double previous_seconds = glfwGetTime();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+        //Time Calculate
+        double previous_seconds_c = glfwGetTime();
+        calculateScreen();
+        double current_seconds_c = glfwGetTime();
+        double elapsed_seconds_c = current_seconds_c - previous_seconds_c;
+        printf("Time calculate Screen: %f \n", elapsed_seconds_c);
+
+        //Time Draw
+        double previous_seconds = glfwGetTime();
+        drawScreen();
         double current_seconds = glfwGetTime();
         double elapsed_seconds = current_seconds - previous_seconds;
-        previous_seconds = current_seconds;
-        //printf("Time calculate Screen: %f \n", elapsed_seconds);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-        calculateScreen();
-        drawScreen();
+        printf("Time draw Screen: %f \n", elapsed_seconds);
+
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
         /* Poll for and process events */
@@ -128,9 +134,10 @@ void calculateScreen() {
     const auto inv_width = 1.0 / SCREEN_WIDTH;
     const auto inv_height = 1.0 / SCREEN_HEIGHT;
 
-    // Pre-calculate camera basis vectors for proper orientation
-    const auto camera_right = Vector3{0.0, 0.0, 1.0}; // Assuming Z is right
-    const auto camera_up = Vector3{0.0, 1.0, 0.0};    // Assuming Y is up
+    // Calculate proper camera basis vectors from camera direction
+    const auto world_up = Vector3{0.0, 1.0, 0.0};
+    const auto camera_right = Vector3::cross(camera_dir, world_up).normalize();
+    const auto camera_up = Vector3::cross(camera_right, camera_dir).normalize();
 
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
         const auto px_base = (2.0 * (i + 0.5) * inv_width - 1.0) * fov_half_tan * aspect_ratio;
@@ -139,7 +146,7 @@ void calculateScreen() {
             const auto py = (1.0 - 2.0 * (j + 0.5) * inv_height) * fov_half_tan;
             auto ray_direction = camera_dir + (camera_up * py) + (camera_right * px_base);
 
-            // Fast normalize using reciprocal, should already be normalized
+            // Fast normalize using reciprocal
             const auto inv_length = 1.0 / ray_direction.length();
             ray_direction = ray_direction * inv_length;
 
