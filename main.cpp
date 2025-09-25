@@ -14,7 +14,7 @@ static const int SCREEN_HEIGHT = 500;
 //Building Screen with Color
 //An Array with Dimensions of Screen and color
 Color s[SCREEN_WIDTH][SCREEN_HEIGHT];
-const int obj_size = 4;
+const int obj_size = 2;
 Sphere objects [obj_size*obj_size*obj_size]; //512 objects in the scene
 
 Camera camera{};
@@ -25,25 +25,19 @@ double mapToScreen(int j, const int height);
 
 void calculateScreen();
 
-int main(void)
-{
-    //Init
+int main(void) {
+    //Init GLFW
     GLFWwindow* window;
-    /* Initialize the library */
     if (!glfwInit())
         return -1;
-    /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raytracing demo", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
     }
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
     if(!gladLoadGL())
         return -1;
-
-    //make key callback
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -63,22 +57,23 @@ int main(void)
             camera.rotateVertical(0.1);
             //printf("6: Camera Direction: %f, %f, %f\n", camera.getDirection().getX(), camera.getDirection().getY(), camera.getDirection().getZ());
         }
-    });
-
-
-    //Demo Screen with Gradient Color
-    /*
-    for( int i = 0; i < SCREEN_WIDTH; i++ ) {
-        for( int j = 0; j < SCREEN_HEIGHT; j++ ) {
-            double r = (double) i / SCREEN_WIDTH;
-            double g = (double) j / SCREEN_HEIGHT;
-            double b = (r + g) /2.0;
-            s[i][j] = Color(r, g, b);
+        if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+            camera.moveForward(0.1);
+            //printf("W: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
         }
-    }
-    */
-
-
+        if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+            camera.moveForward(-0.1);
+            //printf("S: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
+        }
+        if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+            camera.moveRight(-0.1);
+            //printf("A: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
+        }
+        if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+           camera.moveRight(0.1);
+            //printf("D: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
+        }
+    });
     //Load objects
     for (int i = 0; i < obj_size; ++i) {
         for (int j = 0; j < obj_size; ++j) {
@@ -86,7 +81,7 @@ int main(void)
                 const auto x = i * 2.0;
                 const auto y = j * 2.0 - obj_size - 2.0;
                 const auto z = k * 2.0 - obj_size - 2.0;
-                objects[i * obj_size * obj_size + j * obj_size + k] = Sphere(x, y, z, 0.5);
+                objects[i * obj_size * obj_size + j * obj_size + k] = Sphere {x, y, z, 0.5};
             }
         }
     }
@@ -95,27 +90,27 @@ int main(void)
         printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
     }
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
+    //TODO: Build BVH from objects here
+
+    //App loop
+    while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
         //Time Calculate
         double previous_seconds_c = glfwGetTime();
-        calculateScreen();
+        calculateScreen();  //Actual Calculations
         double current_seconds_c = glfwGetTime();
         double elapsed_seconds_c = current_seconds_c - previous_seconds_c;
         printf("Time calculate Screen: %f \n", elapsed_seconds_c);
 
         //Time Draw
         double previous_seconds = glfwGetTime();
-        drawScreen();
+        drawScreen();   //just screen drawing (out of scope for now)
         double current_seconds = glfwGetTime();
         double elapsed_seconds = current_seconds - previous_seconds;
         printf("Time draw Screen: %f \n", elapsed_seconds);
 
-        /* Swap front and back buffers */
+        //GLFW magic for screen drawing and events
         glfwSwapBuffers(window);
-        /* Poll for and process events */
         glfwPollEvents();
     }
     glfwTerminate();
@@ -124,7 +119,7 @@ int main(void)
 
 void calculateScreen() {
 
-    Color ns[SCREEN_WIDTH][SCREEN_HEIGHT];
+    Color ns[SCREEN_WIDTH][SCREEN_HEIGHT];  //new screen
 
     // Pre-calculate constants outside loops
     const auto camera_pos = camera.getPosition();
@@ -152,8 +147,11 @@ void calculateScreen() {
 
             const Ray ray{camera_pos, ray_direction};
 
-            auto closest_distance = std::numeric_limits<double>::max();
 
+            //This is the place where I can do the BVH acceleration structure
+            //For now just a simple loop over all objects
+            //TODO: Traverse BVH and get intersection point, then calc color based on distance or Material
+            auto closest_distance = std::numeric_limits<double>::max();
             // Find closest intersection only
             for (const auto& object : objects) {
                 const auto intersection = object.intersect(ray);
@@ -167,6 +165,8 @@ void calculateScreen() {
                     }
                 }
             }
+
+
         }
     }
     // Copy new screen to current screen

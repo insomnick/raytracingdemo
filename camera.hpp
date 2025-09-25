@@ -15,7 +15,7 @@ private:
 public:
     Camera() {
         direction = {-1.0, 0.0, 0.0};
-        position = {-4.0, -3.0, -3.0};
+        position = {-2.0, -3.0, -3.0};
         //plane = {0.0, 1.0, 1.0};
         fov = 90.0 * (std::numbers::pi / 180.0); //Convert to Radians
     }
@@ -56,6 +56,22 @@ public:
         //printf("Camera length: %f\n", direction.length());
     }
 
+    void moveForward(double distance) {
+        Vector3 norm_dir = direction.normalize();
+        position = position + (norm_dir * distance);
+    }
+
+    void moveRight(double distance) {
+        Vector3 world_up = {0.0, 1.0, 0.0};
+        Vector3 right = Vector3::cross(direction, world_up).normalize();
+        position = position + (right * distance);
+    }
+
+    void moveLeft(double distance) {
+        Vector3 world_up = {0.0, 1.0, 0.0};
+        Vector3 right = Vector3::cross(direction, world_up).normalize();
+        position = position - (right * distance);
+    }
 };
 
 #endif //RAYTRACINGDEMO_CAMERA_HPP
