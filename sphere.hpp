@@ -13,7 +13,7 @@ public:
     Sphere() : center({0.0,0.0,0.0}), radius(1.0) {}
     Sphere(double cx, double cy, double cz, double r) : center({cx,cy,cz}), radius(r) {}
     Vector3 getCenter() { return center; }
-    double getRadius() { return radius; }
+    //double getRadius() { return radius; }
 
     std::unique_ptr<Vector3> intersect(const Ray& ray) const {
         Vector3 oc = (ray.getOrigin() - center);

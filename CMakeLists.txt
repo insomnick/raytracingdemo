@@ -11,6 +11,8 @@ add_executable(raytracingdemo
         camera.hpp
         sphere.hpp
         vector3.hpp
+        bvh.hpp
+        aabb.hpp
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---

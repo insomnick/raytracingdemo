@@ -7,6 +7,7 @@
 #include "camera.hpp"
 #include "sphere.hpp"
 #include "ray.hpp"
+#include "bvh.hpp"
 
 static const int SCREEN_WIDTH = 500;
 static const int SCREEN_HEIGHT = 500;
@@ -15,15 +16,14 @@ static const int SCREEN_HEIGHT = 500;
 //An Array with Dimensions of Screen and color
 Color s[SCREEN_WIDTH][SCREEN_HEIGHT];
 const int obj_size = 2;
-Sphere objects [obj_size*obj_size*obj_size]; //512 objects in the scene
+std::vector<Sphere> objects; //512 primitives in the scene
 
 Camera camera{};
-
 
 void drawScreen();
 double mapToScreen(int j, const int height);
 
-void calculateScreen();
+void calculateScreen(BVH& bvh);
 
 int main(void) {
     //Init GLFW
@@ -74,14 +74,15 @@ int main(void) {
             //printf("D: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
         }
     });
-    //Load objects
+    //Load primitives
+    objects.reserve(obj_size * obj_size * obj_size);
     for (int i = 0; i < obj_size; ++i) {
         for (int j = 0; j < obj_size; ++j) {
             for (int k = 0; k < obj_size; ++k) {
                 const auto x = i * 2.0;
                 const auto y = j * 2.0 - obj_size - 2.0;
                 const auto z = k * 2.0 - obj_size - 2.0;
-                objects[i * obj_size * obj_size + j * obj_size + k] = Sphere {x, y, z, 0.5};
+                objects.emplace_back(x, y, z, 0.5);
             }
         }
     }
@@ -90,14 +91,16 @@ int main(void) {
         printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
     }
 
-    //TODO: Build BVH from objects here
+    //Build BVH from primitives here
+    //TODO: better BVH construction
+    BVH bvh = BVH::stupidConstruct(objects);
 
     //App loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
         //Time Calculate
         double previous_seconds_c = glfwGetTime();
-        calculateScreen();  //Actual Calculations
+        calculateScreen(bvh);  //Actual Calculations
         double current_seconds_c = glfwGetTime();
         double elapsed_seconds_c = current_seconds_c - previous_seconds_c;
         printf("Time calculate Screen: %f \n", elapsed_seconds_c);
@@ -117,18 +120,25 @@ int main(void) {
     return 0;
 }
 
-void calculateScreen() {
+void calculateScreen(BVH& bvh) {
 
-    Color ns[SCREEN_WIDTH][SCREEN_HEIGHT];  //new screen
+    //TODO: make the whole screen buffer thing smarter
+    Color ns[SCREEN_WIDTH][SCREEN_HEIGHT];
+    // Initialize screen to black
+    for (int i = 0; i < SCREEN_WIDTH; ++i) {
+        for (int j = 0; j < SCREEN_HEIGHT; ++j) {
+            ns[i][j] = Color(0.0, 0.0, 0.0);
+        }
+    }
 
-    // Pre-calculate constants outside loops
+    //TODO: Something is seriously wrong with the camera, hat to be fixed
+    //Pre-calculate constants outside loops
     const auto camera_pos = camera.getPosition();
     const auto camera_dir = camera.getDirection();
     const auto fov_half_tan = std::tan(camera.getFov() * 0.5);
     const auto aspect_ratio = static_cast<double>(SCREEN_WIDTH) / SCREEN_HEIGHT;
     const auto inv_width = 1.0 / SCREEN_WIDTH;
     const auto inv_height = 1.0 / SCREEN_HEIGHT;
-
     // Calculate proper camera basis vectors from camera direction
     const auto world_up = Vector3{0.0, 1.0, 0.0};
     const auto camera_right = Vector3::cross(camera_dir, world_up).normalize();
@@ -136,40 +146,28 @@ void calculateScreen() {
 
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
         const auto px_base = (2.0 * (i + 0.5) * inv_width - 1.0) * fov_half_tan * aspect_ratio;
-
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
             const auto py = (1.0 - 2.0 * (j + 0.5) * inv_height) * fov_half_tan;
             auto ray_direction = camera_dir + (camera_up * py) + (camera_right * px_base);
-
             // Fast normalize using reciprocal
             const auto inv_length = 1.0 / ray_direction.length();
             ray_direction = ray_direction * inv_length;
-
             const Ray ray{camera_pos, ray_direction};
 
-
             //This is the place where I can do the BVH acceleration structure
-            //For now just a simple loop over all objects
-            //TODO: Traverse BVH and get intersection point, then calc color based on distance or Material
-            auto closest_distance = std::numeric_limits<double>::max();
-            // Find closest intersection only
-            for (const auto& object : objects) {
-                const auto intersection = object.intersect(ray);
-                if (intersection != nullptr) {
-                    const auto distance = (*intersection - camera_pos).length();
-                    if (distance < closest_distance) {
-                        closest_distance = distance;
-                        auto c = 1.0 - (distance * 0.1);
-                        c = std::clamp(c, 0.0, 1.0);
-                        ns[i][j] = Color(c, c, c);
-                    }
-                }
+            //Traverse BVH and get intersection point, then calc color based on distance or Material
+            auto intersection = bvh.traverse(ray);
+            if (intersection != nullptr) {
+                // Simple shading based on distance
+                double distance = (*intersection - camera_pos).length();
+                double intensity = std::exp(-0.1 * distance); // Exponential falloff
+                intensity = std::fmin(intensity, 1.0); // Clamp to [0, 1]
+                ns[i][j] = Color(intensity, intensity, intensity);
             }
-
-
         }
     }
-    // Copy new screen to current screen
+    //TODO: also stupid
+    //Copy new screen to current screen
     for(int i = 0; i < SCREEN_WIDTH; i++) {
         for (int j = 0; j < SCREEN_HEIGHT; j++) {
             s[i][j] = ns[i][j];
