@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "vector3.hpp"
+#include "ray.hpp"
 
 class Sphere {
 private:
@@ -14,17 +15,17 @@ public:
     Vector3 getCenter() { return center; }
     double getRadius() { return radius; }
 
-    std::unique_ptr<Vector3> intersect(const Vector3& ray_origin, const Vector3& ray_direction) const {
-        Vector3 oc = Vector3::subtract(ray_origin, center);
-        double a = Vector3::dot(ray_direction, ray_direction);
-        double b = 2.0 * Vector3::dot(oc, ray_direction);
+    std::unique_ptr<Vector3> intersect(const Ray& ray) const {
+        Vector3 oc = Vector3::subtract(ray.getOrigin(), center);
+        double a = Vector3::dot(ray.getDirection(), ray.getDirection());
+        double b = 2.0 * Vector3::dot(oc, ray.getDirection());
         double c = Vector3::dot(oc, oc) - radius * radius;
         double discriminant = b * b - 4 * a * c;
         if (discriminant < 0) {
             return nullptr; // No intersection
         } else {
             double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
-            return std::make_unique<Vector3>(ray_origin + Vector3::multiply(ray_direction, t));
+            return std::make_unique<Vector3>(ray.getOrigin() + Vector3::multiply(ray.getDirection(), t));
         }
     }
 

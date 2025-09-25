@@ -6,8 +6,8 @@
 #include "sphere.hpp"
 #include "ray.hpp"
 
-static const int SCREEN_WIDTH = 720;
-static const int SCREEN_HEIGHT = 720;
+static const int SCREEN_WIDTH = 500;
+static const int SCREEN_HEIGHT = 500;
 
 //Building Screen with Color
 //An Array with Dimensions of Screen and color
@@ -66,9 +66,9 @@ int main(void)
         }
     }
 
-    for (auto & object : objects) {
-        printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
-    }
+//    for (auto & object : objects) {
+//        printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
+//    }
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -115,7 +115,7 @@ void calculateScreen() {
             //s[i][j] = Color(ray_direction.getX()*ray_direction.getX(), ray_direction.getY()*ray_direction.getY(), ray_direction.getZ()*ray_direction.getZ());
 
             for (const auto & object : objects) {
-                const auto intersection = object.intersect(ray.origin, ray.direction);
+                const auto intersection = object.intersect(ray);
                 if(!(intersection == nullptr)){
                     double c = Vector3::subtract(*intersection, camera.getPosition()).length();
                     c = 1.0 - (c / 10.0);
