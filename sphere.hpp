@@ -23,10 +23,14 @@ public:
         double discriminant = b * b - 4 * a * c;
         if (discriminant < 0) {
             return nullptr; // No intersection
-        } else {
-            double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
-            return std::make_unique<Vector3>(ray.getOrigin() + (ray.getDirection() * t));
         }
+        double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
+        if(t <= 0.0){
+            return nullptr;
+        }
+
+        return std::make_unique<Vector3>(ray.getOrigin() + (ray.getDirection() * t));
+
     }
 
 };
