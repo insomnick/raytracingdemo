@@ -97,11 +97,17 @@ int main(void) {
         }
     }
 
-    bvh = BVH::stupidConstruct(objects);
+    //Build BVH time calculation
+    double previous_seconds_bvh = glfwGetTime();
+    bvh = BVH::medianSplitConstruction(objects);
+    //bvh = BVH::stupidConstruct(objects);
+    double current_seconds_bvh = glfwGetTime();
+    double elapsed_seconds_bvh = current_seconds_bvh - previous_seconds_bvh;
+    printf("Time build BVH using Median Split: %f \n", elapsed_seconds_bvh);
 
-    for (auto & object : objects) {
-        printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
-    }
+    //for (auto & object : objects) {
+    //    printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
+    //}
 
     //App loop
     while (!glfwWindowShouldClose(window)) {
