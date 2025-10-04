@@ -24,6 +24,15 @@ public:
 
     double getZ() const { return z; }
 
+    double getAxis(int axis) const {
+        switch(axis) {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+            default: throw std::out_of_range("Axis must be 0, 1, or 2");
+        }
+    }
+
     friend Vector3 operator+(const Vector3 &v1, const Vector3 &v2) {
         return {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z};
     }

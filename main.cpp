@@ -15,8 +15,10 @@ static const int SCREEN_HEIGHT = 500;
 //Building Screen with Color
 //An Array with Dimensions of Screen and color
 Color s[SCREEN_WIDTH][SCREEN_HEIGHT];
-const int obj_size = 2;
+const int obj_size = 3;
 std::vector<Sphere> objects; //512 primitives in the scene
+BVH bvh = BVH::stupidConstruct(objects);
+
 
 Camera camera{};
 
@@ -73,6 +75,14 @@ int main(void) {
            camera.moveRight(0.1);
             //printf("D: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
         }
+        if (key == GLFW_KEY_M && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+            printf(" Rebuilding BVH using Median Split...\n");
+            bvh = BVH::medianSplitConstruction(objects);
+        }
+        if (key == GLFW_KEY_N && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+            printf(" Rebuilding BVH using Stupid Split...\n");
+            bvh = BVH::stupidConstruct(objects);
+        }
     });
     //Load primitives
     objects.reserve(obj_size * obj_size * obj_size);
@@ -87,13 +97,11 @@ int main(void) {
         }
     }
 
+    bvh = BVH::stupidConstruct(objects);
+
     for (auto & object : objects) {
         printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
     }
-
-    //Build BVH from primitives here
-    //TODO: better BVH construction
-    BVH bvh = BVH::stupidConstruct(objects);
 
     //App loop
     while (!glfwWindowShouldClose(window)) {
@@ -121,16 +129,6 @@ int main(void) {
 }
 
 void calculateScreen(BVH& bvh) {
-
-    //TODO: make the whole screen buffer thing smarter
-    Color ns[SCREEN_WIDTH][SCREEN_HEIGHT];
-    // Initialize screen to black
-    for (int i = 0; i < SCREEN_WIDTH; ++i) {
-        for (int j = 0; j < SCREEN_HEIGHT; ++j) {
-            ns[i][j] = Color(0.0, 0.0, 0.0);
-        }
-    }
-
     //Pre-calculate constants outside loops
     const auto camera_pos = camera.getPosition();
     const auto camera_dir = camera.getDirection();
@@ -161,18 +159,14 @@ void calculateScreen(BVH& bvh) {
                 double distance = (*intersection - camera_pos).length();
                 double intensity = std::exp(-0.1 * distance); // Exponential falloff
                 intensity = std::fmin(intensity, 1.0); // Clamp to [0, 1]
-                ns[i][j] = Color(intensity, intensity, intensity);
+                s[i][j] = Color(intensity, intensity, intensity);
+            } else {
+                s[i][j] = Color(0.0, 0.0, 0.0); // Blank
             }
         }
     }
-    //TODO: also stupid
-    //Copy new screen to current screen
-    for(int i = 0; i < SCREEN_WIDTH; i++) {
-        for (int j = 0; j < SCREEN_HEIGHT; j++) {
-            s[i][j] = ns[i][j];
-        }
-    }
 }
+
 
 void drawScreen() {
     glBegin(GL_POINTS);
