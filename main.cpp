@@ -8,6 +8,7 @@
 #include "sphere.hpp"
 #include "ray.hpp"
 #include "bvh.hpp"
+#include "object_loader.hpp"
 
 static const int SCREEN_WIDTH = 500;
 static const int SCREEN_HEIGHT = 500;
@@ -96,6 +97,8 @@ int main(void) {
             }
         }
     }
+
+    std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/stanford-bunny.obj");
 
     //Build BVH time calculation
     double previous_seconds_bvh = glfwGetTime();

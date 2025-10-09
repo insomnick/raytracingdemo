@@ -13,6 +13,9 @@ add_executable(raytracingdemo
         vector3.hpp
         bvh.hpp
         aabb.hpp
+        lib/OBJ_Loader.h
+        object_loader.hpp
+        triangle.hpp
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---
