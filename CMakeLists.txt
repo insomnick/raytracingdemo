@@ -5,17 +5,18 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(raytracingdemo
-        main.cpp
-        color.hpp
-        ray.hpp
-        camera.hpp
-        sphere.hpp
-        vector3.hpp
-        bvh.hpp
-        aabb.hpp
+        src/main.cpp
+        src/color.hpp
+        src/primitives/ray.hpp
+        src/camera.hpp
+        src/primitives/sphere.hpp
+        src/primitives/vector3.hpp
+        src/bvh.hpp
+        src/aabb.hpp
         lib/OBJ_Loader.h
-        object_loader.hpp
-        triangle.hpp
+        src/object_loader.hpp
+        src/primitives/triangle.hpp
+        src/primitives/primitive.hpp
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---

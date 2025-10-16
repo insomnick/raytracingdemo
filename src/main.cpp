@@ -1,12 +1,14 @@
-#include <glad/glad.h>
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
-#include <valarray>
 #include <array>
 #include <cmath>
+#include <memory>
+#include <algorithm>
+
 #include "color.hpp"
 #include "camera.hpp"
-#include "sphere.hpp"
-#include "ray.hpp"
+#include "primitives/sphere.hpp"
+#include "primitives/ray.hpp"
 #include "bvh.hpp"
 #include "object_loader.hpp"
 
@@ -17,7 +19,7 @@ static const int SCREEN_HEIGHT = 500;
 //An Array with Dimensions of Screen and color
 Color s[SCREEN_WIDTH][SCREEN_HEIGHT];
 const int obj_size = 3;
-std::vector<Sphere> objects; //512 primitives in the scene
+std::vector<std::unique_ptr<Primitive>> objects; //512 primitives in the scene
 BVH bvh = BVH::stupidConstruct(objects);
 
 
@@ -76,6 +78,13 @@ int main(void) {
            camera.moveRight(0.1);
             //printf("D: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
         }
+        if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+            camera.moveUp(0.1);
+            //printf("D: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
+        }
+        if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+            camera.moveUp(-0.1);
+        }
         if (key == GLFW_KEY_M && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
             printf(" Rebuilding BVH using Median Split...\n");
             bvh = BVH::medianSplitConstruction(objects);
@@ -86,19 +95,24 @@ int main(void) {
         }
     });
     //Load primitives
-    objects.reserve(obj_size * obj_size * obj_size);
-    for (int i = 0; i < obj_size; ++i) {
-        for (int j = 0; j < obj_size; ++j) {
-            for (int k = 0; k < obj_size; ++k) {
-                const auto x = i * 2.0;
-                const auto y = j * 2.0 - obj_size - 2.0;
-                const auto z = k * 2.0 - obj_size - 2.0;
-                objects.emplace_back(x, y, z, 0.5);
-            }
-        }
-    }
+//    objects.reserve(obj_size * obj_size * obj_size);
+//    for (int i = 0; i < obj_size; ++i) {
+//        for (int j = 0; j < obj_size; ++j) {
+//            for (int k = 0; k < obj_size; ++k) {
+//                const auto x = i * 2.0;
+//                const auto y = j * 2.0 - obj_size - 2.0;
+//                const auto z = k * 2.0 - obj_size - 2.0;
+//                objects.emplace_back(std::make_unique<Sphere>(x, y, z, 0.5));
+//            }
+//        }
+//    }
 
-    std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/stanford-bunny.obj");
+    std::vector<Triangle> loaded_objects = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 10.0);
+    //save in objects vector
+    objects.reserve(loaded_objects.size());
+    for (auto & obj : loaded_objects) {
+        objects.push_back(std::make_unique<Triangle>(obj));
+    }
 
     //Build BVH time calculation
     double previous_seconds_bvh = glfwGetTime();
@@ -161,14 +175,32 @@ void calculateScreen(BVH& bvh) {
             const Ray ray{camera_pos, ray_direction};
 
             //This is the place where I can do the BVH acceleration structure
-            //Traverse BVH and get intersection point, then calc color based on distance or Material
+            //Traverse BVH and get intersection point and normal, then calc color
             auto intersection = bvh.traverse(ray);
             if (intersection != nullptr) {
-                // Simple shading based on distance
-                double distance = (*intersection - camera_pos).length();
-                double intensity = std::exp(-0.1 * distance); // Exponential falloff
-                intensity = std::fmin(intensity, 1.0); // Clamp to [0, 1]
-                s[i][j] = Color(intensity, intensity, intensity);
+                Vector3 hitPos = intersection->getOrigin();
+                Vector3 normal = intersection->getDirection();
+                double normal_length = normal.length();
+                if (normal_length > 0.0) normal = normal * (1.0 / normal_length);
+
+                Vector3 light_direction = camera_pos - hitPos;  //camera pos as light source
+                double light_distance = light_direction.length();
+                if (light_distance > 0.0) light_direction = light_direction * (1.0 / light_distance);
+
+                // Lighting terms
+                const double ambient = 0.12;
+                double diffuse = std::max(0.0, Vector3::dot(normal, light_direction));
+                double attenuation = 1.0 / (1.0 + 0.35 * light_distance * light_distance); // quadratic falloff
+                double intensity = ambient + diffuse * attenuation;
+                intensity = std::clamp(intensity, 0.0, 1.0);
+
+                // Base color encodes normal (for visibility) then scaled by light
+                double nx = 0.5 * (normal.getX() + 1.0);
+                double ny = 0.5 * (normal.getY() + 1.0);
+                double nz = 0.5 * (normal.getZ() + 1.0);
+                s[i][j] = Color(nx * intensity,
+                                ny * intensity,
+                                nz * intensity);
             } else {
                 s[i][j] = Color(0.0, 0.0, 0.0); // Blank
             }
@@ -184,7 +216,9 @@ void drawScreen() {
         for(int j = 0; j < SCREEN_HEIGHT; j++) {
             Color c = s[i][j];
             glColor3d(c.r(),c.g(),c.b());
-            glVertex2d(mapToScreen(i, SCREEN_WIDTH),mapToScreen(j, SCREEN_HEIGHT));
+            // invert j so row 0 (treated as top in calculateScreen) is rendered at y=+1
+            glVertex2d(mapToScreen(i, SCREEN_WIDTH),
+                       mapToScreen(SCREEN_HEIGHT - 1 - j, SCREEN_HEIGHT));
         }
     }
     glEnd();

@@ -2,7 +2,7 @@
 #define RAYTRACINGDEMO_COLOR_HPP
 
 #include <vector>
-#include "vector3.hpp"
+#include "primitives/vector3.hpp"
 
 struct Color {
     Vector3 c;

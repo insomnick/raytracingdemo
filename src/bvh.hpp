@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <limits>
 #include "aabb.hpp"
-#include "sphere.hpp"
+#include "primitives/primitive.hpp"
 
 class BVH {
 private:
@@ -15,7 +15,7 @@ private:
     BVH(AABB box, std::vector<BVH> children): box(std::move(box)), children(std::move(children)) {}
 
     // Private helper function for recursive construction
-    static BVH medianSplitConstruction(std::vector<Sphere>& objects, size_t start, size_t end, int degree) {
+    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, size_t start, size_t end, int degree) {
 
         //Calculate axis aligned bounding box
         const size_t count = end - start;
@@ -27,24 +27,21 @@ private:
         double maxZ = std::numeric_limits<double>::lowest();
         for (size_t i = start; i < end; ++i) {
             const auto& object = objects[i];
-            const auto center = object.getCenter();
-            const double radius = object.getRadius();
-            minX = std::min(minX, center.getX() - radius);
-            maxX = std::max(maxX, center.getX() + radius);
-            minY = std::min(minY, center.getY() - radius);
-            maxY = std::max(maxY, center.getY() + radius);
-            minZ = std::min(minZ, center.getZ() - radius);
-            maxZ = std::max(maxZ, center.getZ() + radius);
+            minX = std::min(minX, object->getMin().getX());
+            maxX = std::max(maxX, object->getMax().getX());
+            minY = std::min(minY, object->getMin().getY());
+            maxY = std::max(maxY, object->getMax().getY());
+            minZ = std::min(minZ, object->getMin().getZ());
+            maxZ = std::max(maxZ, object->getMax().getZ());
         }
 
         // Leaf node condition
         if (count <= static_cast<size_t>(degree)) {
-            std::vector<Sphere> primitiveLeaves;
-            primitiveLeaves.reserve(count);
+            std::vector<std::unique_ptr<Primitive>> primitiveLeaves;
             for (size_t i = start; i < end; ++i) {
-                primitiveLeaves.push_back(objects[i]);
+                primitiveLeaves.push_back(std::move(objects[i]));
             }
-            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, primitiveLeaves};
+            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, std::move(primitiveLeaves)};
             return BVH{leafBox, {}};
         }
 
@@ -62,10 +59,9 @@ private:
         std::nth_element(objects.begin() + start,
                          objects.begin() + mid,
                          objects.begin() + end,
-                         [&](const Sphere& a, const Sphere& b) {
-                             return a.getCenter().getAxis(axis) < b.getCenter().getAxis(axis);
+                         [&](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b) {
+                             return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                          });
-
         // Create Node
         AABB internalBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, {}};
         std::vector<BVH> kids;
@@ -76,18 +72,18 @@ private:
     }
 
 public:
-    static BVH stupidConstruct(std::vector<Sphere>& objects) {
-        AABB box{
-            {std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()},
-            {std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()},
-            objects
-        };
+    static BVH stupidConstruct(std::vector<std::unique_ptr<Primitive>>& objects) {
+        AABB box(
+                {std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()},
+                {std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()},
+                std::move(objects)  // empty for now
+        );
         std::vector<BVH> children;
         BVH bvh{box, children};
         return bvh;
     }
 
-    static BVH medianSplitConstruction(std::vector<Sphere>& objects, int degree = 2) {
+    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, int degree = 2) {
         if (objects.empty()) {
             AABB emptyBox{
                 {0,0,0},
@@ -99,17 +95,17 @@ public:
         return medianSplitConstruction(objects, 0, objects.size(), degree);
     }
 
-    std::unique_ptr<Vector3> traverse(const Ray& ray) const {
+    std::unique_ptr<Ray> traverse(const Ray& ray) const {
         if (!box.hit(ray)){
             return nullptr;
         }
         if (children.empty()) { //or box.getPrimitives().empty()
-            std::unique_ptr<Vector3> closest = nullptr;
+            std::unique_ptr<Ray> closest = nullptr;
             double closestDist = std::numeric_limits<double>::max();
             for (const auto &object: box.getPrimitives()) {
-                if (object.intersect(ray)) {
-                    auto p = object.getIntersectionPoint(ray);
-                    const double d = (*p - ray.getOrigin()).length();
+                if (object->intersect(ray)) {
+                    auto p = object->getIntersectionNormalAndDirection(ray);
+                    const double d = (p->getOrigin() - ray.getOrigin()).length();
                     if (d < closestDist) {
                         closestDist = d;
                         closest = std::move(p);
@@ -119,12 +115,12 @@ public:
             return closest;
         }
         // Traverse children recursively
-        std::unique_ptr<Vector3> closest = nullptr;
+        std::unique_ptr<Ray> closest = nullptr;
         double closestDistance = std::numeric_limits<double>::max();
         for (const auto& child : children) {
             auto hit = child.traverse(ray);
             if (hit) {
-                const double distance = (*hit - ray.getOrigin()).length();
+                const double distance = (hit->getOrigin() - ray.getOrigin()).length();
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     closest = std::move(hit);
