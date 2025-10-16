@@ -114,10 +114,24 @@ int main(void) {
 //        }
 //    }
 
-    std::vector<Triangle> loaded_objects = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 10.0);
+    //std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
+    std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/teapot.obj", 1.0);
+    //BROKEN std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/suzanne.obj", 5.0);
+    printf("Loaded %zu triangles from OBJ file.\n", loaded_object.size());
+
+
+    //calculate object center ( center of all centers
+    Vector3 object_center{0.0, 0.0, 0.0};
+    for (auto & obj : loaded_object) {
+        object_center = object_center + obj.getCenter();
+    }
+    object_center = object_center * (1.0 / loaded_object.size());
+    camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
+
+
     //save in objects vector
-    objects.reserve(loaded_objects.size());
-    for (auto & obj : loaded_objects) {
+    objects.reserve(loaded_object.size());
+    for (auto & obj : loaded_object) {
         objects.push_back(std::make_unique<Triangle>(obj));
     }
 
@@ -225,15 +239,14 @@ static void shadeScreen(const Vector3& camera_pos) {
             Vector3 N = h.normal;
             double nl = N.length();
             if (nl > 0.0) N = N * (1.0 / nl);
-
             Vector3 L = camera_pos - h.position;
             double dist = L.length();
             if (dist > 0.0) L = L * (1.0 / dist);
 
-            const double ambient = 0.12;
-            double diffuse = std::max(0.0, Vector3::dot(N, L));
-            double attenuation = 1.0 / (1.0 + 0.35 * dist * dist);
-            double intensity = std::clamp(ambient + diffuse * attenuation, 0.0, 1.0);
+            const double ambient = 0.45;
+            double diffuse = std::max(0.0, Vector3::dot(N, L)) * 1.35;
+            double attenuation = 1.0 / (1.0 + 0.05 * dist * dist);
+            double intensity = std::clamp((ambient + diffuse * attenuation) * 1.25, 0.0, 1.0);
 
             double nx = 0.5 * (N.getX() + 1.0);
             double ny = 0.5 * (N.getY() + 1.0);

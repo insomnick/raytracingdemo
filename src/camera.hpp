@@ -15,9 +15,13 @@ private:
 public:
     Camera() {
         direction = {0.0, 0.0, -1.0};
-        position = {0.0, 1.0, 2.0};
+        position = {0.0, 0.0, 0.0};
         //plane = {0.0, 1.0, 1.0};
         fov = 90.0 * (std::numbers::pi / 180.0); //Convert to Radians
+    }
+
+    void setPosition(const Vector3& pos) {
+        position = pos;
     }
 
     Vector3 getDirection() const {
