@@ -4,6 +4,7 @@
 #include <cmath>
 #include <memory>
 #include <algorithm>
+#include <vector>
 
 #include "color.hpp"
 #include "camera.hpp"
@@ -15,9 +16,14 @@
 static const int SCREEN_WIDTH = 500;
 static const int SCREEN_HEIGHT = 500;
 
-//Building Screen with Color
-//An Array with Dimensions of Screen and color
-Color s[SCREEN_WIDTH][SCREEN_HEIGHT];
+struct Hit {
+    bool hit = false;
+    Vector3 position{};
+    Vector3 normal{};
+};
+static std::vector<Hit> ray_hits(SCREEN_WIDTH * SCREEN_HEIGHT); //positions and normals of hits
+static std::array<std::array<Color, SCREEN_HEIGHT>, SCREEN_WIDTH> screen; // pixel colors
+
 const int obj_size = 3;
 std::vector<std::unique_ptr<Primitive>> objects; //512 primitives in the scene
 BVH bvh = BVH::stupidConstruct(objects);
@@ -29,6 +35,7 @@ void drawScreen();
 double mapToScreen(int j, const int height);
 
 void calculateScreen(BVH& bvh);
+static void shadeScreen(const Vector3& camera_pos);
 
 int main(void) {
     //Init GLFW
@@ -128,13 +135,22 @@ int main(void) {
 
     //App loop
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         //Time Calculate
         double previous_seconds_c = glfwGetTime();
-        calculateScreen(bvh);  //Actual Calculations
+        calculateScreen(bvh);                  // ray generation + BVH traversal only
         double current_seconds_c = glfwGetTime();
         double elapsed_seconds_c = current_seconds_c - previous_seconds_c;
         printf("Time calculate Screen: %f \n", elapsed_seconds_c);
+
+
+        //Time Shade
+        double previous_seconds_s = glfwGetTime();
+        shadeScreen(camera.getPosition());     // lighting pass
+        double current_seconds_s = glfwGetTime();
+        double elapsed_seconds_s = current_seconds_s - previous_seconds_s;
+        printf("Time shade Screen: %f \n", elapsed_seconds_s);
 
         //Time Draw
         double previous_seconds = glfwGetTime();
@@ -152,58 +168,77 @@ int main(void) {
 }
 
 void calculateScreen(BVH& bvh) {
-    //Pre-calculate constants outside loops
-    const auto camera_pos = camera.getPosition();
-    const auto camera_dir = camera.getDirection();
-    const auto fov_half_tan = std::tan(camera.getFov() * 0.5);
-    const auto aspect_ratio = static_cast<double>(SCREEN_WIDTH) / SCREEN_HEIGHT;
-    const auto inv_width = 1.0 / SCREEN_WIDTH;
-    const auto inv_height = 1.0 / SCREEN_HEIGHT;
-    // Calculate proper camera basis vectors from camera direction
-    const auto world_up = Vector3{0.0, 1.0, 0.0};
-    const auto camera_right = Vector3::cross(camera_dir, world_up).normalize();
-    const auto camera_up = Vector3::cross(camera_right, camera_dir).normalize();
+    const Vector3 camera_pos = camera.getPosition();
+    const Vector3 camera_dir = camera.getDirection();
+    const double fov_half_tan = std::tan(camera.getFov() * 0.5);
+    const double aspect_ratio = static_cast<double>(SCREEN_WIDTH) / SCREEN_HEIGHT;
+
+    // basis
+    const Vector3 world_up{0.0, 1.0, 0.0};
+    Vector3 right = Vector3::cross(camera_dir, world_up);
+    if (right.length() < 1e-8) right = Vector3{0.0, 0.0, 1.0};
+    right = right.normalize();
+    Vector3 up = Vector3::cross(right, camera_dir).normalize();
+
+    // Precompute pixel plane coefficients
+    static std::vector<double> px_cache;
+    static std::vector<double> py_cache;
+    px_cache.resize(SCREEN_WIDTH);
+    py_cache.resize(SCREEN_HEIGHT);
+    const double inv_w = 1.0 / SCREEN_WIDTH;
+    const double inv_h = 1.0 / SCREEN_HEIGHT;
+    for (int x = 0; x < SCREEN_WIDTH; ++x)
+        px_cache[x] = (2.0 * (x + 0.5) * inv_w - 1.0) * fov_half_tan * aspect_ratio;
+    for (int y = 0; y < SCREEN_HEIGHT; ++y)
+        py_cache[y] = (1.0 - 2.0 * (y + 0.5) * inv_h) * fov_half_tan;
 
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
-        const auto px_base = (2.0 * (i + 0.5) * inv_width - 1.0) * fov_half_tan * aspect_ratio;
+        const double px = px_cache[i];
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
-            const auto py = (1.0 - 2.0 * (j + 0.5) * inv_height) * fov_half_tan;
-            auto ray_direction = camera_dir + (camera_up * py) + (camera_right * px_base);
-            // Fast normalize using reciprocal
-            const auto inv_length = 1.0 / ray_direction.length();
-            ray_direction = ray_direction * inv_length;
-            const Ray ray{camera_pos, ray_direction};
+            const double py = py_cache[j];
+            Vector3 dir = camera_dir + up * py + right * px;
+            dir = dir * (1.0 / dir.length());
+            Ray ray{camera_pos, dir};
 
-            //This is the place where I can do the BVH acceleration structure
-            //Traverse BVH and get intersection point and normal, then calc color
-            auto intersection = bvh.traverse(ray);
-            if (intersection != nullptr) {
-                Vector3 hitPos = intersection->getOrigin();
-                Vector3 normal = intersection->getDirection();
-                double normal_length = normal.length();
-                if (normal_length > 0.0) normal = normal * (1.0 / normal_length);
-
-                Vector3 light_direction = camera_pos - hitPos;  //camera pos as light source
-                double light_distance = light_direction.length();
-                if (light_distance > 0.0) light_direction = light_direction * (1.0 / light_distance);
-
-                // Lighting terms
-                const double ambient = 0.12;
-                double diffuse = std::max(0.0, Vector3::dot(normal, light_direction));
-                double attenuation = 1.0 / (1.0 + 0.35 * light_distance * light_distance); // quadratic falloff
-                double intensity = ambient + diffuse * attenuation;
-                intensity = std::clamp(intensity, 0.0, 1.0);
-
-                // Base color encodes normal (for visibility) then scaled by light
-                double nx = 0.5 * (normal.getX() + 1.0);
-                double ny = 0.5 * (normal.getY() + 1.0);
-                double nz = 0.5 * (normal.getZ() + 1.0);
-                s[i][j] = Color(nx * intensity,
-                                ny * intensity,
-                                nz * intensity);
+            const int idx = j + i * SCREEN_HEIGHT;
+            auto hitRay = bvh.traverse(ray); // Ray(origin=hitPos, direction=normal) or nullptr
+            if (hitRay) {
+                ray_hits[idx].hit = true;
+                ray_hits[idx].position = hitRay->getOrigin();
+                ray_hits[idx].normal = hitRay->getDirection();
             } else {
-                s[i][j] = Color(0.0, 0.0, 0.0); // Blank
+                ray_hits[idx].hit = false;
             }
+        }
+    }
+}
+
+static void shadeScreen(const Vector3& camera_pos) {
+    for (int i = 0; i < SCREEN_WIDTH; ++i) {
+        for (int j = 0; j < SCREEN_HEIGHT; ++j) {
+            const int idx = j + i * SCREEN_HEIGHT;
+            const Hit& h = ray_hits[idx];
+            if (!h.hit) {
+                screen[i][j] = Color(0.0, 0.0, 0.0);
+                continue;
+            }
+            Vector3 N = h.normal;
+            double nl = N.length();
+            if (nl > 0.0) N = N * (1.0 / nl);
+
+            Vector3 L = camera_pos - h.position;
+            double dist = L.length();
+            if (dist > 0.0) L = L * (1.0 / dist);
+
+            const double ambient = 0.12;
+            double diffuse = std::max(0.0, Vector3::dot(N, L));
+            double attenuation = 1.0 / (1.0 + 0.35 * dist * dist);
+            double intensity = std::clamp(ambient + diffuse * attenuation, 0.0, 1.0);
+
+            double nx = 0.5 * (N.getX() + 1.0);
+            double ny = 0.5 * (N.getY() + 1.0);
+            double nz = 0.5 * (N.getZ() + 1.0);
+            screen[i][j] = Color(nx * intensity, ny * intensity, nz * intensity);
         }
     }
 }
@@ -214,7 +249,7 @@ void drawScreen() {
     /* Render here */
     for(int i = 0; i < SCREEN_WIDTH; i++)  {
         for(int j = 0; j < SCREEN_HEIGHT; j++) {
-            Color c = s[i][j];
+            Color c = screen[i][j];
             glColor3d(c.r(),c.g(),c.b());
             // invert j so row 0 (treated as top in calculateScreen) is rendered at y=+1
             glVertex2d(mapToScreen(i, SCREEN_WIDTH),
