@@ -114,8 +114,11 @@ int main(void) {
 //        }
 //    }
 
-    //std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
-    std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/teapot.obj", 1.0);
+    std::vector<Triangle> loaded_object;
+    auto bunny = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
+    loaded_object.insert(loaded_object.end(), bunny.begin(), bunny.end());
+    //auto teapot = ObjectLoader::loadFromFile("../example/teapot.obj", 1.0);
+    //loaded_object.insert(loaded_object.end(), teapot.begin(), teapot.end());
     //BROKEN std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/suzanne.obj", 5.0);
     printf("Loaded %zu triangles from OBJ file.\n", loaded_object.size());
 
