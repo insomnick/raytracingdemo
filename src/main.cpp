@@ -115,8 +115,10 @@ int main(void) {
 //    }
 
     std::vector<Triangle> loaded_object;
-    auto bunny = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
-    loaded_object.insert(loaded_object.end(), bunny.begin(), bunny.end());
+    auto sponza = ObjectLoader::loadFromFile("../example/sponza.obj", 0.0005);
+    loaded_object.insert(loaded_object.end(), sponza.begin(), sponza.end());
+    //auto bunny = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
+    //loaded_object.insert(loaded_object.end(), bunny.begin(), bunny.end());
     //auto teapot = ObjectLoader::loadFromFile("../example/teapot.obj", 1.0);
     //loaded_object.insert(loaded_object.end(), teapot.begin(), teapot.end());
     //BROKEN std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/suzanne.obj", 5.0);
@@ -196,7 +198,8 @@ void calculateScreen(BVH& bvh) {
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
         const double px = camera.getPixelX(i);
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
-            const double py = camera.getPixelY(j); // FIX: was getPixelY(i)
+            printf("Calculating pixel (%d, %d)\n", i, j);
+            const double py = camera.getPixelY(j);
             Vector3 dir = camera_dir + up * py + right * px;
             dir = dir * (1.0 / dir.length());
             Ray ray{camera_pos, dir};
