@@ -5,21 +5,14 @@
 #include "vector3.hpp"
 
 struct Ray {
-private:
     Vector3 origin;
-    Vector3 direction;
-    Vector3 inv_direction; // Precomputed inverse direction for AABB intersection
-public:
-    Ray(Vector3 origin, Vector3 direction) : origin(origin), direction(direction) {
-        inv_direction = Vector3{
-            direction.getX() != 0.0 ? 1.0 / direction.getX() : std::numeric_limits<double>::infinity(),
-            direction.getY() != 0.0 ? 1.0 / direction.getY() : std::numeric_limits<double>::infinity(),
-            direction.getZ() != 0.0 ? 1.0 / direction.getZ() : std::numeric_limits<double>::infinity()
-        };
+    Vector3 direction; // should be normalized
+    Vector3 invDir;    // component-wise inverse
+    Ray(const Vector3& o, const Vector3& d): origin(o), direction(d){
+        invDir = { d.getX()!=0.f? 1.f/d.getX(): std::numeric_limits<float>::infinity(),
+                   d.getY()!=0.f? 1.f/d.getY(): std::numeric_limits<float>::infinity(),
+                   d.getZ()!=0.f? 1.f/d.getZ(): std::numeric_limits<float>::infinity()};
     }
-    Vector3 getOrigin() const { return origin; }
-    Vector3 getDirection() const { return direction; }
-    Vector3 getInvDirection() const { return inv_direction; }
 };
 
 #endif //RAYTRACINGDEMO_RAY_HPP

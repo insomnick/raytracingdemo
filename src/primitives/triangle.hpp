@@ -3,94 +3,37 @@
 
 #include "vector3.hpp"
 #include "ray.hpp"
+#include "primitive.hpp"
 
 class Triangle : public Primitive {
-private:
-    Vector3 v0, v1, v2; // Triangle vertices
-    Vector3 normal; // Precomputed normal for the triangle
-    Vector3 center;
+    Vector3 v0,v1,v2; Vector3 e1,e2; Vector3 normal; Vector3 center;
 public:
-    Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2)
-        : v0(v0), v1(v1), v2(v2) {
-        // Precompute the normal and center
-        normal = Vector3::cross(v1 - v0, v2 - v0).normalize();
-        center = (v0 + v1 + v2) * (1.0/3);
-        printf("Triangle vertices: (%f, %f, %f), (%f, %f, %f), (%f, %f, %f)\n", v0.getX(), v0.getY(), v0.getZ(), v1.getX(), v1.getY(), v1.getZ(), v2.getX(), v2.getY(), v2.getZ());
+    Triangle(const Vector3& a,const Vector3& b,const Vector3& c): v0(a),v1(b),v2(c){
+        e1 = v1 - v0; e2 = v2 - v0; normal = Vector3::cross(e1, e2).normalize(); center = (v0+v1+v2)*(1.f/3.f);
     }
-
-    Vector3 getCenter() const override{
-        return center;
+    Vector3 getCenter() const override { return center; }
+    Vector3 getMin() const override { return { std::min({v0.getX(),v1.getX(),v2.getX()}), std::min({v0.getY(),v1.getY(),v2.getY()}), std::min({v0.getZ(),v1.getZ(),v2.getZ()})}; }
+    Vector3 getMax() const override { return { std::max({v0.getX(),v1.getX(),v2.getX()}), std::max({v0.getY(),v1.getY(),v2.getY()}), std::max({v0.getZ(),v1.getZ(),v2.getZ()})}; }
+    bool intersect(const Ray& ray, float& tOut, Vector3& normalOut) const override {
+        const float EPS = 1e-6f;
+        Vector3 p = Vector3::cross(ray.direction, e2);
+        float det = Vector3::dot(e1, p);
+        if (det > -EPS && det < EPS) return false;
+        float invDet = 1.f / det;
+        Vector3 s = ray.origin - v0;
+        float u = Vector3::dot(s, p) * invDet;
+        if (u < 0.f || u > 1.f) return false;
+        Vector3 q = Vector3::cross(s, e1);
+        float v = Vector3::dot(ray.direction, q) * invDet;
+        if (v < 0.f || u + v > 1.f) return false;
+        float t = Vector3::dot(e2, q) * invDet;
+        if (t <= EPS) return false;
+        tOut = t;
+        normalOut = normal;
+        if (Vector3::dot(normalOut, ray.direction) > 0) normalOut = normalOut * -1.f;
+        return true;
     }
-
-    Vector3 getMin() const override {
-        return Vector3{
-            std::min({v0.getX(), v1.getX(), v2.getX()}),
-            std::min({v0.getY(), v1.getY(), v2.getY()}),
-            std::min({v0.getZ(), v1.getZ(), v2.getZ()})
-        };
-    }
-    Vector3 getMax() const override {
-        return Vector3{
-            std::max({v0.getX(), v1.getX(), v2.getX()}),
-            std::max({v0.getY(), v1.getY(), v2.getY()}),
-            std::max({v0.getZ(), v1.getZ(), v2.getZ()})
-        };
-    }
-
-    bool intersect(const Ray& ray) const override{
-        const double EPSILON = 1e-8;
-        Vector3 edge1 = v1 - v0;
-        Vector3 edge2 = v2 - v0;
-        Vector3 h = Vector3::cross(ray.getDirection(), edge2);
-        double a = Vector3::dot(edge1, h);
-        if (a > -EPSILON && a < EPSILON)
-            return false; // Ray is parallel to triangle
-        double f = 1.0 / a;
-        Vector3 s = ray.getOrigin() - v0;
-        double u = f * Vector3::dot(s, h);
-        if (u < 0.0 || u > 1.0)
-            return false;
-        Vector3 q = Vector3::cross(s, edge1);
-        double v = f * Vector3::dot(ray.getDirection(), q);
-        if (v < 0.0 || u + v > 1.0)
-            return false;
-        double t = f * Vector3::dot(edge2, q);
-        if (t > EPSILON) // Intersection
-            return true;
-        else // Line intersection but not a ray intersection
-            return false;
-    }
-
-    std::unique_ptr<Ray> getIntersectionNormalAndDirection(const Ray& ray) const override{
-        const double EPSILON = 1e-8;
-        Vector3 edge1 = v1 - v0;
-        Vector3 edge2 = v2 - v0;
-        Vector3 h = Vector3::cross(ray.getDirection(), edge2);
-        double a = Vector3::dot(edge1, h);
-        if (a > -EPSILON && a < EPSILON)
-            return nullptr; // Ray is parallel to triangle
-        double f = 1.0 / a;
-        Vector3 s = ray.getOrigin() - v0;
-        double u = f * Vector3::dot(s, h);
-        if (u < 0.0 || u > 1.0)
-            return nullptr;
-        Vector3 q = Vector3::cross(s, edge1);
-        double v = f * Vector3::dot(ray.getDirection(), q);
-        if (v < 0.0 || u + v > 1.0)
-            return nullptr;
-        double t = f * Vector3::dot(edge2, q);
-        if (t <= EPSILON)
-            return nullptr;
-
-        const auto intersection = (ray.getDirection() * t);
-
-        return std::make_unique<Ray>(intersection, normal);
-    }
-    std::unique_ptr<Primitive> clone() const override {
-        return std::make_unique<Triangle>(*this);
-    }
-    ~Triangle() override = default;
+    std::unique_ptr<Primitive> clone() const override { return std::make_unique<Triangle>(*this); }
 };
-
 
 #endif //RAYTRACINGDEMO_TRIANGLE_H

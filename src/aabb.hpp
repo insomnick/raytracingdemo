@@ -1,75 +1,30 @@
 #ifndef RAYTRACINGDEMO_AABB_HPP
 #define RAYTRACINGDEMO_AABB_HPP
 
-
 #include <vector>
-#include <memory>
-#include <utility>
 #include <algorithm>
-
 #include "primitives/vector3.hpp"
 #include "primitives/ray.hpp"
 #include "primitives/primitive.hpp"
 
-class AABB {    //Axis-Aligned Bounding Box
-
-    Vector3 min; //Minimum corner
-    Vector3 max; //Maximum corner
-    std::vector<std::unique_ptr<Primitive>> primitives;
-
-public:
-    AABB(Vector3 min_, Vector3 max_, std::vector<std::unique_ptr<Primitive>>&& objs)
-        : min(std::move(min_)), max(std::move(max_)), primitives(std::move(objs)) {}
-
-    //copy
-    AABB(const AABB& other) : min(other.min), max(other.max) {
-        primitives.reserve(other.primitives.size());
-        for (const auto &p : other.primitives) {
-            primitives.push_back(p->clone());
-        }
-    }
-    AABB& operator=(const AABB& other) {
-        if (this == &other) return *this;
-        min = other.min;
-        max = other.max;
-        primitives.clear();
-        primitives.reserve(other.primitives.size());
-        for (const auto &p : other.primitives) {
-            primitives.push_back(p->clone());
-        }
-        return *this;
-    }
-    // moves
-    AABB(AABB&&) noexcept = default;
-    AABB& operator=(AABB&&) noexcept = default;
-
-    const Vector3& getMin() const { return min; }
-    const Vector3& getMax() const { return max; }
-
-    const std::vector<std::unique_ptr<Primitive>>& getPrimitives() const { return primitives; }
-    std::vector<std::unique_ptr<Primitive>>& getPrimitives() { return primitives; } // optional non-const overload
-
-    // TODO: Optimize hit function (e.g., precompute inverse dir or use branchless slabs)
-    bool hit(const Ray& ray) const {
-        // Using "slab" method with 3 planes
-        double tx1 = (min.getX() - ray.getOrigin().getX())*ray.getInvDirection().getX();
-        double tx2 = (max.getX() - ray.getOrigin().getX())*ray.getInvDirection().getX();
-        double tmin = std::min(tx1, tx2);
-        double tmax = std::max(tx1, tx2);
-
-        double ty1 = (min.getY() - ray.getOrigin().getY())*ray.getInvDirection().getY();
-        double ty2 = (max.getY() - ray.getOrigin().getY())*ray.getInvDirection().getY();
-        tmin = std::max(tmin, std::min(ty1, ty2));
-        tmax = std::min(tmax, std::max(ty1, ty2));
-
-        double tz1 = (min.getZ() - ray.getOrigin().getZ())*ray.getInvDirection().getZ();
-        double tz2 = (max.getZ() - ray.getOrigin().getZ())*ray.getInvDirection().getZ();
-        tmin = std::max(tmin, std::min(tz1, tz2));
-        tmax = std::min(tmax, std::max(tz1, tz2));
-
-        return tmax >= tmin;
+struct AABB {
+    Vector3 minB{0,0,0};
+    Vector3 maxB{0,0,0};
+    std::vector<Primitive*> prims; // leaf primitives (if leaf)
+    bool intersect(const Ray& r, float& tminOut, float& tmaxOut) const {
+        float tmin = ( (r.invDir.getX()>=0? minB.getX(): maxB.getX()) - r.origin.getX()) * r.invDir.getX();
+        float tmax = ( (r.invDir.getX()>=0? maxB.getX(): minB.getX()) - r.origin.getX()) * r.invDir.getX();
+        float tymin = ( (r.invDir.getY()>=0? minB.getY(): maxB.getY()) - r.origin.getY()) * r.invDir.getY();
+        float tymax = ( (r.invDir.getY()>=0? maxB.getY(): minB.getY()) - r.origin.getY()) * r.invDir.getY();
+        if ( (tmin > tymax) || (tymin > tmax)) return false;
+        if (tymin > tmin) tmin = tymin; if (tymax < tmax) tmax = tymax;
+        float tzmin = ( (r.invDir.getZ()>=0? minB.getZ(): maxB.getZ()) - r.origin.getZ()) * r.invDir.getZ();
+        float tzmax = ( (r.invDir.getZ()>=0? maxB.getZ(): minB.getZ()) - r.origin.getZ()) * r.invDir.getZ();
+        if ( (tmin > tzmax) || (tzmin > tmax)) return false;
+        if (tzmin > tmin) tmin = tzmin; if (tzmax < tmax) tmax = tzmax;
+        if (tmax < 0) return false;
+        tminOut = tmin; tmaxOut = tmax; return true;
     }
 };
-
 
 #endif //RAYTRACINGDEMO_AABB_HPP

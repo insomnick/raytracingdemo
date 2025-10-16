@@ -7,55 +7,30 @@
 #include "primitive.hpp"
 
 class Sphere : public Primitive {
-private:
-    Vector3 center;
-    double radius;
+    Vector3 center; float radius;
 public:
-    Sphere() : center({0.0,0.0,0.0}), radius(1.0) {}
-    Sphere(double cx, double cy, double cz, double r) : center({cx,cy,cz}), radius(r) {}
+    Sphere(): center(0,0,0), radius(1.f) {}
+    Sphere(float cx,float cy,float cz,float r): center(cx,cy,cz), radius(r) {}
     Vector3 getCenter() const override { return center; }
-    //double getRadius() const { return radius; }
-
-    Vector3 getMin() const override{ return center - Vector3(1,1,1) * radius; }
-    Vector3 getMax() const override{ return center + Vector3(1,1,1) * radius; }
-
-    bool intersect(const Ray& ray) const override {
-        Vector3 oc = (ray.getOrigin() - center);
-        double a = Vector3::dot(ray.getDirection(), ray.getDirection());
-        double b = 2.0 * Vector3::dot(oc, ray.getDirection());
-        double c = Vector3::dot(oc, oc) - radius * radius;
-        double discriminant = b * b - 4 * a * c;
-        if (discriminant < 0.0) {
-            return false;
-        }
-        double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
-        if(t <= 0.0){
-            return false;
-        }
+    Vector3 getMin() const override { return center - Vector3(radius,radius,radius); }
+    Vector3 getMax() const override { return center + Vector3(radius,radius,radius); }
+    bool intersect(const Ray& ray, float& tOut, Vector3& normalOut) const override {
+        Vector3 oc = ray.origin - center;
+        float a = Vector3::dot(ray.direction, ray.direction); // ~1 if normalized
+        float b = 2.f * Vector3::dot(oc, ray.direction);
+        float c = Vector3::dot(oc, oc) - radius*radius;
+        float disc = b*b - 4*a*c;
+        if (disc < 0.f) return false;
+        float s = std::sqrt(disc);
+        float t = (-b - s) / (2.f*a);
+        if (t <= 0.f) { t = (-b + s)/(2.f*a); if (t <= 0.f) return false; }
+        tOut = t;
+        Vector3 hit = ray.origin + ray.direction * t;
+        normalOut = (hit - center).normalize();
+        if (Vector3::dot(normalOut, ray.direction) > 0) normalOut = normalOut * -1.f;
         return true;
     }
-
-    std::unique_ptr<Ray> getIntersectionNormalAndDirection(const Ray& ray) const override {
-        Vector3 oc = (ray.getOrigin() - center);
-        double a = Vector3::dot(ray.getDirection(), ray.getDirection());
-        double b = 2.0 * Vector3::dot(oc, ray.getDirection());
-        double c = Vector3::dot(oc, oc) - radius * radius;
-        double discriminant = b * b - 4 * a * c;
-        if (discriminant < 0.0) {
-            return nullptr;
-        }
-        double t = (-b - std::sqrt(discriminant)) / (2.0 * a);
-        if(t <= 0.0){
-            return nullptr;
-        }
-        const auto intersection = (ray.getDirection() * t);
-        return std::make_unique<Ray>(intersection, ((ray.getOrigin() + intersection) - center).normalize());
-    }
-
-    std::unique_ptr<Primitive> clone() const override {
-        return std::make_unique<Sphere>(*this);
-    }
-    ~Sphere() override = default;
+    std::unique_ptr<Primitive> clone() const override { return std::make_unique<Sphere>(*this); }
 };
 
 #endif //RAYTRACINGDEMO_SPHERE_HPP

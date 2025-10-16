@@ -1,135 +1,107 @@
 #ifndef RAYTRACINGDEMO_BVH_HPP
 #define RAYTRACINGDEMO_BVH_HPP
 
-#include <utility>
 #include <vector>
-#include <algorithm>
 #include <limits>
+#include <algorithm>
 #include "aabb.hpp"
 #include "primitives/primitive.hpp"
 
+struct HitInfo { bool hit=false; float t=0.f; Vector3 normal{0,0,0}; };
+
 class BVH {
-private:
-    AABB box;
-    std::vector<BVH> children;
-    BVH(AABB box, std::vector<BVH> children): box(std::move(box)), children(std::move(children)) {}
+    struct Node {
+        Vector3 minB{0,0,0};
+        Vector3 maxB{0,0,0};
+        Vector3 center{0,0,0}; // precomputed for ordering
+        int left=-1;
+        int right=-1;
+        int firstPrim=0;
+        int primCount=0;
+        bool isLeaf() const { return primCount>0; }
+    };
+    std::vector<Node> nodes;
+    std::vector<Primitive*> prims;
 
-    // Private helper function for recursive construction
-    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, size_t start, size_t end, int degree) {
-
-        //Calculate axis aligned bounding box
-        const size_t count = end - start;
-        double minX = std::numeric_limits<double>::max();
-        double minY = std::numeric_limits<double>::max();
-        double minZ = std::numeric_limits<double>::max();
-        double maxX = std::numeric_limits<double>::lowest();
-        double maxY = std::numeric_limits<double>::lowest();
-        double maxZ = std::numeric_limits<double>::lowest();
-        for (size_t i = start; i < end; ++i) {
-            const auto& object = objects[i];
-            minX = std::min(minX, object->getMin().getX());
-            maxX = std::max(maxX, object->getMax().getX());
-            minY = std::min(minY, object->getMin().getY());
-            maxY = std::max(maxY, object->getMax().getY());
-            minZ = std::min(minZ, object->getMin().getZ());
-            maxZ = std::max(maxZ, object->getMax().getZ());
-        }
-
-        // Leaf node condition
-        if (count <= static_cast<size_t>(degree)) {
-            std::vector<std::unique_ptr<Primitive>> primitiveLeaves;
-            for (size_t i = start; i < end; ++i) {
-                primitiveLeaves.push_back(std::move(objects[i]));
-            }
-            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, std::move(primitiveLeaves)};
-            return BVH{leafBox, {}};
-        }
-
-        // Longest axis
-        const double lenX = maxX - minX;
-        const double lenY = maxY - minY;
-        const double lenZ = maxZ - minZ;
-        int axis = 0;
-        if (lenY > lenX && lenY >= lenZ) axis = 1;
-        else if (lenZ > lenX && lenZ >= lenY) axis = 2;
-
-        //TODO: For now binary split regardless of degree var
-        size_t mid = start + count / 2;
-        // Partition around median (nth_element is faster than sort)
-        std::nth_element(objects.begin() + start,
-                         objects.begin() + mid,
-                         objects.begin() + end,
-                         [&](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b) {
-                             return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
-                         });
-        // Create Node
-        AABB internalBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, {}};
-        std::vector<BVH> kids;
-        kids.reserve(2);    //TODO: Change for degree > 2
-        kids.emplace_back(medianSplitConstruction(objects, start, mid, degree));
-        kids.emplace_back(medianSplitConstruction(objects, mid, end, degree));
-        return BVH{internalBox, std::move(kids)};
+    inline bool boxIntersect(const Node& n, const Ray& r, float bestT) const {
+        float tmin = ( (r.invDir.getX()>=0? n.minB.getX(): n.maxB.getX()) - r.origin.getX()) * r.invDir.getX();
+        float tmax = ( (r.invDir.getX()>=0? n.maxB.getX(): n.minB.getX()) - r.origin.getX()) * r.invDir.getX();
+        float tymin = ( (r.invDir.getY()>=0? n.minB.getY(): n.maxB.getY()) - r.origin.getY()) * r.invDir.getY();
+        float tymax = ( (r.invDir.getY()>=0? n.maxB.getY(): n.minB.getY()) - r.origin.getY()) * r.invDir.getY();
+        if ((tmin > tymax) || (tymin > tmax)) return false;
+        if (tymin > tmin) tmin = tymin; if (tymax < tmax) tmax = tymax;
+        float tzmin = ( (r.invDir.getZ()>=0? n.minB.getZ(): n.maxB.getZ()) - r.origin.getZ()) * r.invDir.getZ();
+        float tzmax = ( (r.invDir.getZ()>=0? n.maxB.getZ(): n.minB.getZ()) - r.origin.getZ()) * r.invDir.getZ();
+        if ((tmin > tzmax) || (tzmin > tmax)) return false;
+        if (tzmin > tmin) tmin = tzmin; if (tzmax < tmax) tmax = tzmax;
+        if (tmax < 0.f) return false;
+        return tmin <= bestT;
     }
 
 public:
-    static BVH stupidConstruct(std::vector<std::unique_ptr<Primitive>>& objects) {
-        AABB box(
-                {std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()},
-                {std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()},
-                std::move(objects)  // empty for now
-        );
-        std::vector<BVH> children;
-        BVH bvh{box, children};
-        return bvh;
+    BVH() = default;
+
+    static BVH build(std::vector<std::unique_ptr<Primitive>>& objects, int leafSize=8){
+        std::vector<Primitive*> primPtrs; primPtrs.reserve(objects.size());
+        for(auto& p: objects) primPtrs.push_back(p.get());
+        BVH b; b.prims = primPtrs;
+        b.nodes.reserve(std::max<size_t>(1, primPtrs.size()/leafSize*2));
+        b.buildRecursive(0,(int)b.prims.size(), leafSize);
+        return b;
     }
 
-    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, int degree = 2) {
-        if (objects.empty()) {
-            AABB emptyBox{
-                {0,0,0},
-                {0,0,0},
-                {}
-            };
-            return BVH{emptyBox, {}};
+    HitInfo traverse(const Ray& r) const {
+        HitInfo best; float bestT = std::numeric_limits<float>::infinity();
+        if(nodes.empty()) return best;
+        int stack[64]; int sp=0; stack[sp++] = 0;
+        while(sp){
+            const int idx = stack[--sp];
+            const Node& n = nodes[idx];
+            if(!boxIntersect(n,r,bestT)) continue;
+            if(n.isLeaf()){
+                Primitive* const* leafPrim = prims.data() + n.firstPrim;
+                for(int i=0;i<n.primCount;++i){ float t; Vector3 N; if(leafPrim[i]->intersect(r,t,N) && t < bestT){ best.hit=true; bestT=t; best.t=t; best.normal=N; } }
+            } else {
+                if(n.left>=0 && n.right>=0){
+                    const Node& L = nodes[n.left];
+                    const Node& R = nodes[n.right];
+                    float dL = Vector3::dot(L.center - r.origin, r.direction);
+                    float dR = Vector3::dot(R.center - r.origin, r.direction);
+                    if(dL < dR){ if(sp<63) stack[sp++] = n.right; if(sp<63) stack[sp++] = n.left; }
+                    else { if(sp<63) stack[sp++] = n.left; if(sp<63) stack[sp++] = n.right; }
+                } else { if(n.left>=0 && sp<64) stack[sp++] = n.left; if(n.right>=0 && sp<64) stack[sp++] = n.right; }
+            }
         }
-        return medianSplitConstruction(objects, 0, objects.size(), degree);
+        return best;
     }
 
-    std::unique_ptr<Ray> traverse(const Ray& ray) const {
-        if (!box.hit(ray)){
-            return nullptr;
+private:
+    int buildRecursive(int start, int end, int leafSize){
+        Node node;
+        Vector3 minB( std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+        Vector3 maxB(-std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity());
+        for(int i=start;i<end;++i){ auto* p=prims[i]; Vector3 mn=p->getMin(); Vector3 mx=p->getMax();
+            minB = { std::min(minB.getX(), mn.getX()), std::min(minB.getY(), mn.getY()), std::min(minB.getZ(), mn.getZ())};
+            maxB = { std::max(maxB.getX(), mx.getX()), std::max(maxB.getY(), mx.getY()), std::max(maxB.getZ(), mx.getZ())}; }
+        node.minB = minB; node.maxB = maxB; node.center = (minB + maxB) * 0.5f;
+        int count = end-start;
+        if(count <= leafSize || count <= 2){
+            node.firstPrim = start; node.primCount = count;
+            int idx=(int)nodes.size(); nodes.push_back(node); return idx;
         }
-        if (children.empty()) { //or box.getPrimitives().empty()
-            std::unique_ptr<Ray> closest = nullptr;
-            double closestDist = std::numeric_limits<double>::max();
-            for (const auto &object: box.getPrimitives()) {
-                if (object->intersect(ray)) {
-                    auto p = object->getIntersectionNormalAndDirection(ray);
-                    const double d = (p->getOrigin() - ray.getOrigin()).length();
-                    if (d < closestDist) {
-                        closestDist = d;
-                        closest = std::move(p);
-                    }
-                }
-            }
-            return closest;
-        }
-        // Traverse children recursively
-        std::unique_ptr<Ray> closest = nullptr;
-        double closestDistance = std::numeric_limits<double>::max();
-        for (const auto& child : children) {
-            auto hit = child.traverse(ray);
-            if (hit) {
-                const double distance = (hit->getOrigin() - ray.getOrigin()).length();
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closest = std::move(hit);
-                }
-            }
-        }
-        return closest;
+        float mean[3] = {0.f,0.f,0.f};
+        for(int i=start;i<end;++i){ Vector3 c = prims[i]->getCenter(); mean[0]+=c.getX(); mean[1]+=c.getY(); mean[2]+=c.getZ(); }
+        float invCount = 1.f / count; mean[0]*=invCount; mean[1]*=invCount; mean[2]*=invCount;
+        float var[3] = {0.f,0.f,0.f};
+        for(int i=start;i<end;++i){ Vector3 c = prims[i]->getCenter(); float dx=c.getX()-mean[0]; float dy=c.getY()-mean[1]; float dz=c.getZ()-mean[2]; var[0]+=dx*dx; var[1]+=dy*dy; var[2]+=dz*dz; }
+        int axis = 0; if(var[1]>var[axis]) axis=1; if(var[2]>var[axis]) axis=2;
+        int mid = start + count/2;
+        std::nth_element(prims.begin()+start, prims.begin()+mid, prims.begin()+end, [axis](Primitive* a, Primitive* b){ return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis); });
+        int idx = (int)nodes.size(); nodes.push_back(node);
+        int leftIdx = buildRecursive(start, mid, leafSize);
+        int rightIdx = buildRecursive(mid, end, leafSize);
+        nodes[idx].left = leftIdx; nodes[idx].right = rightIdx; return idx;
     }
 };
 
 #endif //RAYTRACINGDEMO_BVH_HPP
-
