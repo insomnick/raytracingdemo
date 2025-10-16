@@ -37,7 +37,12 @@ double mapToScreen(int j, const int height);
 void calculateScreen(BVH& bvh);
 static void shadeScreen(const Vector3& camera_pos);
 
+void setupScene();
+
 int main(void) {
+
+    setupScene();
+
     //Init GLFW
     GLFWwindow* window;
     if (!glfwInit())
@@ -101,44 +106,6 @@ int main(void) {
             bvh = BVH::stupidConstruct(objects);
         }
     });
-    //Load primitives
-//    objects.reserve(obj_size * obj_size * obj_size);
-//    for (int i = 0; i < obj_size; ++i) {
-//        for (int j = 0; j < obj_size; ++j) {
-//            for (int k = 0; k < obj_size; ++k) {
-//                const auto x = i * 2.0;
-//                const auto y = j * 2.0 - obj_size - 2.0;
-//                const auto z = k * 2.0 - obj_size - 2.0;
-//                objects.emplace_back(std::make_unique<Sphere>(x, y, z, 0.5));
-//            }
-//        }
-//    }
-
-    std::vector<Triangle> loaded_object;
-    auto sponza = ObjectLoader::loadFromFile("../example/sponza.obj", 0.0005);
-    loaded_object.insert(loaded_object.end(), sponza.begin(), sponza.end());
-    //auto bunny = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
-    //loaded_object.insert(loaded_object.end(), bunny.begin(), bunny.end());
-    //auto teapot = ObjectLoader::loadFromFile("../example/teapot.obj", 1.0);
-    //loaded_object.insert(loaded_object.end(), teapot.begin(), teapot.end());
-    //BROKEN std::vector<Triangle> loaded_object = ObjectLoader::loadFromFile("../example/suzanne.obj", 5.0);
-    printf("Loaded %zu triangles from OBJ file.\n", loaded_object.size());
-
-
-    //calculate object center ( center of all centers
-    Vector3 object_center{0.0, 0.0, 0.0};
-    for (auto & obj : loaded_object) {
-        object_center = object_center + obj.getCenter();
-    }
-    object_center = object_center * (1.0 / loaded_object.size());
-    camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
-
-
-    //save in objects vector
-    objects.reserve(loaded_object.size());
-    for (auto & obj : loaded_object) {
-        objects.push_back(std::make_unique<Triangle>(obj));
-    }
 
     //Build BVH time calculation
     double previous_seconds_bvh = glfwGetTime();
@@ -147,10 +114,6 @@ int main(void) {
     double current_seconds_bvh = glfwGetTime();
     double elapsed_seconds_bvh = current_seconds_bvh - previous_seconds_bvh;
     printf("Time build BVH using Median Split: %f \n", elapsed_seconds_bvh);
-
-    //for (auto & object : objects) {
-    //    printf("Object Center: %f, %f, %f\n", object.getCenter().getX(), object.getCenter().getY(), object.getCenter().getZ());
-    //}
 
     //App loop
     while (!glfwWindowShouldClose(window)) {
@@ -162,7 +125,6 @@ int main(void) {
         double current_seconds_c = glfwGetTime();
         double elapsed_seconds_c = current_seconds_c - previous_seconds_c;
         printf("Time calculate Screen: %f \n", elapsed_seconds_c);
-
 
         //Time Shade
         double previous_seconds_s = glfwGetTime();
@@ -186,6 +148,47 @@ int main(void) {
     return 0;
 }
 
+void setupScene() {
+    // Load primitives
+//    objects.reserve(obj_size * obj_size * obj_size);
+//    for (int i = 0; i < obj_size; ++i) {
+//        for (int j = 0; j < obj_size; ++j) {
+//            for (int k = 0; k < obj_size; ++k) {
+//                const auto x = i * 2.0;
+//                const auto y = j * 2.0 - obj_size - 2.0;
+//                const auto z = k * 2.0 - obj_size - 2.0;
+//                objects.emplace_back(std::make_unique<Sphere>(x, y, z, 0.5));
+//            }
+//        }
+//    }
+    std::vector<Triangle> loaded_object;
+    //auto sponza = ObjectLoader::loadFromFile("../example/sponza.obj", 1.0);
+    //loaded_object.insert(loaded_object.end(), sponza.begin(), sponza.end());
+    //auto bunny = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
+    //loaded_object.insert(loaded_object.end(), bunny.begin(), bunny.end());
+    //auto teapot = ObjectLoader::loadFromFile("../example/teapot.obj", 1.0);
+    //loaded_object.insert(loaded_object.end(), teapot.begin(), teapot.end());
+    auto suzanne = ObjectLoader::loadFromFile("../example/suzanne.obj", 3.0);
+    loaded_object.insert(loaded_object.end(), suzanne.begin(), suzanne.end());
+    printf("Loaded %zu triangles from OBJ file.\n", loaded_object.size());
+
+
+    //calculate object center ( center of all centers
+    Vector3 object_center{0.0, 0.0, 0.0};
+    for (auto & obj : loaded_object) {
+        object_center = object_center + obj.getCenter();
+    }
+    object_center = object_center * (1.0 / loaded_object.size());
+    camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
+
+
+    //save in objects vector
+    objects.reserve(loaded_object.size());
+    for (auto & obj : loaded_object) {
+        objects.push_back(std::make_unique<Triangle>(obj));
+    }
+}
+
 void calculateScreen(BVH& bvh) {
     const Vector3 camera_pos = camera.getPosition();
     const Vector3 camera_dir = camera.getDirection();
@@ -198,7 +201,7 @@ void calculateScreen(BVH& bvh) {
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
         const double px = camera.getPixelX(i);
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
-            printf("Calculating pixel (%d, %d)\n", i, j);
+            //printf("Calculating pixel (%d, %d)\n", i, j);
             const double py = camera.getPixelY(j);
             Vector3 dir = camera_dir + up * py + right * px;
             dir = dir * (1.0 / dir.length());
