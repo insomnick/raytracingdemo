@@ -3,6 +3,7 @@
 
 #include <numbers>
 #include <vector>
+#include "primitives/vector3.hpp"
 
 
 class Camera {
@@ -11,13 +12,28 @@ private:
     Vector3 position;
     //Vector3 plane;
     double fov;
+    std::vector<double> pixel_x_cache;
+    std::vector<double> pixel_y_cache;
 
 public:
-    Camera() {
+    Camera(unsigned int screen_width, unsigned int screen_height) {
         direction = {0.0, 0.0, -1.0};
         position = {0.0, 0.0, 0.0};
         //plane = {0.0, 1.0, 1.0};
         fov = 90.0 * (std::numbers::pi / 180.0); //Convert to Radians
+
+        // Precompute pixel plane coefficients - this actually only has to be done one time if camera and screen size don't change
+        const double fov_half_tan = std::tan(fov * 0.5);
+        const double aspect_ratio = static_cast<double>(screen_width) / screen_height;
+
+        pixel_x_cache.resize(screen_width);
+        pixel_y_cache.resize(screen_height);
+        const double inv_w = 1.0 / screen_width;
+        const double inv_h = 1.0 / screen_height;
+        for (int x = 0; x < screen_width; ++x)
+            pixel_x_cache[x] = (2.0 * (x + 0.5) * inv_w - 1.0) * fov_half_tan * aspect_ratio;
+        for (int y = 0; y < screen_height; ++y)
+            pixel_y_cache[y] = (1.0 - 2.0 * (y + 0.5) * inv_h) * fov_half_tan;
     }
 
     void setPosition(const Vector3& pos) {
@@ -32,8 +48,12 @@ public:
         return position;
     }
 
-    double getFov() const {
-        return fov;
+    double getPixelX(int i) const {
+        return pixel_x_cache[i];
+    }
+
+    double getPixelY(int i) const {
+        return pixel_y_cache[i];
     }
 
     void rotateVertical(double angle) {

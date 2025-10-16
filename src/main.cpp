@@ -29,7 +29,7 @@ std::vector<std::unique_ptr<Primitive>> objects; //512 primitives in the scene
 BVH bvh = BVH::stupidConstruct(objects);
 
 
-Camera camera{};
+Camera camera{SCREEN_WIDTH, SCREEN_HEIGHT};
 
 void drawScreen();
 double mapToScreen(int j, const int height);
@@ -187,32 +187,16 @@ int main(void) {
 void calculateScreen(BVH& bvh) {
     const Vector3 camera_pos = camera.getPosition();
     const Vector3 camera_dir = camera.getDirection();
-    const double fov_half_tan = std::tan(camera.getFov() * 0.5);
-    const double aspect_ratio = static_cast<double>(SCREEN_WIDTH) / SCREEN_HEIGHT;
-
-    // basis
     const Vector3 world_up{0.0, 1.0, 0.0};
     Vector3 right = Vector3::cross(camera_dir, world_up);
     if (right.length() < 1e-8) right = Vector3{0.0, 0.0, 1.0};
     right = right.normalize();
     Vector3 up = Vector3::cross(right, camera_dir).normalize();
 
-    // Precompute pixel plane coefficients
-    static std::vector<double> px_cache;
-    static std::vector<double> py_cache;
-    px_cache.resize(SCREEN_WIDTH);
-    py_cache.resize(SCREEN_HEIGHT);
-    const double inv_w = 1.0 / SCREEN_WIDTH;
-    const double inv_h = 1.0 / SCREEN_HEIGHT;
-    for (int x = 0; x < SCREEN_WIDTH; ++x)
-        px_cache[x] = (2.0 * (x + 0.5) * inv_w - 1.0) * fov_half_tan * aspect_ratio;
-    for (int y = 0; y < SCREEN_HEIGHT; ++y)
-        py_cache[y] = (1.0 - 2.0 * (y + 0.5) * inv_h) * fov_half_tan;
-
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
-        const double px = px_cache[i];
+        const double px = camera.getPixelX(i);
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
-            const double py = py_cache[j];
+            const double py = camera.getPixelY(j); // FIX: was getPixelY(i)
             Vector3 dir = camera_dir + up * py + right * px;
             dir = dir * (1.0 / dir.length());
             Ray ray{camera_pos, dir};

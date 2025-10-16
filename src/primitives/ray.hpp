@@ -1,6 +1,7 @@
 #ifndef RAYTRACINGDEMO_RAY_HPP
 #define RAYTRACINGDEMO_RAY_HPP
 
+#include <limits>
 #include "vector3.hpp"
 
 struct Ray {
