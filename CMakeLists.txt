@@ -14,9 +14,10 @@ add_executable(raytracingdemo
         src/bvh.hpp
         src/aabb.hpp
         lib/OBJ_Loader.h
-        src/object_loader.hpp
+        src/utils/object_loader.hpp
         src/primitives/triangle.hpp
         src/primitives/primitive.hpp
+        src/utils/timer.hpp
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---

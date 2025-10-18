@@ -11,25 +11,25 @@
 #include "primitives/sphere.hpp"
 #include "primitives/ray.hpp"
 #include "bvh.hpp"
-#include "object_loader.hpp"
-
-static const int SCREEN_WIDTH = 500;
-static const int SCREEN_HEIGHT = 500;
+#include "utils/object_loader.hpp"
+#include "utils/timer.hpp"
 
 struct Hit {
     bool hit = false;
     Vector3 position{};
     Vector3 normal{};
 };
+
+static const int SCREEN_WIDTH = 500;
+static const int SCREEN_HEIGHT = 500;
+
 static std::vector<Hit> ray_hits(SCREEN_WIDTH * SCREEN_HEIGHT); //positions and normals of hits
 static std::array<std::array<Color, SCREEN_HEIGHT>, SCREEN_WIDTH> screen; // pixel colors
 
-const int obj_size = 3;
 std::vector<std::unique_ptr<Primitive>> objects; //512 primitives in the scene
 BVH bvh = BVH::stupidConstruct(objects);
-
-
 Camera camera{SCREEN_WIDTH, SCREEN_HEIGHT};
+Timer timer;
 
 void drawScreen();
 double mapToScreen(int j, const int height);
@@ -108,37 +108,26 @@ int main(void) {
     });
 
     //Build BVH time calculation
-    double previous_seconds_bvh = glfwGetTime();
+    timer.reset();
     bvh = BVH::medianSplitConstruction(objects);
     //bvh = BVH::stupidConstruct(objects);
-    double current_seconds_bvh = glfwGetTime();
-    double elapsed_seconds_bvh = current_seconds_bvh - previous_seconds_bvh;
-    printf("Time build BVH using Median Split: %f \n", elapsed_seconds_bvh);
+    printf("Time build BVH using Median Split: %f \n", timer.elapsed());
 
     //App loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //Time Calculate
-        double previous_seconds_c = glfwGetTime();
-        calculateScreen(bvh);                  // ray generation + BVH traversal only
-        double current_seconds_c = glfwGetTime();
-        double elapsed_seconds_c = current_seconds_c - previous_seconds_c;
-        printf("Time calculate Screen: %f \n", elapsed_seconds_c);
+        timer.reset();
+        calculateScreen(bvh);
+        printf("Time calculate Screen: %f \n", timer.elapsed());
 
-        //Time Shade
-        double previous_seconds_s = glfwGetTime();
+        timer.reset();
         shadeScreen(camera.getPosition());     // lighting pass
-        double current_seconds_s = glfwGetTime();
-        double elapsed_seconds_s = current_seconds_s - previous_seconds_s;
-        printf("Time shade Screen: %f \n", elapsed_seconds_s);
+        printf("Time shade Screen: %f \n", timer.elapsed());
 
-        //Time Draw
-        double previous_seconds = glfwGetTime();
+        timer.reset();
         drawScreen();   //just screen drawing (out of scope for now)
-        double current_seconds = glfwGetTime();
-        double elapsed_seconds = current_seconds - previous_seconds;
-        printf("Time draw Screen: %f \n", elapsed_seconds);
+        printf("Time draw Screen: %f \n", timer.elapsed());
 
         //GLFW magic for screen drawing and events
         glfwSwapBuffers(window);
@@ -149,18 +138,7 @@ int main(void) {
 }
 
 void setupScene() {
-    // Load primitives
-//    objects.reserve(obj_size * obj_size * obj_size);
-//    for (int i = 0; i < obj_size; ++i) {
-//        for (int j = 0; j < obj_size; ++j) {
-//            for (int k = 0; k < obj_size; ++k) {
-//                const auto x = i * 2.0;
-//                const auto y = j * 2.0 - obj_size - 2.0;
-//                const auto z = k * 2.0 - obj_size - 2.0;
-//                objects.emplace_back(std::make_unique<Sphere>(x, y, z, 0.5));
-//            }
-//        }
-//    }
+
     std::vector<Triangle> loaded_object;
     //auto sponza = ObjectLoader::loadFromFile("../example/sponza.obj", 1.0);
     //loaded_object.insert(loaded_object.end(), sponza.begin(), sponza.end());

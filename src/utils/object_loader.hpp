@@ -2,9 +2,9 @@
 #define RAYTRACINGDEMO_OBJECT_LOADER_HPP
 
 #include <limits>
-#include "../lib/OBJ_Loader.h"
-#include "primitives/vector3.hpp"
-#include "primitives/triangle.hpp"
+#include "../../lib/OBJ_Loader.h"
+#include "../primitives/vector3.hpp"
+#include "../primitives/triangle.hpp"
 
 class ObjectLoader {
 public:
