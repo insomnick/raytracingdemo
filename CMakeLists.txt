@@ -18,6 +18,7 @@ add_executable(raytracingdemo
         src/primitives/triangle.hpp
         src/primitives/primitive.hpp
         src/utils/timer.hpp
+        src/utils/benchmark.hpp
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---

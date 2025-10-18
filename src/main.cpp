@@ -1,7 +1,6 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <array>
-#include <cmath>
 #include <memory>
 #include <algorithm>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "bvh.hpp"
 #include "utils/object_loader.hpp"
 #include "utils/timer.hpp"
+#include "utils/benchmark.hpp"
 
 struct Hit {
     bool hit = false;
@@ -31,20 +31,66 @@ BVH bvh = BVH::stupidConstruct(objects);
 Camera camera{SCREEN_WIDTH, SCREEN_HEIGHT};
 Timer timer;
 
+GLFWwindow* window;
+
 void drawScreen();
 double mapToScreen(int j, const int height);
-
 void calculateScreen(BVH& bvh);
 static void shadeScreen(const Vector3& camera_pos);
-
 void setupScene();
+bool setupOpenGL();
 
 int main(void) {
 
     setupScene();
+    if(setupOpenGL() != 0) {;
+        return -1;
+    }
+
+    Benchmark bm;
+
+    //Build BVH time calculation
+    timer.reset();
+    bvh = BVH::medianSplitConstruction(objects);
+    //bvh = BVH::stupidConstruct(objects);
+    double elapsed = timer.elapsed();
+    printf("Time build BVH using Median Split: %f \n", elapsed);
+    bm.saveDataFrame("bvh_build_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+
+
+    //App loop
+    while (!glfwWindowShouldClose(window)) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        timer.reset();
+        calculateScreen(bvh);
+        elapsed = timer.elapsed();
+        printf("Time calculate Screen: %f \n", elapsed);
+        bm.saveDataFrame("render_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+
+        timer.reset();
+        shadeScreen(camera.getPosition());     // lighting pass
+        elapsed = timer.elapsed();
+        printf("Time shade Screen: %f \n", elapsed);
+        bm.saveDataFrame("shading_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+
+        timer.reset();
+        drawScreen();   //just screen drawing (out of scope for now)
+        elapsed = timer.elapsed();
+        printf("Time draw Screen: %f \n", elapsed);
+        bm.saveDataFrame("drawing_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+
+        //GLFW magic for screen drawing and events
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+    glfwTerminate();
+    return 0;
+}
+
+bool setupOpenGL() {
 
     //Init GLFW
-    GLFWwindow* window;
     if (!glfwInit())
         return -1;
     window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raytracing demo", NULL, NULL);
@@ -87,7 +133,7 @@ int main(void) {
             //printf("A: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
         }
         if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-           camera.moveRight(0.1);
+            camera.moveRight(0.1);
             //printf("D: Camera Position: %f, %f, %f\n", camera.getPosition().getX(), camera.getPosition().getY(), camera.getPosition().getZ());
         }
         if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
@@ -106,34 +152,6 @@ int main(void) {
             bvh = BVH::stupidConstruct(objects);
         }
     });
-
-    //Build BVH time calculation
-    timer.reset();
-    bvh = BVH::medianSplitConstruction(objects);
-    //bvh = BVH::stupidConstruct(objects);
-    printf("Time build BVH using Median Split: %f \n", timer.elapsed());
-
-    //App loop
-    while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        timer.reset();
-        calculateScreen(bvh);
-        printf("Time calculate Screen: %f \n", timer.elapsed());
-
-        timer.reset();
-        shadeScreen(camera.getPosition());     // lighting pass
-        printf("Time shade Screen: %f \n", timer.elapsed());
-
-        timer.reset();
-        drawScreen();   //just screen drawing (out of scope for now)
-        printf("Time draw Screen: %f \n", timer.elapsed());
-
-        //GLFW magic for screen drawing and events
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-    glfwTerminate();
     return 0;
 }
 
@@ -160,7 +178,7 @@ void setupScene() {
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
 
-    //save in objects vector
+    //saveDataFrame in objects vector
     objects.reserve(loaded_object.size());
     for (auto & obj : loaded_object) {
         objects.push_back(std::make_unique<Triangle>(obj));
