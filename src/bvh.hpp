@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
+#include <cstddef>
 #include "aabb.hpp"
 #include "primitives/primitive.hpp"
 
@@ -36,8 +37,9 @@ private:
         }
 
         // Leaf node condition
-        if (count <= static_cast<size_t>(degree)) {
+        if (count == 0 || degree <= 1 || count < static_cast<size_t>(degree)) {
             std::vector<std::unique_ptr<Primitive>> primitiveLeaves;
+            primitiveLeaves.reserve(count);
             for (size_t i = start; i < end; ++i) {
                 primitiveLeaves.push_back(std::move(objects[i]));
             }
@@ -53,21 +55,29 @@ private:
         if (lenY > lenX && lenY >= lenZ) axis = 1;
         else if (lenZ > lenX && lenZ >= lenY) axis = 2;
 
-        //TODO: For now binary split regardless of degree var
-        size_t mid = start + count / 2;
-        // Partition around median (nth_element is faster than sort)
-        std::nth_element(objects.begin() + start,
-                         objects.begin() + mid,
-                         objects.begin() + end,
-                         [&](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b) {
-                             return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
-                         });
-        // Create Node
         AABB internalBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, {}};
+
+        size_t segmentBegin = start;
+        for (int i = 1; i < degree; ++i) {
+            size_t boundary = start + (count * i) / degree; // target index for this partition boundary
+            std::nth_element(objects.begin() + segmentBegin,
+                             objects.begin() + boundary,
+                             objects.begin() + end,
+                             [&](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b) {
+                                 return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                             });
+            segmentBegin = boundary; // next segment starts from here
+        }
+
         std::vector<BVH> kids;
-        kids.reserve(2);    //TODO: Change for degree > 2
-        kids.emplace_back(medianSplitConstruction(objects, start, mid, degree));
-        kids.emplace_back(medianSplitConstruction(objects, mid, end, degree));
+        kids.reserve(degree);
+        size_t childStart = start;
+        for (int i = 0; i < degree; ++i) {
+            size_t childEnd = (i == degree - 1) ? end : start + (count * (i + 1)) / degree;
+            kids.emplace_back(medianSplitConstruction(objects, childStart, childEnd, degree));
+            childStart = childEnd;
+        }
+
         return BVH{internalBox, std::move(kids)};
     }
 
@@ -76,7 +86,7 @@ public:
         AABB box(
                 {std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()},
                 {std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()},
-                std::move(objects)  // empty for now
+                std::move(objects)
         );
         std::vector<BVH> children;
         BVH bvh{box, children};
@@ -95,8 +105,12 @@ public:
         return medianSplitConstruction(objects, 0, objects.size(), degree);
     }
 
+    static BVH surfaceAreaHeuristicConstruction(std::vector<std::unique_ptr<Primitive>>& objects, int degree = 2) {
+        return medianSplitConstruction(objects, degree);
+    }
+
     std::unique_ptr<Ray> traverse(const Ray& ray) const {
-        if (!box.hit(ray)){
+        if (!box.intersect(ray)) {
             return nullptr;
         }
         if (children.empty()) { //or box.getPrimitives().empty()
@@ -132,4 +146,3 @@ public:
 };
 
 #endif //RAYTRACINGDEMO_BVH_HPP
-

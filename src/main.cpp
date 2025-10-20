@@ -51,7 +51,7 @@ int main(void) {
 
     //Build BVH time calculation
     timer.reset();
-    bvh = BVH::medianSplitConstruction(objects);
+    bvh = BVH::medianSplitConstruction(objects, 4);
     //bvh = BVH::stupidConstruct(objects);
     double elapsed = timer.elapsed();
     printf("Time build BVH using Median Split: %f \n", elapsed);
