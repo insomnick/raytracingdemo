@@ -110,7 +110,7 @@ public:
     }
 
     std::unique_ptr<Ray> traverse(const Ray& ray) const {
-        if (!box.intersect(ray)) {
+        if (!box.hit(ray)) {
             return nullptr;
         }
         if (children.empty()) { //or box.getPrimitives().empty()
