@@ -67,7 +67,7 @@ public:
     }
 
     void rotateHorizontal(double angle) {
-        // Rotate relative to current direction's right vector, also considering not rotating the wrong direction relative to y axis
+        // Rotate relative to current direction's primitives_right vector, also considering not rotating the wrong direction relative to y axis
         Vector3 world_up = {0.0, 1.0, 0.0};
         Vector3 right = Vector3::cross(direction, world_up).normalize();
         Vector3 up = Vector3::cross(right, direction).normalize();

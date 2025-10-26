@@ -887,7 +887,7 @@ namespace objl
 						pNext = tVerts[i + 1];
 					}
 
-					// Check to see if there are only 3 verts left
+					// Check to see if there are only 3 verts primitives_left
 					// if so this is the last triangle
 					if (tVerts.size() == 3)
 					{

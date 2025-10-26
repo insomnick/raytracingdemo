@@ -5,143 +5,101 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
-#include <cstddef>
 #include "aabb.hpp"
 #include "primitives/primitive.hpp"
 
 class BVH {
 private:
-    AABB box;
-    std::vector<BVH> children;
-    BVH(AABB box, std::vector<BVH> children): box(std::move(box)), children(std::move(children)) {}
+    struct BVHNode {
+        BVHNode(AABB box, size_t primitives_left, size_t primitives_right, size_t children_left, size_t children_right) : box(std::move(box)), primitives_left(primitives_left), primitives_right(primitives_right), children_left(children_left), children_right(children_right) {}
+        AABB box;
+        size_t primitives_left; //inclusive
+        size_t primitives_right; //exclusive
+        size_t children_left; //inclusive
+        size_t children_right; //exclusive
+    };
 
-    // Private helper function for recursive construction
-    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, size_t start, size_t end, int degree) {
-
-        //Calculate axis aligned bounding box
-        const size_t count = end - start;
-        double minX = std::numeric_limits<double>::max();
-        double minY = std::numeric_limits<double>::max();
-        double minZ = std::numeric_limits<double>::max();
-        double maxX = std::numeric_limits<double>::lowest();
-        double maxY = std::numeric_limits<double>::lowest();
-        double maxZ = std::numeric_limits<double>::lowest();
-        for (size_t i = start; i < end; ++i) {
-            const auto& object = objects[i];
-            minX = std::min(minX, object->getMin().getX());
-            maxX = std::max(maxX, object->getMax().getX());
-            minY = std::min(minY, object->getMin().getY());
-            maxY = std::max(maxY, object->getMax().getY());
-            minZ = std::min(minZ, object->getMin().getZ());
-            maxZ = std::max(maxZ, object->getMax().getZ());
-        }
-
-        // Leaf node condition
-        if (count == 0 || degree <= 1 || count < static_cast<size_t>(degree)) {
-            std::vector<std::unique_ptr<Primitive>> primitiveLeaves;
-            primitiveLeaves.reserve(count);
-            for (size_t i = start; i < end; ++i) {
-                primitiveLeaves.push_back(std::move(objects[i]));
-            }
-            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, std::move(primitiveLeaves)};
-            return BVH{leafBox, {}};
-        }
-
-        // Longest axis
-        const double lenX = maxX - minX;
-        const double lenY = maxY - minY;
-        const double lenZ = maxZ - minZ;
-        int axis = 0;
-        if (lenY > lenX && lenY >= lenZ) axis = 1;
-        else if (lenZ > lenX && lenZ >= lenY) axis = 2;
-
-        AABB internalBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, {}};
-
-        size_t segmentBegin = start;
-        for (int i = 1; i < degree; ++i) {
-            size_t boundary = start + (count * i) / degree; // target index for this partition boundary
-            std::nth_element(objects.begin() + segmentBegin,
-                             objects.begin() + boundary,
-                             objects.begin() + end,
-                             [&](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b) {
-                                 return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
-                             });
-            segmentBegin = boundary; // next segment starts from here
-        }
-
-        std::vector<BVH> kids;
-        kids.reserve(degree);
-        size_t childStart = start;
-        for (int i = 0; i < degree; ++i) {
-            size_t childEnd = (i == degree - 1) ? end : start + (count * (i + 1)) / degree;
-            kids.emplace_back(medianSplitConstruction(objects, childStart, childEnd, degree));
-            childStart = childEnd;
-        }
-
-        return BVH{internalBox, std::move(kids)};
-    }
+    std::vector<BVHNode> nodes;
+    std::vector<Primitive*> primitives;
 
 public:
-    static BVH stupidConstruct(std::vector<std::unique_ptr<Primitive>>& objects) {
-        AABB box(
-                {std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()},
-                {std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()},
-                std::move(objects)
-        );
-        std::vector<BVH> children;
-        BVH bvh{box, children};
+
+    static BVH medianConstruction(const std::vector<Primitive*>& primitives, int degree = 2) {
+        BVH bvh;
+        if (primitives.empty()) return bvh;
+        bvh.primitives = primitives;
+
+        //TODO just binary for now
+        BVHNode root_node{AABB(primitives, 0, 0), 0, primitives.size(), 1, 3}; //Todo + degree
+        bvh.nodes.emplace_back(root_node);
+
+        size_t index = 0;
+        while (index < bvh.nodes.size()) {
+            BVHNode &current = bvh.nodes[index];
+            size_t left = current.primitives_left;
+            size_t right = current.primitives_right;
+            size_t count = right - left;
+            if (count <= 1) {
+                current.children_left = -1;
+                current.children_right = -1;
+                ++index;
+                continue;
+            }
+
+            int axis = current.box.getLongestAxis();
+            size_t split_pos = left + count / 2;
+            //if (split_pos <= left || split_pos >= right) { ++index; continue; }
+
+            std::nth_element(bvh.primitives.begin() + left,
+                             bvh.primitives.begin() + split_pos,
+                             bvh.primitives.begin() + right,
+                             [axis](Primitive *a, Primitive *b) {
+                                 return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                             });
+
+            bvh.nodes.emplace_back(AABB(bvh.primitives, left, split_pos), left, split_pos, bvh.primitives.size(), bvh.primitives.size() + 2);
+            bvh.nodes.emplace_back(AABB(bvh.primitives, split_pos, right), split_pos, right, bvh.primitives.size(), bvh.primitives.size() + 2);
+            ++index;
+        }
         return bvh;
     }
 
-    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, int degree = 2) {
-        if (objects.empty()) {
-            AABB emptyBox{
-                {0,0,0},
-                {0,0,0},
-                {}
-            };
-            return BVH{emptyBox, {}};
-        }
-        return medianSplitConstruction(objects, 0, objects.size(), degree);
-    }
+    std::unique_ptr<Ray> traverse(Ray& ray){
+        std::vector<size_t> stack;
+        stack.push_back(0); //start with root node
 
-    static BVH surfaceAreaHeuristicConstruction(std::vector<std::unique_ptr<Primitive>>& objects, int degree = 2) {
-        return medianSplitConstruction(objects, degree);
-    }
+        std::unique_ptr<Ray> closest_hit = nullptr;
+        double closest_t = std::numeric_limits<double>::infinity();
 
-    std::unique_ptr<Ray> traverse(const Ray& ray) const {
-        if (!box.hit(ray)) {
-            return nullptr;
-        }
-        if (children.empty()) { //or box.getPrimitives().empty()
-            std::unique_ptr<Ray> closest = nullptr;
-            double closestDist = std::numeric_limits<double>::max();
-            for (const auto &object: box.getPrimitives()) {
-                if (object->intersect(ray)) {
-                    auto p = object->getIntersectionNormalAndDirection(ray);
-                    const double d = (p->getOrigin() - ray.getOrigin()).length();
-                    if (d < closestDist) {
-                        closestDist = d;
-                        closest = std::move(p);
+        while (!stack.empty()) {
+            size_t node_index = stack.back();
+            stack.pop_back();
+            const BVHNode& node = nodes[node_index];
+
+            if (!node.box.hit(ray)) {
+                continue; // No intersection with this node's AABB
+            }
+
+            // Leaf node
+            if (node.children_left == -1 || node.children_right == -1) {
+                for (size_t i = node.primitives_left; i < node.primitives_right; ++i) {
+                    std::unique_ptr<Ray> hit = primitives[i]->getIntersectionNormalAndDirection(ray);
+                    if (hit) {
+                        double t = (hit->getOrigin() - ray.getOrigin()).length();
+                        if (t < closest_t) {
+                            closest_t = t;
+                            closest_hit = std::move(hit);
+                        }
                     }
                 }
-            }
-            return closest;
-        }
-        // Traverse children recursively
-        std::unique_ptr<Ray> closest = nullptr;
-        double closestDistance = std::numeric_limits<double>::max();
-        for (const auto& child : children) {
-            auto hit = child.traverse(ray);
-            if (hit) {
-                const double distance = (hit->getOrigin() - ray.getOrigin()).length();
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closest = std::move(hit);
-                }
+            } else {
+                // Push child nodes onto the stack
+                stack.push_back(node.children_right);
+                stack.push_back(node.children_left);
             }
         }
-        return closest;
+
+        return closest_hit;
     }
 };
 

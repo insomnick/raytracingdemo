@@ -15,40 +15,54 @@ class AABB {    //Axis-Aligned Bounding Box
 
     Vector3 min; //Minimum corner
     Vector3 max; //Maximum corner
-    std::vector<std::unique_ptr<Primitive>> primitives;
 
 public:
-    AABB(Vector3 min_, Vector3 max_, std::vector<std::unique_ptr<Primitive>>&& objs)
-        : min(std::move(min_)), max(std::move(max_)), primitives(std::move(objs)) {}
-
-    //copy
-    AABB(const AABB& other) : min(other.min), max(other.max) {
-        primitives.reserve(other.primitives.size());
-        for (const auto &p : other.primitives) {
-            primitives.push_back(p->clone());
-        }
-    }
-    AABB& operator=(const AABB& other) {
-        if (this == &other) return *this;
-        min = other.min;
-        max = other.max;
-        primitives.clear();
-        primitives.reserve(other.primitives.size());
-        for (const auto &p : other.primitives) {
-            primitives.push_back(p->clone());
-        }
-        return *this;
-    }
-    // moves
-    AABB(AABB&&) noexcept = default;
-    AABB& operator=(AABB&&) noexcept = default;
-
     const Vector3& getMin() const { return min; }
     const Vector3& getMax() const { return max; }
 
-    const std::vector<std::unique_ptr<Primitive>>& getPrimitives() const { return primitives; }
-    std::vector<std::unique_ptr<Primitive>>& getPrimitives() { return primitives; } // optional non-const overload
+    int getLongestAxis() const {
+        auto lengths =  max - min;
+        if (lengths.getX() >= lengths.getY() && lengths.getX() >= lengths.getZ()) {
+            return 0;
+        } else if (lengths.getY() >= lengths.getX() && lengths.getY() >= lengths.getZ()) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
 
+    AABB(const std::vector<Primitive *> &primitives, size_t i, size_t i1) {
+        if (primitives.empty()) {
+            min = Vector3{0.0, 0.0, 0.0};
+            max = Vector3{0.0, 0.0, 0.0};
+            return;
+        }
+        min = Vector3{
+                std::numeric_limits<double>::infinity(),
+                std::numeric_limits<double>::infinity(),
+                std::numeric_limits<double>::infinity()
+        };
+        max = Vector3{
+                -std::numeric_limits<double>::infinity(),
+                -std::numeric_limits<double>::infinity(),
+                -std::numeric_limits<double>::infinity()
+        };
+
+        for (const auto &p : primitives) {
+            Vector3 p_min = p->getMin();
+            Vector3 p_max = p->getMax();
+            min = Vector3{
+                    std::min(min.getX(), p_min.getX()),
+                    std::min(min.getY(), p_min.getY()),
+                    std::min(min.getZ(), p_min.getZ())
+            };
+            max = Vector3{
+                    std::max(max.getX(), p_max.getX()),
+                    std::max(max.getY(), p_max.getY()),
+                    std::max(max.getZ(), p_max.getZ())
+            };
+        }
+    }
     // TODO: Optimize hit function (e.g., precompute inverse dir or use branchless slabs)
     bool hit(const Ray& ray) const {
         // Using "slab" method with 3 planes

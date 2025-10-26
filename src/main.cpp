@@ -26,8 +26,7 @@ static const int SCREEN_HEIGHT = 500;
 static std::vector<Hit> ray_hits(SCREEN_WIDTH * SCREEN_HEIGHT); //positions and normals of hits
 static std::array<std::array<Color, SCREEN_HEIGHT>, SCREEN_WIDTH> screen; // pixel colors
 
-std::vector<std::unique_ptr<Primitive>> objects; //512 primitives in the scene
-BVH bvh = BVH::stupidConstruct(objects);
+std::vector<Primitive *> objects; //512 primitives in the scene
 Camera camera{SCREEN_WIDTH, SCREEN_HEIGHT};
 Timer timer;
 
@@ -51,7 +50,7 @@ int main(void) {
 
     //Build BVH time calculation
     timer.reset();
-    bvh = BVH::medianSplitConstruction(objects, 4);
+    BVH bvh = BVH::medianConstruction(objects, 4);
     //bvh = BVH::stupidConstruct(objects);
     double elapsed = timer.elapsed();
     printf("Time build BVH using Median Split: %f \n", elapsed);
@@ -85,6 +84,12 @@ int main(void) {
         glfwPollEvents();
     }
     glfwTerminate();
+
+    //delete bvh;
+    for (auto & obj : objects) {
+        delete obj;
+    }
+
     return 0;
 }
 
@@ -143,14 +148,6 @@ bool setupOpenGL() {
         if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
             camera.moveUp(-0.1);
         }
-        if (key == GLFW_KEY_M && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-            printf(" Rebuilding BVH using Median Split...\n");
-            bvh = BVH::medianSplitConstruction(objects);
-        }
-        if (key == GLFW_KEY_N && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-            printf(" Rebuilding BVH using Stupid Split...\n");
-            bvh = BVH::stupidConstruct(objects);
-        }
     });
     return 0;
 }
@@ -179,9 +176,8 @@ void setupScene() {
 
 
     //saveDataFrame in objects vector
-    objects.reserve(loaded_object.size());
     for (auto & obj : loaded_object) {
-        objects.push_back(std::make_unique<Triangle>(obj));
+        objects.push_back(new Triangle(obj));
     }
 }
 
