@@ -131,49 +131,77 @@ private:
                   [axis](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b){
                       return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                   });
+
         size_t bestSplit = start + 1;;
         double bestCost = std::numeric_limits<double>::max();
-        for (size_t i = start + 1; i < end; ++i) {
-            double lminX = std::numeric_limits<double>::max();
-            double lminY = std::numeric_limits<double>::max();
-            double lminZ = std::numeric_limits<double>::max();
-            double lmaxX = std::numeric_limits<double>::lowest();
-            double lmaxY = std::numeric_limits<double>::lowest();
-            double lmaxZ = std::numeric_limits<double>::lowest();
-            for (size_t j = start; j < i; ++j) {
-                const auto &object = objects[j];
-                lminX = std::min(lminX, object->getMin().getX());
-                lmaxX = std::max(lmaxX, object->getMax().getX());
-                lminY = std::min(lminY, object->getMin().getY());
-                lmaxY = std::max(lmaxY, object->getMax().getY());
-                lminZ = std::min(lminZ, object->getMin().getZ());
-                lmaxZ = std::max(lmaxZ, object->getMax().getZ());
+
+        const size_t n = end - start;
+        std::vector<double> leftMinX(n), leftMinY(n), leftMinZ(n),
+                leftMaxX(n), leftMaxY(n), leftMaxZ(n);
+        for (size_t k = 0; k < n; ++k) {
+            const auto &obj = objects[start + k];
+            double ominX = obj->getMin().getX();
+            double ominY = obj->getMin().getY();
+            double ominZ = obj->getMin().getZ();
+            double omaxX = obj->getMax().getX();
+            double omaxY = obj->getMax().getY();
+            double omaxZ = obj->getMax().getZ();
+            if (k == 0) {
+                leftMinX[k] = ominX; leftMaxX[k] = omaxX;
+                leftMinY[k] = ominY; leftMaxY[k] = omaxY;
+                leftMinZ[k] = ominZ; leftMaxZ[k] = omaxZ;
+            } else {
+                leftMinX[k] = std::min(leftMinX[k-1], ominX);
+                leftMaxX[k] = std::max(leftMaxX[k-1], omaxX);
+                leftMinY[k] = std::min(leftMinY[k-1], ominY);
+                leftMaxY[k] = std::max(leftMaxY[k-1], omaxY);
+                leftMinZ[k] = std::min(leftMinZ[k-1], ominZ);
+                leftMaxZ[k] = std::max(leftMaxZ[k-1], omaxZ);
             }
+        }
+        std::vector<double> rightMinX(n), rightMinY(n), rightMinZ(n),
+                rightMaxX(n), rightMaxY(n), rightMaxZ(n);
+        for (size_t k = n; k-- > 0;) {
+            const auto &obj = objects[start + k];
+            double ominX = obj->getMin().getX();
+            double ominY = obj->getMin().getY();
+            double ominZ = obj->getMin().getZ();
+            double omaxX = obj->getMax().getX();
+            double omaxY = obj->getMax().getY();
+            double omaxZ = obj->getMax().getZ();
+            if (k == n - 1) {
+                rightMinX[k] = ominX; rightMaxX[k] = omaxX;
+                rightMinY[k] = ominY; rightMaxY[k] = omaxY;
+                rightMinZ[k] = ominZ; rightMaxZ[k] = omaxZ;
+            } else {
+                rightMinX[k] = std::min(rightMinX[k+1], ominX);
+                rightMaxX[k] = std::max(rightMaxX[k+1], omaxX);
+                rightMinY[k] = std::min(rightMinY[k+1], ominY);
+                rightMaxY[k] = std::max(rightMaxY[k+1], omaxY);
+                rightMinZ[k] = std::min(rightMinZ[k+1], ominZ);
+                rightMaxZ[k] = std::max(rightMaxZ[k+1], omaxZ);
+            }
+        }
+
+        for (size_t split = 1; split < n; ++split) {
+            double lminX = leftMinX[split-1], lmaxX = leftMaxX[split-1];
+            double lminY = leftMinY[split-1], lmaxY = leftMaxY[split-1];
+            double lminZ = leftMinZ[split-1], lmaxZ = leftMaxZ[split-1];
             double larea = 2.0 * ((lmaxX - lminX) * (lmaxY - lminY) +
                                   (lmaxY - lminY) * (lmaxZ - lminZ) +
                                   (lmaxZ - lminZ) * (lmaxX - lminX));
-            double rminX = std::numeric_limits<double>::max();
-            double rminY = std::numeric_limits<double>::max();
-            double rminZ = std::numeric_limits<double>::max();
-            double rmaxX = std::numeric_limits<double>::lowest();
-            double rmaxY = std::numeric_limits<double>::lowest();
-            double rmaxZ = std::numeric_limits<double>::lowest();
-            for (size_t j = i; j < end; ++j) {
-                const auto &object = objects[j];
-                rminX = std::min(rminX, object->getMin().getX());
-                rmaxX = std::max(rmaxX, object->getMax().getX());
-                rminY = std::min(rminY, object->getMin().getY());
-                rmaxY = std::max(rmaxY, object->getMax().getY());
-                rminZ = std::min(rminZ, object->getMin().getZ());
-                rmaxZ = std::max(rmaxZ, object->getMax().getZ());
-            }
+
+            double rminX = rightMinX[split], rmaxX = rightMaxX[split];
+            double rminY = rightMinY[split], rmaxY = rightMaxY[split];
+            double rminZ = rightMinZ[split], rmaxZ = rightMaxZ[split];
             double rarea = 2.0 * ((rmaxX - rminX) * (rmaxY - rminY) +
                                   (rmaxY - rminY) * (rmaxZ - rminZ) +
                                   (rmaxZ - rminZ) * (rmaxX - rminX));
-            double cost = larea * (i - start) + rarea * (end - i);
+
+            double cost = larea * split + rarea * (n - split);
             if (cost < bestCost) {
                 bestCost = cost;
-                bestSplit = i;
+                bestSplit = start + split;
             }
         }
 

@@ -42,11 +42,11 @@ bool setupOpenGL();
 
 int main(void) {
 
-    std::string object_file = "suzanne.obj";
-    setupScene(object_file, 3.0);
+    std::string object_file = "sponza.obj";
+    setupScene(object_file, 1.0);
 
     Benchmark bm;
-    std::string algorithm_name = "sah";
+    std::string algorithm_name = "median"; // "sah", "median", "stupid"
 
 
     //Build BVH time calculation
@@ -54,7 +54,7 @@ int main(void) {
     if (algorithm_name == "sah") {
         printf("Building BVH using Surface Area Heuristic Construction...\n");
         bvh = BVH::binarySurfaceAreaHeuristicConstruction(objects);
-    } else if (algorithm_name == "median_split") {
+    } else if (algorithm_name == "median") {
         printf("Building BVH using Median Split Construction...\n");
         bvh = BVH::medianSplitConstruction(objects, 2);
     } else {
@@ -62,7 +62,7 @@ int main(void) {
         bvh = BVH::stupidConstruct(objects);
     }
     double elapsed = timer.elapsed();
-    printf("Time build BVH using Median Split: %f \n", elapsed);
+    printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
     bm.saveDataFrame("bvh_build_times.csv", object_file, algorithm_name, camera, elapsed);
 
     if(setupOpenGL() != 0) {;
