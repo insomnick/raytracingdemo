@@ -37,27 +37,37 @@ void drawScreen();
 double mapToScreen(int j, const int height);
 void calculateScreen(BVH& bvh);
 static void shadeScreen(const Vector3& camera_pos);
-void setupScene();
+void setupScene(const std::string& obj_filename, double obj_scale=1.0);
 bool setupOpenGL();
 
 int main(void) {
 
-    setupScene();
-    if(setupOpenGL() != 0) {;
-        return -1;
-    }
+    std::string object_file = "suzanne.obj";
+    setupScene(object_file, 3.0);
 
     Benchmark bm;
+    std::string algorithm_name = "sah";
+
 
     //Build BVH time calculation
     timer.reset();
-    bvh = BVH::medianSplitConstruction(objects, 4);
-    //bvh = BVH::stupidConstruct(objects);
+    if (algorithm_name == "sah") {
+        printf("Building BVH using Surface Area Heuristic Construction...\n");
+        bvh = BVH::binarySurfaceAreaHeuristicConstruction(objects);
+    } else if (algorithm_name == "median_split") {
+        printf("Building BVH using Median Split Construction...\n");
+        bvh = BVH::medianSplitConstruction(objects, 2);
+    } else {
+        printf("Building BVH using Stupid Construction...\n");
+        bvh = BVH::stupidConstruct(objects);
+    }
     double elapsed = timer.elapsed();
     printf("Time build BVH using Median Split: %f \n", elapsed);
-    bm.saveDataFrame("bvh_build_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+    bm.saveDataFrame("bvh_build_times.csv", object_file, algorithm_name, camera, elapsed);
 
-
+    if(setupOpenGL() != 0) {;
+        return -1;
+    }
     //App loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -66,19 +76,19 @@ int main(void) {
         calculateScreen(bvh);
         elapsed = timer.elapsed();
         printf("Time calculate Screen: %f \n", elapsed);
-        bm.saveDataFrame("render_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+        bm.saveDataFrame("render_times.csv", object_file, algorithm_name, camera, elapsed);
 
         timer.reset();
         shadeScreen(camera.getPosition());     // lighting pass
         elapsed = timer.elapsed();
         printf("Time shade Screen: %f \n", elapsed);
-        bm.saveDataFrame("shading_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+        bm.saveDataFrame("shading_times.csv", object_file, algorithm_name, camera, elapsed);
 
         timer.reset();
         drawScreen();   //just screen drawing (out of scope for now)
         elapsed = timer.elapsed();
         printf("Time draw Screen: %f \n", elapsed);
-        bm.saveDataFrame("drawing_times.csv", "suzanne.obj", "median_split", camera, elapsed);
+        bm.saveDataFrame("drawing_times.csv", object_file, algorithm_name, camera, elapsed);
 
         //GLFW magic for screen drawing and events
         glfwSwapBuffers(window);
@@ -155,16 +165,10 @@ bool setupOpenGL() {
     return 0;
 }
 
-void setupScene() {
+void setupScene(const std::string& obj_filename, double obj_scale) {
 
     std::vector<Triangle> loaded_object;
-    //auto sponza = ObjectLoader::loadFromFile("../example/sponza.obj", 1.0);
-    //loaded_object.insert(loaded_object.end(), sponza.begin(), sponza.end());
-    //auto bunny = ObjectLoader::loadFromFile("../example/stanford-bunny.obj", 30.0);
-    //loaded_object.insert(loaded_object.end(), bunny.begin(), bunny.end());
-    //auto teapot = ObjectLoader::loadFromFile("../example/teapot.obj", 1.0);
-    //loaded_object.insert(loaded_object.end(), teapot.begin(), teapot.end());
-    auto suzanne = ObjectLoader::loadFromFile("../example/suzanne.obj", 3.0);
+    auto suzanne = ObjectLoader::loadFromFile("../example/" + obj_filename, obj_scale);
     loaded_object.insert(loaded_object.end(), suzanne.begin(), suzanne.end());
     printf("Loaded %zu triangles from OBJ file.\n", loaded_object.size());
 

@@ -13,10 +13,11 @@ class BVH {
 private:
     AABB box;
     std::vector<BVH> children;
-    BVH(AABB box, std::vector<BVH> children): box(std::move(box)), children(std::move(children)) {}
 
-    // Private helper function for recursive construction
-    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, size_t start, size_t end, int degree) {
+    BVH(AABB box, std::vector<BVH> children) : box(std::move(box)), children(std::move(children)) {}
+
+    static BVH
+    medianSplitConstruction(std::vector<std::unique_ptr<Primitive>> &objects, size_t start, size_t end, int degree) {
 
         //Calculate axis aligned bounding box
         const size_t count = end - start;
@@ -27,7 +28,7 @@ private:
         double maxY = std::numeric_limits<double>::lowest();
         double maxZ = std::numeric_limits<double>::lowest();
         for (size_t i = start; i < end; ++i) {
-            const auto& object = objects[i];
+            const auto &object = objects[i];
             minX = std::min(minX, object->getMin().getX());
             maxX = std::max(maxX, object->getMax().getX());
             minY = std::min(minY, object->getMin().getY());
@@ -55,7 +56,9 @@ private:
         if (lenY > lenX && lenY >= lenZ) axis = 1;
         else if (lenZ > lenX && lenZ >= lenY) axis = 2;
 
-        AABB internalBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, {}};
+        AABB internalBox{{minX, minY, minZ},
+                         {maxX, maxY, maxZ},
+                         {}};
 
         size_t segmentBegin = start;
         for (int i = 1; i < degree; ++i) {
@@ -63,7 +66,7 @@ private:
             std::nth_element(objects.begin() + segmentBegin,
                              objects.begin() + boundary,
                              objects.begin() + end,
-                             [&](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b) {
+                             [axis](const std::unique_ptr<Primitive> &a, const std::unique_ptr<Primitive> &b) {
                                  return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                              });
             segmentBegin = boundary; // next segment starts from here
@@ -77,6 +80,107 @@ private:
             kids.emplace_back(medianSplitConstruction(objects, childStart, childEnd, degree));
             childStart = childEnd;
         }
+
+        return BVH{internalBox, std::move(kids)};
+    }
+
+    //TODO no code copying from medianSplitConstruction
+    static BVH binarySurfaceAreaHeuristicConstruction(std::vector<std::unique_ptr<Primitive>> &objects, size_t start, size_t end) {
+        //Calculate axis aligned bounding box
+        const size_t count = end - start;
+        double minX = std::numeric_limits<double>::max();
+        double minY = std::numeric_limits<double>::max();
+        double minZ = std::numeric_limits<double>::max();
+        double maxX = std::numeric_limits<double>::lowest();
+        double maxY = std::numeric_limits<double>::lowest();
+        double maxZ = std::numeric_limits<double>::lowest();
+        for (size_t i = start; i < end; ++i) {
+            const auto &object = objects[i];
+            minX = std::min(minX, object->getMin().getX());
+            maxX = std::max(maxX, object->getMax().getX());
+            minY = std::min(minY, object->getMin().getY());
+            maxY = std::max(maxY, object->getMax().getY());
+            minZ = std::min(minZ, object->getMin().getZ());
+            maxZ = std::max(maxZ, object->getMax().getZ());
+        }
+
+        // Leaf node condition
+        if (count < 2) {
+            std::vector<std::unique_ptr<Primitive>> primitiveLeaves;
+            primitiveLeaves.reserve(count);
+            for (size_t i = start; i < end; ++i) {
+                primitiveLeaves.push_back(std::move(objects[i]));
+            }
+            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, std::move(primitiveLeaves)};
+            return BVH{leafBox, {}};
+        }
+
+        // Longest axis
+        const double lenX = maxX - minX;
+        const double lenY = maxY - minY;
+        const double lenZ = maxZ - minZ;
+        int axis = 0;
+        if (lenY > lenX && lenY >= lenZ) axis = 1;
+        else if (lenZ > lenX && lenZ >= lenY) axis = 2;
+
+        AABB internalBox{{minX, minY, minZ},
+                         {maxX, maxY, maxZ},
+                         {}};
+        // we need to calculate area heuristic here to find the best split point
+        std::sort(objects.begin() + start, objects.begin() + end,
+                  [axis](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b){
+                      return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                  });
+        size_t bestSplit = start + 1;;
+        double bestCost = std::numeric_limits<double>::max();
+        for (size_t i = start + 1; i < end; ++i) {
+            double lminX = std::numeric_limits<double>::max();
+            double lminY = std::numeric_limits<double>::max();
+            double lminZ = std::numeric_limits<double>::max();
+            double lmaxX = std::numeric_limits<double>::lowest();
+            double lmaxY = std::numeric_limits<double>::lowest();
+            double lmaxZ = std::numeric_limits<double>::lowest();
+            for (size_t j = start; j < i; ++j) {
+                const auto &object = objects[j];
+                lminX = std::min(lminX, object->getMin().getX());
+                lmaxX = std::max(lmaxX, object->getMax().getX());
+                lminY = std::min(lminY, object->getMin().getY());
+                lmaxY = std::max(lmaxY, object->getMax().getY());
+                lminZ = std::min(lminZ, object->getMin().getZ());
+                lmaxZ = std::max(lmaxZ, object->getMax().getZ());
+            }
+            double larea = 2.0 * ((lmaxX - lminX) * (lmaxY - lminY) +
+                                  (lmaxY - lminY) * (lmaxZ - lminZ) +
+                                  (lmaxZ - lminZ) * (lmaxX - lminX));
+            double rminX = std::numeric_limits<double>::max();
+            double rminY = std::numeric_limits<double>::max();
+            double rminZ = std::numeric_limits<double>::max();
+            double rmaxX = std::numeric_limits<double>::lowest();
+            double rmaxY = std::numeric_limits<double>::lowest();
+            double rmaxZ = std::numeric_limits<double>::lowest();
+            for (size_t j = i; j < end; ++j) {
+                const auto &object = objects[j];
+                rminX = std::min(rminX, object->getMin().getX());
+                rmaxX = std::max(rmaxX, object->getMax().getX());
+                rminY = std::min(rminY, object->getMin().getY());
+                rmaxY = std::max(rmaxY, object->getMax().getY());
+                rminZ = std::min(rminZ, object->getMin().getZ());
+                rmaxZ = std::max(rmaxZ, object->getMax().getZ());
+            }
+            double rarea = 2.0 * ((rmaxX - rminX) * (rmaxY - rminY) +
+                                  (rmaxY - rminY) * (rmaxZ - rminZ) +
+                                  (rmaxZ - rminZ) * (rmaxX - rminX));
+            double cost = larea * (i - start) + rarea * (end - i);
+            if (cost < bestCost) {
+                bestCost = cost;
+                bestSplit = i;
+            }
+        }
+
+        std::vector<BVH> kids;
+        kids.reserve(2);
+        kids.emplace_back(binarySurfaceAreaHeuristicConstruction(objects, start, bestSplit));
+        kids.emplace_back(binarySurfaceAreaHeuristicConstruction(objects, bestSplit, end));
 
         return BVH{internalBox, std::move(kids)};
     }
@@ -105,8 +209,16 @@ public:
         return medianSplitConstruction(objects, 0, objects.size(), degree);
     }
 
-    static BVH surfaceAreaHeuristicConstruction(std::vector<std::unique_ptr<Primitive>>& objects, int degree = 2) {
-        return medianSplitConstruction(objects, degree);
+    static BVH binarySurfaceAreaHeuristicConstruction(std::vector<std::unique_ptr<Primitive>>& objects) {
+        if (objects.empty()) {
+            AABB emptyBox{
+                    {0,0,0},
+                    {0,0,0},
+                    {}
+            };
+            return BVH{emptyBox, {}};
+        }
+        return binarySurfaceAreaHeuristicConstruction(objects, 0, objects.size());
     }
 
     std::unique_ptr<Ray> traverse(const Ray& ray) const {
@@ -146,3 +258,4 @@ public:
 };
 
 #endif //RAYTRACINGDEMO_BVH_HPP
+
