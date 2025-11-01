@@ -13,6 +13,7 @@
 #include "utils/object_loader.hpp"
 #include "utils/timer.hpp"
 #include "utils/benchmark.hpp"
+#include "camera_path.hpp"
 
 struct Hit {
     bool hit = false;
@@ -42,7 +43,7 @@ bool setupOpenGL();
 
 int main(void) {
 
-    std::string object_file = "sponza.obj";
+    std::string object_file = "teapot.obj";
     setupScene(object_file, 1.0);
 
     Benchmark bm;
@@ -69,7 +70,18 @@ int main(void) {
         return -1;
     }
     //App loop
+    int resolution = 36;
+    CameraPath camera_path(camera.getPosition() - Vector3{0.0, 0.0, 5.0}, resolution);   //TODO: hacky position change later
+    int path_step = 0;
+
     while (!glfwWindowShouldClose(window)) {
+        //Camera update for path
+        Ray cam_ray = camera_path.circularPath(path_step);
+        camera.setPosition(cam_ray.getOrigin());
+        camera.setDirection(cam_ray.getDirection());
+        path_step++;
+
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         timer.reset();

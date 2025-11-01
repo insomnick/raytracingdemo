@@ -3,6 +3,7 @@
 
 #include <numbers>
 #include <vector>
+#include <cmath>
 #include "primitives/vector3.hpp"
 
 
@@ -38,6 +39,10 @@ public:
 
     void setPosition(const Vector3& pos) {
         position = pos;
+    }
+
+    void setDirection(const Vector3& dir) {
+        direction = dir;
     }
 
     Vector3 getDirection() const {

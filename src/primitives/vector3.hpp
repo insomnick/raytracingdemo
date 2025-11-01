@@ -1,12 +1,7 @@
-//
-// Created by garczorz on 9/19/25.
-//
-
 #ifndef RAYTRACINGDEMO_VECTOR3_HPP
 #define RAYTRACINGDEMO_VECTOR3_HPP
 
-
-#include <complex>
+#include <cmath>
 
 class Vector3 {
 private:
