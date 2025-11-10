@@ -21,6 +21,15 @@ struct Hit {
     Vector3 normal{};
 };
 
+struct TestrunConfiguration {
+    std::string object_file;
+    double object_scale;
+    std::string bvh_algorithm;
+    int camera_path_resolution;
+    bool no_window;
+};
+
+
 static const int SCREEN_WIDTH = 500;
 static const int SCREEN_HEIGHT = 500;
 
@@ -39,16 +48,29 @@ double mapToScreen(int j, const int height);
 void calculateScreen(BVH& bvh);
 static void shadeScreen(const Vector3& camera_pos);
 void setupScene(const std::string& obj_filename, double obj_scale=1.0);
-bool setupOpenGL();
+int setupOpenGL();
+void runTest(const TestrunConfiguration& config);
+
 
 int main(void) {
 
-    std::string object_file = "teapot.obj";
-    setupScene(object_file, 1.0);
+    TestrunConfiguration config{
+        .object_file = "suzanne.obj",
+        .object_scale = 3.0,
+        .bvh_algorithm = "median", // "sah", "median", "stupid"
+        .camera_path_resolution = 100,
+        .no_window = true
+    };
+    runTest(config);
+    return 0;
+}
+
+void runTest(const TestrunConfiguration& config) {
 
     Benchmark bm;
-    std::string algorithm_name = "median"; // "sah", "median", "stupid"
-
+    std::string object_file = config.object_file;
+    std::string algorithm_name = config.bvh_algorithm; // "sah", "median", "stupid"
+    setupScene(object_file, config.object_scale);
 
     //Build BVH time calculation
     timer.reset();
@@ -62,55 +84,73 @@ int main(void) {
         printf("Building BVH using Stupid Construction...\n");
         bvh = BVH::stupidConstruct(objects);
     }
+
     double elapsed = timer.elapsed();
     printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
     bm.saveDataFrame("bvh_build_times.csv", object_file, algorithm_name, camera, elapsed);
 
-    if(setupOpenGL() != 0) {;
-        return -1;
-    }
     //App loop
-    int resolution = 36;
+    int resolution = config.camera_path_resolution;
     CameraPath camera_path(camera.getPosition() - Vector3{0.0, 0.0, 5.0}, resolution);   //TODO: hacky position change later
     int path_step = 0;
 
-    while (!glfwWindowShouldClose(window)) {
+
+    if(!config.no_window) {
+        if (setupOpenGL() != 0) {
+            std::cerr << "Failed to initialize OpenGL context.\n";
+            return;
+        }
+    }
+
+    while (true) {
         //Camera update for path
+        if(path_step >= resolution) {
+            break;  //Testrun end
+        }
         Ray cam_ray = camera_path.circularPath(path_step);
         camera.setPosition(cam_ray.getOrigin());
         camera.setDirection(cam_ray.getDirection());
+        printf("Testrun Step %d / %d \n", path_step + 1, resolution);
         path_step++;
 
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if(!config.no_window) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
 
         timer.reset();
         calculateScreen(bvh);
         elapsed = timer.elapsed();
-        printf("Time calculate Screen: %f \n", elapsed);
+        //printf("Time calculate Screen: %f \n", elapsed);
         bm.saveDataFrame("render_times.csv", object_file, algorithm_name, camera, elapsed);
 
         timer.reset();
         shadeScreen(camera.getPosition());     // lighting pass
         elapsed = timer.elapsed();
-        printf("Time shade Screen: %f \n", elapsed);
+        //printf("Time shade Screen: %f \n", elapsed);
         bm.saveDataFrame("shading_times.csv", object_file, algorithm_name, camera, elapsed);
+        //TODO: save image to file here for each step?
 
-        timer.reset();
-        drawScreen();   //just screen drawing (out of scope for now)
-        elapsed = timer.elapsed();
-        printf("Time draw Screen: %f \n", elapsed);
-        bm.saveDataFrame("drawing_times.csv", object_file, algorithm_name, camera, elapsed);
+        if(!config.no_window) {
+            timer.reset();
+            drawScreen();   //just screen drawing (out of scope for now)
+            elapsed = timer.elapsed();
+            //printf("Time draw Screen: %f \n", elapsed);
+            bm.saveDataFrame("drawing_times.csv", object_file, algorithm_name, camera, elapsed);
 
-        //GLFW magic for screen drawing and events
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+            if(glfwWindowShouldClose(window)) {
+                break;
+            }
+            //GLFW magic for screen drawing and events
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
     }
-    glfwTerminate();
-    return 0;
+    if(!config.no_window) {
+        glfwTerminate();
+    }
 }
 
-bool setupOpenGL() {
+int setupOpenGL() {
 
     //Init GLFW
     if (!glfwInit())
