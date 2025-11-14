@@ -4,6 +4,7 @@
 #include <memory>
 #include <algorithm>
 #include <vector>
+#include <map>
 
 #include "color.hpp"
 #include "camera.hpp"
@@ -25,6 +26,7 @@ struct TestrunConfiguration {
     std::string object_file;
     double object_scale;
     std::string bvh_algorithm;
+    int bvh_degree;
     int camera_path_resolution;
     bool no_window;
 };
@@ -37,7 +39,6 @@ static std::vector<Hit> ray_hits(SCREEN_WIDTH * SCREEN_HEIGHT); //positions and 
 static std::array<std::array<Color, SCREEN_HEIGHT>, SCREEN_WIDTH> screen; // pixel colors
 
 std::vector<std::unique_ptr<Primitive>> objects; //512 primitives in the scene
-BVH bvh = BVH::stupidConstruct(objects);
 Camera camera{SCREEN_WIDTH, SCREEN_HEIGHT};
 Timer timer;
 
@@ -54,14 +55,35 @@ void runTest(const TestrunConfiguration& config);
 
 int main(void) {
 
-    TestrunConfiguration config{
-        .object_file = "suzanne.obj",
-        .object_scale = 3.0,
-        .bvh_algorithm = "median", // "sah", "median", "stupid"
-        .camera_path_resolution = 100,
-        .no_window = true
+    std::multimap<std::string, int> bvh_algorithms = {
+            { "sah",    2 },
+            { "median", 2 },
+            { "median", 4 },
+            { "median", 8 },
     };
-    runTest(config);
+    std::map<std::string, double> object_files= {
+              { "stanford-bunny.obj", 30.0}
+            , { "teapot.obj",        1.0 }
+            , { "suzanne.obj",       3.0 }
+    //        , { "sponza.obj",         1.0 }
+    };
+    const int camera_path_resolution = 4;
+    bool no_window = true;
+
+    for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
+        for (const auto &[object_file, object_scale]: object_files) {
+            TestrunConfiguration config;
+            config = TestrunConfiguration{
+                    .object_file = object_file,
+                    .object_scale = object_scale,
+                    .bvh_algorithm = bvh_algorithm,
+                    .bvh_degree = bvh_degree,
+                    .camera_path_resolution = camera_path_resolution,
+                    .no_window = no_window
+            };
+            runTest(config);
+        };
+    }
     return 0;
 }
 
@@ -69,26 +91,30 @@ void runTest(const TestrunConfiguration& config) {
 
     Benchmark bm;
     std::string object_file = config.object_file;
-    std::string algorithm_name = config.bvh_algorithm; // "sah", "median", "stupid"
+    int bvh_degree = config.bvh_degree;
+    std::string algorithm_name = config.bvh_algorithm + "-" + std::to_string(bvh_degree); // "sah", "median", "stupid"
+    double elapsed = 0.0;
     setupScene(object_file, config.object_scale);
 
     //Build BVH time calculation
     timer.reset();
-    if (algorithm_name == "sah") {
+    BVH bvh = BVH::stupidConstruct(objects);
+    if (algorithm_name.starts_with("sah")) {
         printf("Building BVH using Surface Area Heuristic Construction...\n");
         bvh = BVH::binarySurfaceAreaHeuristicConstruction(objects);
-    } else if (algorithm_name == "median") {
+    } else if (algorithm_name.starts_with("median")) {
         printf("Building BVH using Median Split Construction...\n");
-        bvh = BVH::medianSplitConstruction(objects, 2);
+        bvh = BVH::medianSplitConstruction(objects, bvh_degree);
     } else {
         printf("Building BVH using Stupid Construction...\n");
         bvh = BVH::stupidConstruct(objects);
     }
 
-    double elapsed = timer.elapsed();
-    printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
-    bm.saveDataFrame("bvh_build_times.csv", object_file, algorithm_name, camera, elapsed);
-
+    for (int i = 0; i < 20; i++) {
+        elapsed = timer.elapsed();
+        printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
+        bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
+    }
     //App loop
     int resolution = config.camera_path_resolution;
     CameraPath camera_path(camera.getPosition() - Vector3{0.0, 0.0, 5.0}, resolution);   //TODO: hacky position change later
@@ -121,13 +147,13 @@ void runTest(const TestrunConfiguration& config) {
         calculateScreen(bvh);
         elapsed = timer.elapsed();
         //printf("Time calculate Screen: %f \n", elapsed);
-        bm.saveDataFrame("render_times.csv", object_file, algorithm_name, camera, elapsed);
+        bm.saveDataFrame("render_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
 
         timer.reset();
         shadeScreen(camera.getPosition());     // lighting pass
         elapsed = timer.elapsed();
         //printf("Time shade Screen: %f \n", elapsed);
-        bm.saveDataFrame("shading_times.csv", object_file, algorithm_name, camera, elapsed);
+        bm.saveDataFrame("shading_times.csv", object_file, config.object_scale,algorithm_name, camera, elapsed);
         //TODO: save image to file here for each step?
 
         if(!config.no_window) {
@@ -135,7 +161,7 @@ void runTest(const TestrunConfiguration& config) {
             drawScreen();   //just screen drawing (out of scope for now)
             elapsed = timer.elapsed();
             //printf("Time draw Screen: %f \n", elapsed);
-            bm.saveDataFrame("drawing_times.csv", object_file, algorithm_name, camera, elapsed);
+            bm.saveDataFrame("drawing_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
 
             if(glfwWindowShouldClose(window)) {
                 break;
@@ -205,14 +231,6 @@ int setupOpenGL() {
         if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
             camera.moveUp(-0.1);
         }
-        if (key == GLFW_KEY_M && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-            printf(" Rebuilding BVH using Median Split...\n");
-            bvh = BVH::medianSplitConstruction(objects);
-        }
-        if (key == GLFW_KEY_N && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-            printf(" Rebuilding BVH using Stupid Split...\n");
-            bvh = BVH::stupidConstruct(objects);
-        }
     });
     return 0;
 }
@@ -220,7 +238,7 @@ int setupOpenGL() {
 void setupScene(const std::string& obj_filename, double obj_scale) {
 
     std::vector<Triangle> loaded_object;
-    auto suzanne = ObjectLoader::loadFromFile("../example/" + obj_filename, obj_scale);
+    auto suzanne = ObjectLoader::loadFromFile("example/" + obj_filename, obj_scale);
     loaded_object.insert(loaded_object.end(), suzanne.begin(), suzanne.end());
     printf("Loaded %zu triangles from OBJ file.\n", loaded_object.size());
 

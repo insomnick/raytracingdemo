@@ -1,7 +1,9 @@
 .idea
 cmake-build-debug
 build
-
+venv
+.venv
+testruns
 # Prerequisites
 *.d
 
