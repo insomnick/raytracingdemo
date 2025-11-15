@@ -1,0 +1,5 @@
+file_name,model_name,polygon_count
+object_meta.csv,suzanne.obj,968
+object_meta.csv,teapot.obj,6320
+object_meta.csv,stanford-bunny.obj,69451
+object_meta.csv,sponza.obj,262267

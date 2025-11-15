@@ -61,7 +61,7 @@ int main(void) {
               { "stanford-bunny.obj", 30.0}
             , { "teapot.obj",        1.0 }
             , { "suzanne.obj",       3.0 }
-            //, { "sponza.obj",         1.0 }
+            , { "sponza.obj",         1.0 }
     };
     const int camera_path_resolution = 36;
     bool no_window = true;
@@ -93,6 +93,7 @@ void runTest(const TestrunConfiguration& config) {
     int bvh_degree = config.bvh_degree;
     std::string algorithm_name = config.bvh_algorithm + "-" + std::to_string(bvh_degree); // "sah", "median", "stupid"
     std::vector<Primitive*> objects = setupScene(object_file, config.object_scale);
+    return;
 
     //calculate object center ( center of all centers )
     Vector3 object_center{0.0, 0.0, 0.0};
@@ -206,9 +207,9 @@ int setupOpenGL() {
 std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_scale) {
 
     std::vector<Triangle> loaded_object;
-    auto suzanne = ObjectLoader::loadFromFile("example/" + obj_filename, obj_scale);
-    loaded_object.insert(loaded_object.end(), suzanne.begin(), suzanne.end());
-    printf("Loaded %zu triangles from OBJ file.\n", loaded_object.size());
+    auto file = ObjectLoader::loadFromFile("example/" + obj_filename, obj_scale);
+    loaded_object.insert(loaded_object.end(), file.begin(), file.end());
+    printf("Loaded %zu triangles from OBJ file \'%s\'\n", loaded_object.size(), obj_filename.c_str());
     //convert to ptrs
     std::vector<Primitive*> loaded_object_ptrs;
     loaded_object_ptrs.reserve(loaded_object.size());
