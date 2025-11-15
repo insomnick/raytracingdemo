@@ -13,7 +13,7 @@ class PerformanceAnalyzer:
         # Create results directory if it doesn't exist
         self.result_dir.mkdir(parents=True, exist_ok=True)
         self.data = {}
-        self.metrics = ['bvh_build_times', 'render_times', 'shading_times']
+        self.metrics = ['bvh_build_times', 'render_times']
         
     def load_data(self):
         print("Load data...")
@@ -80,40 +80,72 @@ class PerformanceAnalyzer:
         print("\nKEY METRIC COMPARISON")
         print("=" * 50)
 
-        fig, axes = plt.subplots(len(self.metrics), 1, figsize=(12, 4 * len(self.metrics)))
-        if len(self.metrics) == 1:
+        # Get unique models across all metrics
+        all_models = set()
+        for metric in self.metrics:
+            if metric in self.data and not self.data[metric].empty:
+                all_models.update(self.data[metric]['model_name'].unique())
+
+        all_models = sorted(list(all_models))
+
+        if not all_models:
+            print("No models found in data")
+            return
+
+        # Create subplots: rows for metrics, columns for models
+        fig, axes = plt.subplots(len(self.metrics), len(all_models),
+                                figsize=(5 * len(all_models), 4 * len(self.metrics)))
+
+        # Handle single metric or single model cases
+        if len(self.metrics) == 1 and len(all_models) == 1:
+            axes = [[axes]]
+        elif len(self.metrics) == 1:
             axes = [axes]
+        elif len(all_models) == 1:
+            axes = [[ax] for ax in axes]
 
-        fig.suptitle('Key Metric Comparison Across BVH Algorithms', fontsize=16, fontweight='bold')
+        fig.suptitle('Key Metric Comparison Across BVH Algorithms by Model',
+                    fontsize=16, fontweight='bold')
 
-        # Performance by algorithm (box plots)
+        # Performance by algorithm and model (box plots)
         for i, metric in enumerate(self.metrics):
             if metric in self.data and not self.data[metric].empty:
                 df = self.data[metric]
-                try:
-                    # Box plot comparing algorithms
-                    sns.boxplot(data=df, x='algorithm_name', y='time_seconds', ax=axes[i])
-                    axes[i].set_title(f'{metric.replace("_", " ").title()}')
-                    axes[i].set_xlabel('Algorithm')
-                    axes[i].set_ylabel('Time (seconds)')
-                    axes[i].tick_params(axis='x', rotation=45)
 
-                    # Add mean values as text
-                    for j, algorithm in enumerate(df['algorithm_name'].unique()):
-                        mean_time = df[df['algorithm_name'] == algorithm]['time_seconds'].mean()
-                        axes[i].text(j, mean_time, f'μ={mean_time:.4f}s',
-                            ha='center', va='bottom', fontweight='bold',
-                            bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
-                except Exception as e:
-                    print(f"Error plotting {metric}: {e}")
+                for j, model in enumerate(all_models):
+                    model_df = df[df['model_name'] == model]
+
+                    try:
+                        if not model_df.empty:
+                            # Box plot comparing algorithms for this specific model
+                            sns.boxplot(data=model_df, x='algorithm_name', y='time_seconds',
+                                      ax=axes[i][j])
+                            axes[i][j].set_title(f'{metric.replace("_", " ").title()}\n{model}')
+                            axes[i][j].set_xlabel('Algorithm')
+                            axes[i][j].set_ylabel('Time (seconds)')
+                            axes[i][j].tick_params(axis='x', rotation=45)
+
+                            # Add mean values as text
+                            for k, algorithm in enumerate(model_df['algorithm_name'].unique()):
+                                mean_time = model_df[model_df['algorithm_name'] == algorithm]['time_seconds'].mean()
+                                axes[i][j].text(k, mean_time, f'μ={mean_time:.4f}s',
+                                    ha='center', va='bottom', fontweight='bold', fontsize=8,
+                                    bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.8))
+                        else:
+                            axes[i][j].text(0.5, 0.5, f'No data\nfor {model}',
+                                          ha='center', va='center', transform=axes[i][j].transAxes,
+                                          fontsize=12, style='italic')
+                            axes[i][j].set_title(f'{metric.replace("_", " ").title()}\n{model}')
+                    except Exception as e:
+                        print(f"Error plotting {metric} for model {model}: {e}")
 
         plt.tight_layout()
 
         if save_plots:
             try:
-                output_path = self.result_dir / 'performance_key_metrics.png'
+                output_path = self.result_dir / 'performance_key_metrics_by_model.png'
                 plt.savefig(output_path, dpi=300, bbox_inches='tight', format='png', facecolor='white')
-                print(f"Saved algorithm comparison plot as '{output_path}'")
+                print(f"Saved algorithm comparison by model plot as '{output_path}'")
             except Exception as e:
                 print(f"Error saving plot: {e}")
 
@@ -126,40 +158,75 @@ class PerformanceAnalyzer:
             plt.close('all')
 
     def analyze_performance_trends(self, save_plots=True):
-        """Analyze performance trends over camera path"""
+        """Analyze performance trends over camera path by model"""
         print("\nPERFORMANCE TRENDS ANALYSIS")
         print("=" * 50)
         
-        fig, axes = plt.subplots(len(self.metrics), 1, figsize=(12, 4 * len(self.metrics)))
-        if len(self.metrics) == 1:
+        # Get unique models across all metrics
+        all_models = set()
+        for metric in self.metrics:
+            if metric in self.data and not self.data[metric].empty:
+                all_models.update(self.data[metric]['model_name'].unique())
+
+        all_models = sorted(list(all_models))
+
+        if not all_models:
+            print("No models found in data")
+            return
+
+        # Create subplots: rows for metrics, columns for models
+        fig, axes = plt.subplots(len(self.metrics), len(all_models),
+                                figsize=(6 * len(all_models), 4 * len(self.metrics)))
+
+        # Handle single metric or single model cases
+        if len(self.metrics) == 1 and len(all_models) == 1:
+            axes = [[axes]]
+        elif len(self.metrics) == 1:
             axes = [axes]
-        
+        elif len(all_models) == 1:
+            axes = [[ax] for ax in axes]
+
+        fig.suptitle('Performance Trends Over Camera Path by Model',
+                    fontsize=16, fontweight='bold')
+
         for i, metric in enumerate(self.metrics):
             if metric in self.data and not self.data[metric].empty:
                 df = self.data[metric]
                 
-                # Group by algorithm and plot trends
-                for algorithm in df['algorithm_name'].unique():
-                    alg_data = df[df['algorithm_name'] == algorithm].copy()
-                    
-                    # Sort by some order (using index as proxy for time sequence)
-                    alg_data = alg_data.reset_index().sort_values('index')
-                    
-                    axes[i].plot(alg_data.index, alg_data['time_seconds'], 
-                               label=f'{algorithm}', marker='o', alpha=0.7)
-                
-                axes[i].set_title(f'{metric.replace("_", " ").title()} Over Time')
-                axes[i].set_xlabel('Measurement Sequence')
-                axes[i].set_ylabel('Time (seconds)')
-                axes[i].legend()
-                axes[i].grid(True, alpha=0.3)
-        
+                for j, model in enumerate(all_models):
+                    model_df = df[df['model_name'] == model]
+
+                    if not model_df.empty:
+                        # Group by algorithm and plot trends for this model
+                        for algorithm in model_df['algorithm_name'].unique():
+                            alg_data = model_df[model_df['algorithm_name'] == algorithm].copy()
+
+                            # Sort by camera position or some sequential order
+                            # Using a combination of camera position as proxy for sequence
+                            alg_data['seq'] = range(len(alg_data))
+                            alg_data = alg_data.sort_values('seq')
+
+                            axes[i][j].plot(alg_data['seq'], alg_data['time_seconds'],
+                                          label=f'{algorithm}', marker='o', alpha=0.7, markersize=4)
+
+                        axes[i][j].set_title(f'{metric.replace("_", " ").title()}\n{model}')
+                        axes[i][j].set_xlabel('Measurement Sequence')
+                        axes[i][j].set_ylabel('Time (seconds)')
+                        axes[i][j].legend(fontsize=8)
+                        axes[i][j].grid(True, alpha=0.3)
+                    else:
+                        axes[i][j].text(0.5, 0.5, f'No data\nfor {model}',
+                                      ha='center', va='center', transform=axes[i][j].transAxes,
+                                      fontsize=12, style='italic')
+                        axes[i][j].set_title(f'{metric.replace("_", " ").title()}\n{model}')
+
         plt.tight_layout()
         
         if save_plots:
             try:
-                plt.savefig(self.result_dir / 'performance_trends.png', dpi=300, bbox_inches='tight')
-                print("Saved performance trends plot as 'performance_trends.png'")
+                output_path = self.result_dir / 'performance_trends_by_model.png'
+                plt.savefig(output_path, dpi=300, bbox_inches='tight', format='png', facecolor='white')
+                print(f"Saved performance trends by model plot as '{output_path}'")
             except Exception as e:
                 print(f"Error saving performance trends plot: {e}")
 

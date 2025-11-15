@@ -15,7 +15,6 @@ public:
         // Precompute the normal and center
         normal = Vector3::cross(v1 - v0, v2 - v0).normalize();
         center = (v0 + v1 + v2) * (1.0/3);
-        printf("Triangle vertices: (%f, %f, %f), (%f, %f, %f), (%f, %f, %f)\n", v0.getX(), v0.getY(), v0.getZ(), v1.getX(), v1.getY(), v1.getZ(), v2.getX(), v2.getY(), v2.getZ());
     }
 
     Vector3 getCenter() const override{
@@ -82,7 +81,7 @@ public:
         if (t <= EPSILON)
             return nullptr;
 
-        const auto intersection = (ray.getDirection() * t);
+        const auto intersection = ray.getOrigin() + (ray.getDirection() * t);
 
         return std::make_unique<Ray>(intersection, normal);
     }

@@ -17,7 +17,7 @@ private:
     BVH(AABB box, std::vector<BVH> children) : box(std::move(box)), children(std::move(children)) {}
 
     static BVH
-    medianSplitConstruction(std::vector<std::unique_ptr<Primitive>> &objects, size_t start, size_t end, int degree) {
+    medianSplitConstruction(std::vector<Primitive*> &objects, size_t start, size_t end, int degree) {
 
         //Calculate axis aligned bounding box
         const size_t count = end - start;
@@ -39,12 +39,12 @@ private:
 
         // Leaf node condition
         if (count == 0 || degree <= 1 || count < static_cast<size_t>(degree)) {
-            std::vector<std::unique_ptr<Primitive>> primitiveLeaves;
+            std::vector<Primitive*> primitiveLeaves;
             primitiveLeaves.reserve(count);
             for (size_t i = start; i < end; ++i) {
-                primitiveLeaves.push_back(std::move(objects[i]));
+                primitiveLeaves.push_back(objects[i]);
             }
-            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, std::move(primitiveLeaves)};
+            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, primitiveLeaves};
             return BVH{leafBox, {}};
         }
 
@@ -66,7 +66,7 @@ private:
             std::nth_element(objects.begin() + segmentBegin,
                              objects.begin() + boundary,
                              objects.begin() + end,
-                             [axis](const std::unique_ptr<Primitive> &a, const std::unique_ptr<Primitive> &b) {
+                             [axis](const Primitive* a, const Primitive* b) {
                                  return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                              });
             segmentBegin = boundary; // next segment starts from here
@@ -85,7 +85,7 @@ private:
     }
 
     //TODO no code copying from medianSplitConstruction
-    static BVH binarySurfaceAreaHeuristicConstruction(std::vector<std::unique_ptr<Primitive>> &objects, size_t start, size_t end) {
+    static BVH binarySurfaceAreaHeuristicConstruction(std::vector<Primitive*> &objects, size_t start, size_t end) {
         //Calculate axis aligned bounding box
         const size_t count = end - start;
         double minX = std::numeric_limits<double>::max();
@@ -106,12 +106,12 @@ private:
 
         // Leaf node condition
         if (count < 2) {
-            std::vector<std::unique_ptr<Primitive>> primitiveLeaves;
+            std::vector<Primitive*> primitiveLeaves;
             primitiveLeaves.reserve(count);
             for (size_t i = start; i < end; ++i) {
-                primitiveLeaves.push_back(std::move(objects[i]));
+                primitiveLeaves.push_back(objects[i]);
             }
-            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, std::move(primitiveLeaves)};
+            AABB leafBox{{minX, minY, minZ}, {maxX, maxY, maxZ}, primitiveLeaves};
             return BVH{leafBox, {}};
         }
 
@@ -128,7 +128,7 @@ private:
                          {}};
         // we need to calculate area heuristic here to find the best split point
         std::sort(objects.begin() + start, objects.begin() + end,
-                  [axis](const std::unique_ptr<Primitive>& a, const std::unique_ptr<Primitive>& b){
+                  [axis](const Primitive* a, const Primitive* b){
                       return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                   });
 
@@ -214,18 +214,18 @@ private:
     }
 
 public:
-    static BVH stupidConstruct(std::vector<std::unique_ptr<Primitive>>& objects) {
+    static BVH stupidConstruct(std::vector<Primitive*>& objects) {
         AABB box(
                 {std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max()},
                 {std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()},
-                std::move(objects)
+                objects
         );
         std::vector<BVH> children;
         BVH bvh{box, children};
         return bvh;
     }
 
-    static BVH medianSplitConstruction(std::vector<std::unique_ptr<Primitive>>& objects, int degree = 2) {
+    static BVH medianSplitConstruction(std::vector<Primitive*>& objects, int degree = 2) {
         if (objects.empty()) {
             AABB emptyBox{
                 {0,0,0},
@@ -237,7 +237,7 @@ public:
         return medianSplitConstruction(objects, 0, objects.size(), degree);
     }
 
-    static BVH binarySurfaceAreaHeuristicConstruction(std::vector<std::unique_ptr<Primitive>>& objects) {
+    static BVH binarySurfaceAreaHeuristicConstruction(std::vector<Primitive*>& objects) {
         if (objects.empty()) {
             AABB emptyBox{
                     {0,0,0},
