@@ -93,7 +93,6 @@ void runTest(const TestrunConfiguration& config) {
     int bvh_degree = config.bvh_degree;
     std::string algorithm_name = config.bvh_algorithm + "-" + std::to_string(bvh_degree); // "sah", "median", "stupid"
     std::vector<Primitive*> objects = setupScene(object_file, config.object_scale);
-    return;
 
     //calculate object center ( center of all centers )
     Vector3 object_center{0.0, 0.0, 0.0};
