@@ -53,6 +53,7 @@ int main(void) {
 
     std::multimap<std::string, int> bvh_algorithms = {
             { "sah",    2 },
+            { "sah",    4 },
             { "median", 2 },
             { "median", 4 },
             { "median", 8 },
@@ -103,13 +104,13 @@ void runTest(const TestrunConfiguration& config) {
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
     //Build BVH time calculation
-    BVH bvh = BVH::medianSplitConstruction(objects);
+    BVH bvh = BVH::medianSplitConstruction(objects, 4); //TODO No stupid dummy
     double elapsed = 0.0;
     for (int i = 0; i < 20; i++) {
         timer.reset();
         if (algorithm_name.starts_with("sah")) {
             printf("Building BVH using Surface Area Heuristic Construction...\n");
-            bvh = BVH::binarySurfaceAreaHeuristicConstruction(objects);
+            bvh = BVH::surfaceAreaHeuristicConstruction(objects, bvh_degree);
         } else if (algorithm_name.starts_with("median")) {
             printf("Building BVH using Median Split Construction...\n");
             bvh = BVH::medianSplitConstruction(objects, bvh_degree);
