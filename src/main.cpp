@@ -106,7 +106,7 @@ void runTest(const TestrunConfiguration& config) {
     //Build BVH time calculation
     BVH bvh = BVH::medianSplitConstruction(objects, 4); //TODO No stupid dummy
     double elapsed = 0.0;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 1; i++) {
         timer.reset();
         if (algorithm_name.starts_with("sah")) {
             printf("Building BVH using Surface Area Heuristic Construction...\n");
@@ -237,8 +237,7 @@ void calculateScreen(BVH& bvh, Camera& camera) {
             Ray ray{camera_pos, dir};
 
             const int idx = j + i * SCREEN_HEIGHT;
-            auto hitRay = bvh.traverse(ray); // Ray(origin=hitPos, direction=normal) or nullptr
-            if (hitRay) {
+            if (const auto hitRay = BVH::traverse(bvh, ray)) {
                 ray_hits[idx].hit = true;
                 ray_hits[idx].position = hitRay->getOrigin();
                 ray_hits[idx].normal = hitRay->getDirection();

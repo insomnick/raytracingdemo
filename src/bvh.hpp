@@ -273,35 +273,36 @@ public:
         return surfaceAreaHeuristicConstruction(objects, 0, objects.size(), degree);
     }
 
-    std::unique_ptr<Ray> traverse(const Ray& ray) const {
-        if (!box.hit(ray)) {
-            return nullptr;
-        }
-        if (children.empty()) { //or box.getPrimitives().empty()
-            std::unique_ptr<Ray> closest = nullptr;
-            double closestDist = std::numeric_limits<double>::max();
-            for (const auto &object: box.getPrimitives()) {
-                if (object->intersect(ray)) {
-                    auto p = object->getIntersectionNormalAndDirection(ray);
-                    const double d = (p->getOrigin() - ray.getOrigin()).length();
-                    if (d < closestDist) {
-                        closestDist = d;
-                        closest = std::move(p);
+    //first-hit-traversal
+    static std::unique_ptr<Ray> traverse(const BVH& bvh, const Ray& ray) {
+        std::vector<const BVH*> stack;
+        stack.reserve(64);  //Won't be deeper than 64 levels, no reallocs
+        stack.push_back(&bvh);
+
+        std::unique_ptr<Ray> closest = nullptr;
+        double closestDist = std::numeric_limits<double>::max();
+
+        while (!stack.empty()) {
+            const BVH* node = stack.back();
+            stack.pop_back();
+
+            if (!node->box.hit(ray)) {
+                continue;
+            }
+
+            if (node->children.empty()) {
+                for (const Primitive* primitive : node->box.getPrimitives()) {
+                    if (primitive->intersect(ray)) {
+                        auto hitRay = primitive->getIntersectionNormalAndDirection(ray);
+                        if (const double dist = (hitRay->getOrigin() - ray.getOrigin()).length(); dist < closestDist) {
+                            closestDist = dist;
+                            closest = std::move(hitRay);
+                        }
                     }
                 }
-            }
-            return closest;
-        }
-        // Traverse children recursively
-        std::unique_ptr<Ray> closest = nullptr;
-        double closestDistance = std::numeric_limits<double>::max();
-        for (const auto& child : children) {
-            auto hit = child.traverse(ray);
-            if (hit) {
-                const double distance = (hit->getOrigin() - ray.getOrigin()).length();
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closest = std::move(hit);
+            } else {
+                for (const BVH& child : node->children) {
+                    stack.push_back(&child);
                 }
             }
         }
