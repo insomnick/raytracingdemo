@@ -8,13 +8,13 @@
 
 #include "color.hpp"
 #include "camera.hpp"
-#include "primitives/sphere.hpp"
 #include "primitives/ray.hpp"
 #include "bvh.hpp"
 #include "utils/object_loader.hpp"
 #include "utils/timer.hpp"
 #include "utils/benchmark.hpp"
 #include "camera_path.hpp"
+#include "stack_bvh.hpp"
 
 struct Hit {
     bool hit = false;
@@ -42,7 +42,7 @@ GLFWwindow* window;
 
 void drawScreen();
 double mapToScreen(int j, const int height);
-void calculateScreen(BVH& bvh, Camera& camera);
+void calculateScreen(StackBVH& bvh, Camera& camera);
 static void shadeScreen(const Vector3& camera_pos);
 std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_scale=1.0);
 int setupOpenGL();
@@ -62,10 +62,10 @@ int main(void) {
               { "stanford-bunny.obj", 30.0}
             , { "teapot.obj",        1.0 }
             , { "suzanne.obj",       3.0 }
-            , { "sponza.obj",         1.0 }
+            //, { "sponza.obj",         1.0 }
     };
     const int camera_path_resolution = 36;
-    bool no_window = true;
+    bool no_window = false;
 
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
         for (const auto &[object_file, object_scale]: object_files) {
@@ -104,8 +104,15 @@ void runTest(const TestrunConfiguration& config) {
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
     //Build BVH time calculation
-    BVH bvh = BVH::medianSplitConstruction(objects, 4); //TODO No stupid dummy
     double elapsed = 0.0;
+    printf("Building BVH using Median Split Construction...\n");
+    timer.reset();
+    StackBVH bvh = StackBVH::binaryBuild(objects, StackBVH::medianSplit);
+    elapsed = timer.elapsed();
+    printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
+    bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
+
+    /*
     for (int i = 0; i < 1; i++) {
         timer.reset();
         if (algorithm_name.starts_with("sah")) {
@@ -122,6 +129,7 @@ void runTest(const TestrunConfiguration& config) {
         printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
         bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
     }
+    */
 
     if(!config.no_window) {
         if (setupOpenGL() != 0) {
@@ -219,7 +227,7 @@ std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_s
     return loaded_object_ptrs;
 }
 
-void calculateScreen(BVH& bvh, Camera& camera) {
+void calculateScreen(StackBVH& bvh, Camera& camera) {
     const Vector3 camera_pos = camera.getPosition();
     const Vector3 camera_dir = camera.getDirection();
     const Vector3 world_up{0.0, 1.0, 0.0};
@@ -237,7 +245,7 @@ void calculateScreen(BVH& bvh, Camera& camera) {
             Ray ray{camera_pos, dir};
 
             const int idx = j + i * SCREEN_HEIGHT;
-            if (const auto hitRay = BVH::traverse(bvh, ray)) {
+            if (const auto hitRay = StackBVH::traverse(bvh, ray)) {
                 ray_hits[idx].hit = true;
                 ray_hits[idx].position = hitRay->getOrigin();
                 ray_hits[idx].normal = hitRay->getDirection();

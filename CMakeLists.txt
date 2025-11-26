@@ -20,6 +20,7 @@ add_executable(raytracingdemo
         src/utils/timer.hpp
         src/utils/benchmark.hpp
         src/camera_path.hpp
+        src/stack_bvh.hpp
 )
 
 # --- GLFW (needs libglfw3-dev installed) ---

@@ -21,7 +21,7 @@ private:
         if (!boundingBox.getPrimitives().empty()){
             return BVH{boundingBox, {}};
         }
-        int splitAxis = calculateLongestAxis(boundingBox);
+        const int splitAxis = calculateLongestAxis(boundingBox);
 
         sortAtMedianSplits(objects, start, end, degree, splitAxis);
 
