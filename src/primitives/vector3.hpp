@@ -2,6 +2,7 @@
 #define RAYTRACINGDEMO_VECTOR3_HPP
 
 #include <cmath>
+#include <stdexcept>
 
 class Vector3 {
 private:

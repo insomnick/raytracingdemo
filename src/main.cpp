@@ -92,6 +92,9 @@ void runTest(const TestrunConfiguration& config) {
     Benchmark bm;
     std::string object_file = config.object_file;
     int bvh_degree = config.bvh_degree;
+    //Log2 of degree to get number of collapse iterations
+    int collapse_iterations = static_cast<int>(std::log2(bvh_degree)) - 1;
+    printf("Collape Iterations: %d\n", collapse_iterations);
     std::string algorithm_name = config.bvh_algorithm + "-" + std::to_string(bvh_degree); // "sah", "median", "stupid"
     std::vector<Primitive*> objects = setupScene(object_file, config.object_scale);
 
@@ -103,11 +106,24 @@ void runTest(const TestrunConfiguration& config) {
     object_center = object_center * (1.0 / objects.size());
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
+    std::size_t (*partition_function)(std::vector<Primitive *> &primitives, const int axis);
+    if (algorithm_name.starts_with("sah")) {
+        partition_function = StackBVH::sahSplit;
+    } else if (algorithm_name.starts_with("median")) {
+        partition_function = StackBVH::medianSplit;
+    } else {
+        throw std::out_of_range("Unknown algorithm");
+    }
+
     //Build BVH time calculation
     double elapsed = 0.0;
-    printf("Building BVH using Median Split Construction...\n");
+    printf("Building BVH using %s split...\n", algorithm_name.c_str());
     timer.reset();
-    StackBVH bvh = StackBVH::binaryBuild(objects, StackBVH::sahSplit);
+    StackBVH bvh = StackBVH::binaryBuild(objects, partition_function);
+    for (int i = 0; i < collapse_iterations; i++) {
+        printf("Collapsed...\n");
+        StackBVH::collapse(bvh);
+    }
     elapsed = timer.elapsed();
     printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
     bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);

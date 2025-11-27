@@ -178,7 +178,44 @@ public:
             }
         }
 
-        return std::move(StackBVH{std::move(root)});
+        return StackBVH{std::move(root)};
+    }
+
+    //let nodes absorb their children
+    static void collapse(StackBVH &bvh) {
+        std::vector<BVHNode*> stack;
+        stack.reserve(64);  //should min be ~ log(primitives.size())
+        stack.push_back(&bvh.root);
+
+        while (!stack.empty()) {
+            BVHNode* node = stack.back();
+            stack.pop_back();
+
+            if (node->children.empty()) {
+                continue;
+            }
+
+            std::vector<BVHNode> newChildren;
+            newChildren.reserve(node->children.size());
+
+            for (auto &child : node->children) {
+                // if child has children, lift them up one level
+                if (!child.children.empty()) {
+                    for (auto &grandChild : child.children) {
+                        newChildren.push_back(std::move(grandChild));
+                    }
+                } else {
+                    // keep leaf child
+                    newChildren.push_back(std::move(child));
+                }
+            }
+
+            node->children = std::move(newChildren);
+            //Next Iteration
+            for (auto &child : node->children) {
+                stack.push_back(&child);
+            }
+        }
     }
 
     //first-hit-traversal
