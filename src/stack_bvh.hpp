@@ -15,7 +15,12 @@ private:
 
     explicit StackBVH(BVHNode root) : root(std::move(root)) {}
 
-    static void findBounds(const std::vector<Primitive *> &primitives, Vector3& min, Vector3& max) {
+    static void findBounds(const std::vector<Primitive*>::const_iterator& begin, const std::vector<Primitive*>::const_iterator& end, Vector3& min, Vector3& max) {
+        if (begin == end) {
+            min = Vector3{0.0, 0.0, 0.0};
+            max = Vector3{0.0, 0.0, 0.0};
+            return;
+        }
         //calculate bounds of root
         auto minimumX = std::numeric_limits<double>::max();
         auto minimumY = std::numeric_limits<double>::max();
@@ -23,7 +28,8 @@ private:
         auto maximumX = std::numeric_limits<double>::lowest();
         auto maximumY = std::numeric_limits<double>::lowest();
         auto maximumZ = std::numeric_limits<double>::lowest();
-        for (auto primitive: primitives) {
+        for (auto iterator = begin; iterator != end; ++iterator) {
+            const Primitive* primitive = *iterator;
             minimumX = std::min(minimumX,primitive->getMin().getX());
             minimumY = std::min(minimumY,primitive->getMin().getY());
             minimumZ = std::min(minimumZ,primitive->getMin().getZ());
@@ -47,6 +53,12 @@ private:
         return axis;
     }
 
+    static double calculateSurfaceArea (const Vector3 &minP, const Vector3 &maxP) {
+        const Vector3 extent = maxP - minP;
+        const double ex = extent.getX(), ey = extent.getY(), ez = extent.getZ();
+        return 2.0 * (ex * ey + ey * ez + ez * ex);
+    };
+
     static bool isLeaf(const BVHNode &node) {
         if (node.primitives.size() < 2) {   //Binary
             return true; // Leaf node
@@ -69,6 +81,59 @@ public:
         return split;
     }
 
+    static std::size_t sahSplit(std::vector<Primitive *>& primitives, const int axis) {
+
+        std::sort(primitives.begin(), primitives.end(),
+                  [axis](const Primitive* a, const Primitive* b) {
+                      return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                  });
+        const size_t count = primitives.size();
+        std::vector<Vector3> leftMins(count), leftMaxs(count), rightMins(count), rightMaxs(count);
+
+        // prefix bounds for left side
+        findBounds(primitives.begin(), primitives.begin() + 1, leftMins[0], leftMaxs[0]);
+
+        for (size_t i = 1; i < count; ++i) {
+            Vector3 tmpMin, tmpMax;
+            findBounds(primitives.begin() + static_cast<long>(i), primitives.begin() + static_cast<long>(i + 1), tmpMin, tmpMax);
+            const auto minX = std::min(leftMins[i - 1].getX(), tmpMin.getX());
+            const auto minY = std::min(leftMins[i - 1].getY(), tmpMin.getY());
+            const auto minZ = std::min(leftMins[i - 1].getZ(), tmpMin.getZ());
+            const auto maxX = std::max(leftMaxs[i - 1].getX(), tmpMax.getX());
+            const auto maxY = std::max(leftMaxs[i - 1].getY(), tmpMax.getY());
+            const auto maxZ = std::max(leftMaxs[i - 1].getZ(), tmpMax.getZ());
+            leftMins[i] = Vector3{minX, minY, minZ};
+            leftMaxs[i] = Vector3{maxX, maxY, maxZ};
+        }
+
+        // suffix bounds for right side
+        findBounds(primitives.begin() + static_cast<long>(count - 1), primitives.begin() + static_cast<long>(count), rightMins[count - 1], rightMaxs[count - 1]);
+        for (size_t i = count - 1; i-- > 0;) {
+            Vector3 tmpMin, tmpMax;
+            findBounds(primitives.begin() + static_cast<long>(i), primitives.begin() + static_cast<long>(i + 1), tmpMin, tmpMax);
+            const auto minX = std::min(rightMins[i + 1].getX(), tmpMin.getX());
+            const auto minY = std::min(rightMins[i + 1].getY(), tmpMin.getY());
+            const auto minZ = std::min(rightMins[i + 1].getZ(), tmpMin.getZ());
+            const auto maxX = std::max(rightMaxs[i + 1].getX(), tmpMax.getX());
+            const auto maxY = std::max(rightMaxs[i + 1].getY(), tmpMax.getY());
+            const auto maxZ = std::max(rightMaxs[i + 1].getZ(), tmpMax.getZ());
+            rightMins[i] = Vector3{minX, minY, minZ};
+            rightMaxs[i] = Vector3{maxX, maxY, maxZ};
+        }
+
+        size_t split = count / 2;
+        double minCost = std::numeric_limits<double>::max();
+        for (size_t i = 1; i < count - 1; ++i) {
+            const double leftArea = calculateSurfaceArea(leftMins[i - 1], leftMaxs[i - 1]);
+            const double rightArea = calculateSurfaceArea(rightMins[i], rightMaxs[i]);
+            if (const double cost = leftArea * static_cast<double>(i) + rightArea * static_cast<double>((count - i)); minCost > cost) {
+                minCost = cost;
+                split = i;
+            }
+        }
+        return split;
+    }
+
     // binary BVH construction with lambda for splitting
     template<typename PartitionFunction>
     static StackBVH binaryBuild(std::vector<Primitive*>& primitives, PartitionFunction partitionFunction) {
@@ -78,7 +143,7 @@ public:
 
         Vector3 globalMin;
         Vector3 globalMax;
-        findBounds(primitives, globalMin, globalMax);
+        findBounds(primitives.begin(), primitives.end(), globalMin, globalMax);
         const AABB box{globalMin, globalMax};
 
         BVHNode root = {box, primitives, {}};
@@ -95,16 +160,16 @@ public:
             auto rightNodes = std::vector(
                     node->primitives.begin() + splitIndex,
                     node->primitives.end()
-            );;
+            );
             node->primitives.resize(splitIndex);  //reuse as left child primitives
             node->primitives.shrink_to_fit();
 
             Vector3 leftMin, leftMax, rightMin, rightMax;
-            findBounds(node->primitives, leftMin, leftMax);
-            findBounds(rightNodes, rightMin, rightMax);
+            findBounds(node->primitives.begin(), node->primitives.end(), leftMin, leftMax);
+            findBounds(rightNodes.begin(), rightNodes.end(), rightMin, rightMax);
 
             node->children.emplace_back(BVHNode{AABB{leftMin, leftMax}, node->primitives, {}});
-            node->children.emplace_back(BVHNode{AABB{rightMin, rightMax}, rightNodes, {}});
+            node->children.emplace_back(BVHNode{AABB{rightMin, rightMax}, std::move(rightNodes), {}});
             node->primitives.clear();
 
             //Put children on stack
@@ -113,7 +178,7 @@ public:
             }
         }
 
-        return StackBVH{root};
+        return std::move(StackBVH{std::move(root)});
     }
 
     //first-hit-traversal

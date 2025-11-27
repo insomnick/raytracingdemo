@@ -107,7 +107,7 @@ void runTest(const TestrunConfiguration& config) {
     double elapsed = 0.0;
     printf("Building BVH using Median Split Construction...\n");
     timer.reset();
-    StackBVH bvh = StackBVH::binaryBuild(objects, StackBVH::medianSplit);
+    StackBVH bvh = StackBVH::binaryBuild(objects, StackBVH::sahSplit);
     elapsed = timer.elapsed();
     printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
     bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
