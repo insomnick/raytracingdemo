@@ -1,5 +1,6 @@
 #ifndef RAYTRACINGDEMO_STACK_BVH_HPP
 #define RAYTRACINGDEMO_STACK_BVH_HPP
+
 #include "aabb.hpp"
 #include "bvh.hpp"
 

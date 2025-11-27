@@ -24,17 +24,17 @@ struct Hit {
 };
 
 struct TestrunConfiguration {
-    std::string object_file;
-    double object_scale;
-    std::string bvh_algorithm;
-    int bvh_degree;
-    int camera_path_resolution;
-    bool no_window;
+    std::string object_file{};
+    double object_scale{};
+    std::string bvh_algorithm{};
+    int bvh_degree{};
+    int camera_path_resolution{};
+    bool no_window{};
 };
 
 
-static const int SCREEN_WIDTH = 500;
-static const int SCREEN_HEIGHT = 500;
+static constexpr int SCREEN_WIDTH = 500;
+static constexpr int SCREEN_HEIGHT = 500;
 
 static std::vector<Hit> ray_hits(SCREEN_WIDTH * SCREEN_HEIGHT); //positions and normals of hits
 static std::array<std::array<Color, SCREEN_HEIGHT>, SCREEN_WIDTH> screen; // pixel colors
@@ -50,7 +50,7 @@ int setupOpenGL();
 void runTest(const TestrunConfiguration& config);
 
 
-int main(void) {
+int main() {
 
     std::multimap<std::string, int> bvh_algorithms = {
             { "sah",    2 },
@@ -65,13 +65,12 @@ int main(void) {
             , { "suzanne.obj",       3.0 }
             //, { "sponza.obj",         1.0 }
     };
-    const int camera_path_resolution = 36;
-    bool no_window = false;
 
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
         for (const auto &[object_file, object_scale]: object_files) {
-            TestrunConfiguration config;
-            config = TestrunConfiguration{
+            constexpr int camera_path_resolution = 36;
+            constexpr bool no_window = false;
+            const auto config = TestrunConfiguration{
                     .object_file = object_file,
                     .object_scale = object_scale,
                     .bvh_algorithm = bvh_algorithm,
