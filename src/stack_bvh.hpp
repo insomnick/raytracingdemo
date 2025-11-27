@@ -1,22 +1,31 @@
 #ifndef RAYTRACINGDEMO_STACK_BVH_HPP
 #define RAYTRACINGDEMO_STACK_BVH_HPP
 
+#include <vector>
+#include <limits>
+
 #include "aabb.hpp"
-#include "bvh.hpp"
+#include "primitives/primitive.hpp"
+#include "primitives/ray.hpp"
 
 class StackBVH {
 private:
     struct BVHNode {
         AABB box;
-        std::vector<Primitive*> primitives;
+        std::vector<Primitive*>::iterator begin;
+        std::vector<Primitive*>::iterator end;
         std::vector<BVHNode> children;
     };
 
     BVHNode root;
+    std::vector<Primitive*> primitives;
 
-    explicit StackBVH(BVHNode root) : root(std::move(root)) {}
+    explicit StackBVH(BVHNode rootNode, std::vector<Primitive*> primitives)
+        : root(std::move(rootNode)), primitives(std::move(primitives)) {}
 
-    static void findBounds(const std::vector<Primitive*>::const_iterator& begin, const std::vector<Primitive*>::const_iterator& end, Vector3& min, Vector3& max) {
+    static void findBounds(const std::vector<Primitive*>::const_iterator& begin,
+                           const std::vector<Primitive*>::const_iterator& end,
+                           Vector3& min, Vector3& max) {
         if (begin == end) {
             min = Vector3{0.0, 0.0, 0.0};
             max = Vector3{0.0, 0.0, 0.0};
@@ -61,7 +70,7 @@ private:
     };
 
     static bool isLeaf(const BVHNode &node) {
-        if (node.primitives.size() < 2) {   //Binary
+        if (node.end - node.begin < 2) {   //Binary
             return true; // Leaf node
         }
         return false;
@@ -69,34 +78,34 @@ private:
 
 public:
     // median split partitioning, returns splitting point
-    static std::size_t medianSplit(std::vector<Primitive *>& primitives, const int axis) {
+    static std::size_t medianSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
 
-        const size_t split = primitives.size() / 2;
+        const size_t split = (end - begin) / 2;
 
-        std::nth_element(primitives.begin(),
-                             primitives.begin() + split,
-                             primitives.end(),
+        std::nth_element(begin,
+                             begin + split,
+                             end,
                              [axis](const Primitive* a, const Primitive* b) {
                                  return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                              });
         return split;
     }
 
-    static std::size_t sahSplit(std::vector<Primitive *>& primitives, const int axis) {
+    static std::size_t sahSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
 
-        std::sort(primitives.begin(), primitives.end(),
+        std::sort(begin, end,
                   [axis](const Primitive* a, const Primitive* b) {
                       return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                   });
-        const size_t count = primitives.size();
+        const size_t count = end - begin;
         std::vector<Vector3> leftMins(count), leftMaxs(count), rightMins(count), rightMaxs(count);
 
         // prefix bounds for left side
-        findBounds(primitives.begin(), primitives.begin() + 1, leftMins[0], leftMaxs[0]);
+        findBounds(begin, begin + 1, leftMins[0], leftMaxs[0]);
 
         for (size_t i = 1; i < count; ++i) {
             Vector3 tmpMin, tmpMax;
-            findBounds(primitives.begin() + static_cast<long>(i), primitives.begin() + static_cast<long>(i + 1), tmpMin, tmpMax);
+            findBounds(begin + static_cast<long>(i), begin + static_cast<long>(i + 1), tmpMin, tmpMax);
             const auto minX = std::min(leftMins[i - 1].getX(), tmpMin.getX());
             const auto minY = std::min(leftMins[i - 1].getY(), tmpMin.getY());
             const auto minZ = std::min(leftMins[i - 1].getZ(), tmpMin.getZ());
@@ -108,10 +117,10 @@ public:
         }
 
         // suffix bounds for right side
-        findBounds(primitives.begin() + static_cast<long>(count - 1), primitives.begin() + static_cast<long>(count), rightMins[count - 1], rightMaxs[count - 1]);
+        findBounds(begin + static_cast<long>(count - 1), begin + static_cast<long>(count), rightMins[count - 1], rightMaxs[count - 1]);
         for (size_t i = count - 1; i-- > 0;) {
             Vector3 tmpMin, tmpMax;
-            findBounds(primitives.begin() + static_cast<long>(i), primitives.begin() + static_cast<long>(i + 1), tmpMin, tmpMax);
+            findBounds(begin + static_cast<long>(i), begin + static_cast<long>(i + 1), tmpMin, tmpMax);
             const auto minX = std::min(rightMins[i + 1].getX(), tmpMin.getX());
             const auto minY = std::min(rightMins[i + 1].getY(), tmpMin.getY());
             const auto minZ = std::min(rightMins[i + 1].getZ(), tmpMin.getZ());
@@ -137,55 +146,54 @@ public:
 
     // binary BVH construction with lambda for splitting
     template<typename PartitionFunction>
-    static StackBVH binaryBuild(std::vector<Primitive*>& primitives, PartitionFunction partitionFunction) {
-        if (primitives.empty()) {
-            return StackBVH{BVHNode{AABB{{0,0,0}, {0,0,0}}, {}, {}}};
+    static StackBVH binaryBuild(std::vector<Primitive*>& inputPrimitives,
+                                PartitionFunction partitionFunction) {
+        // move input primitives into a single owned vector inside the BVH
+        std::vector ownedPrimitives(inputPrimitives.begin(), inputPrimitives.end());
+        if (ownedPrimitives.empty()) {
+            BVHNode emptyRoot{AABB{{0,0,0}, {0,0,0}}, ownedPrimitives.begin(), ownedPrimitives.end(), {}};
+            return StackBVH{std::move(emptyRoot), std::move(ownedPrimitives)};
         }
 
         Vector3 globalMin;
         Vector3 globalMax;
-        findBounds(primitives.begin(), primitives.end(), globalMin, globalMax);
+        findBounds(ownedPrimitives.begin(), ownedPrimitives.end(), globalMin, globalMax);
         const AABB box{globalMin, globalMax};
 
-        BVHNode root = {box, primitives, {}};
+        BVHNode rootNode{box, ownedPrimitives.begin(), ownedPrimitives.end(), {}};
+        StackBVH bvh{std::move(rootNode), std::move(ownedPrimitives)};
+
         std::vector<BVHNode*> nodes;
-        nodes.push_back(&root); //Push root to stack
+        nodes.push_back(&bvh.root); // push root to stack
 
         while (!nodes.empty()) {
             BVHNode* node = nodes.back();
             nodes.pop_back();
             if (isLeaf(*node)) continue;
 
-            const size_t splitIndex = partitionFunction(node->primitives, calculateLongestAxis(node->box.getMin(), node->box.getMax()));
-            //split primitives into left and right child
-            auto rightNodes = std::vector(
-                    node->primitives.begin() + splitIndex,
-                    node->primitives.end()
-            );
-            node->primitives.resize(splitIndex);  //reuse as left child primitives
-            node->primitives.shrink_to_fit();
+            const int axis = calculateLongestAxis(node->box.getMin(), node->box.getMax());
+            const std::size_t splitIndex = partitionFunction(node->begin, node->end, axis);
 
             Vector3 leftMin, leftMax, rightMin, rightMax;
-            findBounds(node->primitives.begin(), node->primitives.end(), leftMin, leftMax);
-            findBounds(rightNodes.begin(), rightNodes.end(), rightMin, rightMax);
+            const auto splitIterator = node->begin + static_cast<std::ptrdiff_t>(splitIndex);
+            findBounds(node->begin, splitIterator, leftMin, leftMax);
+            findBounds(splitIterator, node->end, rightMin, rightMax);
 
-            node->children.emplace_back(BVHNode{AABB{leftMin, leftMax}, node->primitives, {}});
-            node->children.emplace_back(BVHNode{AABB{rightMin, rightMax}, std::move(rightNodes), {}});
-            node->primitives.clear();
+            node->children.emplace_back(BVHNode{AABB{leftMin, leftMax}, node->begin, splitIterator, {}});
+            node->children.emplace_back(BVHNode{AABB{rightMin, rightMax}, splitIterator, node->end, {}});
 
-            //Put children on stack
-            for (auto &child: node->children) {
+            for (auto& child : node->children) {
                 nodes.push_back(&child);
             }
         }
 
-        return StackBVH{std::move(root)};
+        return bvh;
     }
 
     //let nodes absorb their children
     static void collapse(StackBVH &bvh) {
         std::vector<BVHNode*> stack;
-        stack.reserve(64);  //should min be ~ log(primitives.size())
+        stack.reserve(64);  //should min be ~ log(ownedPrimitives.size())
         stack.push_back(&bvh.root);
 
         while (!stack.empty()) {
@@ -236,9 +244,9 @@ public:
                 continue;
             }
 
-            if (!node->primitives.empty()) {
-                for (const Primitive* primitive : node->primitives) {
-                    if (primitive->intersect(ray)) {
+            if (node->children.empty()) {
+                for (int i = 0; i < static_cast<int>(node->end - node->begin); ++i) {
+                    if (const Primitive* primitive = *(node->begin + i); primitive->intersect(ray)) {
                         auto hitRay = primitive->getIntersectionNormalAndDirection(ray);
                         if (const double dist = (hitRay->getOrigin() - ray.getOrigin()).length(); dist < closestDist) {
                             closestDist = dist;

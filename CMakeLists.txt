@@ -11,7 +11,7 @@ add_executable(raytracingdemo
         src/camera.hpp
         src/primitives/sphere.hpp
         src/primitives/vector3.hpp
-        src/bvh.hpp
+        src/recursive_bvh.hpp
         src/aabb.hpp
         lib/OBJ_Loader.h
         src/utils/object_loader.hpp

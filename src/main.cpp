@@ -106,7 +106,8 @@ void runTest(const TestrunConfiguration& config) {
     object_center = object_center * (1.0 / static_cast<double>(objects.size()));
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
-    std::size_t (*partition_function)(std::vector<Primitive *> &primitives, const int axis);
+    std::size_t (*partition_function)(const std::vector<Primitive *>::iterator &begin,
+                                      const std::vector<Primitive *>::iterator &end, const int axis);
     if (algorithm_name.find_first_of("^sah")) {
         partition_function = StackBVH::sahSplit;
     } else if (algorithm_name.find_first_of("^median")) {
