@@ -14,6 +14,15 @@ public:
 
     Vector3(double x, double y, double z) : x(x), y(y), z(z) {}
 
+    Vector3& operator=(const Vector3& other) {
+        if (this != &other) {
+            x = other.x;
+            y = other.y;
+            z = other.z;
+        }
+        return *this;
+    }
+
     double getX() const { return x; }
 
     double getY() const { return y; }

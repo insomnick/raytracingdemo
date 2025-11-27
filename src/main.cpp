@@ -5,11 +5,12 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <cmath>
 
+#include "primitives/triangle.hpp"
+#include "primitives/ray.hpp"
 #include "color.hpp"
 #include "camera.hpp"
-#include "primitives/ray.hpp"
-#include "bvh.hpp"
 #include "utils/object_loader.hpp"
 #include "utils/timer.hpp"
 #include "utils/benchmark.hpp"
@@ -41,7 +42,7 @@ static std::array<std::array<Color, SCREEN_HEIGHT>, SCREEN_WIDTH> screen; // pix
 GLFWwindow* window;
 
 void drawScreen();
-double mapToScreen(int j, const int height);
+double mapToScreen(int j, int height);
 void calculateScreen(StackBVH& bvh, Camera& camera);
 static void shadeScreen(const Vector3& camera_pos);
 std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_scale=1.0);
@@ -103,13 +104,13 @@ void runTest(const TestrunConfiguration& config) {
     for (auto & obj : objects) {
         object_center = object_center + obj->getCenter();
     }
-    object_center = object_center * (1.0 / objects.size());
+    object_center = object_center * (1.0 / static_cast<double>(objects.size()));
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
     std::size_t (*partition_function)(std::vector<Primitive *> &primitives, const int axis);
-    if (algorithm_name.starts_with("sah")) {
+    if (algorithm_name.find_first_of("^sah")) {
         partition_function = StackBVH::sahSplit;
-    } else if (algorithm_name.starts_with("median")) {
+    } else if (algorithm_name.find_first_of("^median")) {
         partition_function = StackBVH::medianSplit;
     } else {
         throw std::out_of_range("Unknown algorithm");
@@ -216,7 +217,7 @@ int setupOpenGL() {
     //Init GLFW
     if (!glfwInit())
         return -1;
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raytracing demo", NULL, NULL);
+    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raytracing demo", nullptr, nullptr);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -318,5 +319,5 @@ void drawScreen() {
 }
 
 double mapToScreen(int j, const int height) {
-return ((2.0*j)/height) - 1.0;
+    return ((2.0 * static_cast<double>(j)) / static_cast<double>(height)) - 1.0;
 }

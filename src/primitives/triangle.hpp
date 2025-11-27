@@ -1,6 +1,7 @@
 #ifndef RAYTRACINGDEMO_TRIANGLE_H
 #define RAYTRACINGDEMO_TRIANGLE_H
 
+#include "primitive.hpp"
 #include "vector3.hpp"
 #include "ray.hpp"
 
