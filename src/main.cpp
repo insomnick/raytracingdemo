@@ -63,7 +63,7 @@ int main() {
               { "stanford-bunny.obj", 30.0}
             , { "teapot.obj",        1.0 }
             , { "suzanne.obj",       3.0 }
-            //, { "sponza.obj",         1.0 }
+            , { "sponza.obj",         1.0 }
     };
 
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
@@ -108,9 +108,11 @@ void runTest(const TestrunConfiguration& config) {
 
     std::size_t (*partition_function)(const std::vector<Primitive *>::iterator &begin,
                                       const std::vector<Primitive *>::iterator &end, const int axis);
-    if (algorithm_name.find_first_of("^sah")) {
+    if (algorithm_name.find_first_of("sah") == 0) {
+        printf("Using SAH...\n");
         partition_function = StackBVH::sahSplit;
-    } else if (algorithm_name.find_first_of("^median")) {
+    } else if (algorithm_name.find_first_of("median") == 0) {
+        printf("Using median...\n");
         partition_function = StackBVH::medianSplit;
     } else {
         throw std::out_of_range("Unknown algorithm");
