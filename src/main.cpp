@@ -63,7 +63,7 @@ int main() {
               { "stanford-bunny.obj", 30.0}
             , { "teapot.obj",        1.0 }
             , { "suzanne.obj",       3.0 }
-            , { "sponza.obj",         1.0 }
+            //, { "sponza.obj",         1.0 }
     };
 
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
@@ -106,7 +106,7 @@ void runTest(const TestrunConfiguration& config) {
     object_center = object_center * (1.0 / static_cast<double>(objects.size()));
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
-    std::size_t (*partition_function)(const std::vector<Primitive *>::iterator &begin,
+    std::vector<std::size_t> (*partition_function)(const std::vector<Primitive *>::iterator &begin,
                                       const std::vector<Primitive *>::iterator &end, const int axis);
     if (algorithm_name.find_first_of("sah") == 0) {
         printf("Using SAH...\n");
@@ -122,7 +122,7 @@ void runTest(const TestrunConfiguration& config) {
     double elapsed = 0.0;
     printf("Building BVH using %s split...\n", algorithm_name.c_str());
     timer.reset();
-    StackBVH bvh = StackBVH::binaryBuild(objects, partition_function);
+    StackBVH bvh = StackBVH::build(objects, partition_function);
     for (int i = 0; i < collapse_iterations; i++) {
         printf("Collapsed...\n");
         StackBVH::collapse(bvh);

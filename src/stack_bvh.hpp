@@ -78,7 +78,7 @@ private:
 
 public:
     // median split partitioning, returns splitting point
-    static std::size_t medianSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+    static std::vector<std::size_t> medianSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
 
         const size_t split = (end - begin) / 2;
 
@@ -88,10 +88,12 @@ public:
                              [axis](const Primitive* a, const Primitive* b) {
                                  return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                              });
-        return split;
+        std::vector<std::size_t> splitVec;
+        splitVec.push_back(split);
+        return splitVec;
     }
 
-    static std::size_t sahSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+    static std::vector<std::size_t> sahSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
 
         std::sort(begin, end,
                   [axis](const Primitive* a, const Primitive* b) {
@@ -141,12 +143,15 @@ public:
                 split = i;
             }
         }
-        return split;
+
+        std::vector<std::size_t> splitVec;
+        splitVec.push_back(split);
+        return splitVec;
     }
 
-    // binary BVH construction with lambda for splitting
+    // BVH construction with lambda for splitting
     template<typename PartitionFunction>
-    static StackBVH binaryBuild(std::vector<Primitive*>& inputPrimitives,
+    static StackBVH build(std::vector<Primitive*>& inputPrimitives,
                                 PartitionFunction partitionFunction) {
         // move input primitives into a single owned vector inside the BVH
         std::vector ownedPrimitives(inputPrimitives.begin(), inputPrimitives.end());
@@ -172,15 +177,25 @@ public:
             if (isLeaf(*node)) continue;
 
             const int axis = calculateLongestAxis(node->box.getMin(), node->box.getMax());
-            const std::size_t splitIndex = partitionFunction(node->begin, node->end, axis);
+            const std::vector<std::size_t> splitIndices = partitionFunction(node->begin, node->end, axis);
 
-            Vector3 leftMin, leftMax, rightMin, rightMax;
-            const auto splitIterator = node->begin + static_cast<std::ptrdiff_t>(splitIndex);
-            findBounds(node->begin, splitIterator, leftMin, leftMax);
-            findBounds(splitIterator, node->end, rightMin, rightMax);
+            // allow for multiple splits
+            auto splitĹeft = node->begin;
+            for (unsigned long splitIndex : splitIndices) {
+                if (splitIndex == 0 || splitIndex >= static_cast<std::size_t>(node->end - node->begin)) {
+                    continue; //invalid split
+                }
+                Vector3 min, max;
+                const auto splitRight = splitĹeft + static_cast<std::ptrdiff_t>(splitIndex);
+                findBounds(splitĹeft, splitRight, min, max);
+                node->children.emplace_back(BVHNode{AABB{min, max}, splitĹeft, splitRight, {}});
+                splitĹeft = splitRight;
+            }
 
-            node->children.emplace_back(BVHNode{AABB{leftMin, leftMax}, node->begin, splitIterator, {}});
-            node->children.emplace_back(BVHNode{AABB{rightMin, rightMax}, splitIterator, node->end, {}});
+            //everything right of the last split
+            Vector3 min, max;
+            findBounds(splitĹeft, node->end, min, max);
+            node->children.emplace_back(BVHNode{AABB{min, max}, splitĹeft, node->end, {}});
 
             for (auto& child : node->children) {
                 nodes.push_back(&child);
