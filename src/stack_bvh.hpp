@@ -69,31 +69,50 @@ private:
         return 2.0 * (ex * ey + ey * ez + ez * ex);
     };
 
-    static bool isLeaf(const BVHNode &node) {
-        if (node.end - node.begin < 2) {   //Binary
+    static bool isLeaf(const int count, const int degree) {
+        if (count <= degree || degree < 2) {
             return true; // Leaf node
         }
         return false;
     }
 
-public:
     // median split partitioning, returns splitting point
-    static std::vector<std::size_t> medianSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+    static std::vector<std::size_t> medianSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis, const int degree) {
 
-        const size_t split = (end - begin) / 2;
+        const auto count = end - begin;
+        if (isLeaf(count, degree)) return {};
 
-        std::nth_element(begin,
-                             begin + split,
-                             end,
-                             [axis](const Primitive* a, const Primitive* b) {
-                                 return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
-                             });
-        std::vector<std::size_t> splitVec;
-        splitVec.push_back(split);
-        return splitVec;
+        std::vector<std::size_t> splitIndices;
+        for (int i = 1; i < degree; ++i) {
+            size_t split = (count * i) / degree;
+            if (split == 0 || split >= static_cast<std::size_t>(count)) break;
+            splitIndices.push_back(split);
+        }
+
+        for (const unsigned long splitIndex : splitIndices) {
+            std::nth_element(begin, begin + static_cast<std::ptrdiff_t>(splitIndex), end,
+                [axis](const Primitive* a, const Primitive* b) {
+                    return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                });
+        }
+        return splitIndices;
     }
 
-    static std::vector<std::size_t> sahSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+public:
+
+    static std::vector<std::size_t> median2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return medianSplit(begin, end, axis, 2);
+    }
+
+    static std::vector<std::size_t> median4Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return medianSplit(begin, end, axis, 4);
+    }
+
+    static std::vector<std::size_t> median8Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return medianSplit(begin, end, axis, 8);
+    }
+
+    static std::vector<std::size_t> sah2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
 
         std::sort(begin, end,
                   [axis](const Primitive* a, const Primitive* b) {
@@ -174,28 +193,28 @@ public:
         while (!nodes.empty()) {
             BVHNode* node = nodes.back();
             nodes.pop_back();
-            if (isLeaf(*node)) continue;
 
             const int axis = calculateLongestAxis(node->box.getMin(), node->box.getMax());
             const std::vector<std::size_t> splitIndices = partitionFunction(node->begin, node->end, axis);
+            if (splitIndices.empty()) continue; //leaf node
 
             // allow for multiple splits
-            auto splitĹeft = node->begin;
+            auto rangeBegin = node->begin;
             for (unsigned long splitIndex : splitIndices) {
                 if (splitIndex == 0 || splitIndex >= static_cast<std::size_t>(node->end - node->begin)) {
-                    continue; //invalid split
+                    throw std::out_of_range("invalid split position"); //invalid split
                 }
+                auto rangeEnd = node->begin + static_cast<std::ptrdiff_t>(splitIndex);
                 Vector3 min, max;
-                const auto splitRight = splitĹeft + static_cast<std::ptrdiff_t>(splitIndex);
-                findBounds(splitĹeft, splitRight, min, max);
-                node->children.emplace_back(BVHNode{AABB{min, max}, splitĹeft, splitRight, {}});
-                splitĹeft = splitRight;
+                findBounds(rangeBegin, rangeEnd, min, max);
+                node->children.emplace_back(BVHNode{AABB{min, max}, rangeBegin, rangeEnd, {}});
+                rangeBegin = rangeEnd;
             }
 
             //everything right of the last split
             Vector3 min, max;
-            findBounds(splitĹeft, node->end, min, max);
-            node->children.emplace_back(BVHNode{AABB{min, max}, splitĹeft, node->end, {}});
+            findBounds(rangeBegin, node->end, min, max);
+            node->children.emplace_back(BVHNode{AABB{min, max}, rangeBegin, node->end, {}});
 
             for (auto& child : node->children) {
                 nodes.push_back(&child);

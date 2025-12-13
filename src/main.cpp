@@ -58,6 +58,10 @@ int main() {
             { "median", 2 },
             { "median", 4 },
             { "median", 8 },
+            { "sah-c",    4 },
+            { "sah-c",    8 },
+            { "median-c", 4 },
+            { "median-c", 8 },
     };
     std::map<std::string, double> object_files= {
               { "stanford-bunny.obj", 30.0}
@@ -92,9 +96,6 @@ void runTest(const TestrunConfiguration& config) {
     Benchmark bm;
     std::string object_file = config.object_file;
     int bvh_degree = config.bvh_degree;
-    //Log2 of degree to get number of collapse iterations
-    int collapse_iterations = static_cast<int>(std::log2(bvh_degree)) - 1;
-    printf("Collape Iterations: %d\n", collapse_iterations);
     std::string algorithm_name = config.bvh_algorithm + "-" + std::to_string(bvh_degree); // "sah", "median", "stupid"
     std::vector<Primitive*> objects = setupScene(object_file, config.object_scale);
 
@@ -106,25 +107,51 @@ void runTest(const TestrunConfiguration& config) {
     object_center = object_center * (1.0 / static_cast<double>(objects.size()));
     camera.setPosition(object_center + Vector3{0.0, 0.0, 5.0});
 
+    bool collapse = false;
     std::vector<std::size_t> (*partition_function)(const std::vector<Primitive *>::iterator &begin,
                                       const std::vector<Primitive *>::iterator &end, const int axis);
     if (algorithm_name.find_first_of("sah") == 0) {
         printf("Using SAH...\n");
-        partition_function = StackBVH::sahSplit;
+        partition_function = StackBVH::sah2Split;
     } else if (algorithm_name.find_first_of("median") == 0) {
-        printf("Using median...\n");
-        partition_function = StackBVH::medianSplit;
-    } else {
+        switch (bvh_degree) {
+            case 2:
+                printf("Using median-2...\n");
+                partition_function = StackBVH::median2Split;
+            break;
+            case 4:
+                printf("Using median-4...\n");
+                partition_function = StackBVH::median4Split;
+            break;
+            case 8:
+                printf("Using median-8...\n");
+                partition_function = StackBVH::median8Split;
+            break;
+            default:
+                throw std::invalid_argument("Unsupported bvh degree");
+        }
+    } else if (algorithm_name.find_first_of("sah-c") == 0) {
+        printf("Using SAH with collapse...\n");
+        partition_function = StackBVH::sah2Split;
+        collapse = true;
+
+    } else if (algorithm_name.find_first_of("median-c") == 0) {
+        printf("Using median with collapse...\n");
+        partition_function = StackBVH::median2Split;
+        collapse = true;
+    }else {
         throw std::out_of_range("Unknown algorithm");
     }
+
+    //Log2 of degree to get number of collapse iterations
+    int collapse_iterations = static_cast<int>(std::log2(bvh_degree)) - 1;
 
     //Build BVH time calculation
     double elapsed = 0.0;
     printf("Building BVH using %s split...\n", algorithm_name.c_str());
     timer.reset();
     StackBVH bvh = StackBVH::build(objects, partition_function);
-    for (int i = 0; i < collapse_iterations; i++) {
-        printf("Collapsed...\n");
+    for (int i = 0; collapse && i < collapse_iterations; i++) {
         StackBVH::collapse(bvh);
     }
     elapsed = timer.elapsed();
