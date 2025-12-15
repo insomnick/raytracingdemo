@@ -55,6 +55,7 @@ int main() {
     std::multimap<std::string, int> bvh_algorithms = {
             { "sah",    2 },
             { "sah",    4 },
+            { "sah",    8 },
             { "median", 2 },
             { "median", 4 },
             { "median", 8 },
@@ -111,8 +112,22 @@ void runTest(const TestrunConfiguration& config) {
     std::vector<std::size_t> (*partition_function)(const std::vector<Primitive *>::iterator &begin,
                                       const std::vector<Primitive *>::iterator &end, const int axis);
     if (algorithm_name.find_first_of("sah") == 0) {
-        printf("Using SAH...\n");
-        partition_function = StackBVH::sah2Split;
+        switch (bvh_degree) {
+            case 2:
+                printf("Using sah-2...\n");
+                partition_function = StackBVH::sah2Split;
+                break;
+            case 4:
+                printf("Using sah-4...\n");
+                partition_function = StackBVH::sah4Split;
+                break;
+            case 8:
+                printf("Using sah-8...\n");
+                partition_function = StackBVH::sah8Split;
+                break;
+            default:
+                throw std::invalid_argument("Unsupported bvh degree");
+        }
     } else if (algorithm_name.find_first_of("median") == 0) {
         switch (bvh_degree) {
             case 2:

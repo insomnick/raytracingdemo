@@ -23,15 +23,14 @@ private:
     explicit StackBVH(BVHNode rootNode, std::vector<Primitive*> primitives)
         : root(std::move(rootNode)), primitives(std::move(primitives)) {}
 
-    static void findBounds(const std::vector<Primitive*>::const_iterator& begin,
-                           const std::vector<Primitive*>::const_iterator& end,
+    static void findBounds(const std::vector<Primitive*>::iterator& begin,
+                           const std::vector<Primitive*>::iterator& end,
                            Vector3& min, Vector3& max) {
         if (begin == end) {
             min = Vector3{0.0, 0.0, 0.0};
             max = Vector3{0.0, 0.0, 0.0};
             return;
         }
-        //calculate bounds of root
         auto minimumX = std::numeric_limits<double>::max();
         auto minimumY = std::numeric_limits<double>::max();
         auto minimumZ = std::numeric_limits<double>::max();
@@ -69,8 +68,8 @@ private:
         return 2.0 * (ex * ey + ey * ez + ez * ex);
     };
 
-    static bool isLeaf(const int count, const int degree) {
-        if (count <= degree || degree < 2) {
+    static bool isLeaf(const size_t count, const int degree) {
+        if (count <= static_cast<size_t>(degree) || degree < 2) {
             return true; // Leaf node
         }
         return false;
@@ -98,6 +97,145 @@ private:
         return splitIndices;
     }
 
+
+    static std::vector<std::size_t> sahSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis, const int degree) {
+
+        const auto range = end - begin;
+        if (isLeaf(range, degree)) return {};
+
+        std::sort(begin, end,
+                  [axis](const Primitive* a, const Primitive* b) {
+                      return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                  });
+
+        struct Segment { size_t begin; size_t end; }; // [begin, end)
+        std::vector<Segment> segments;
+        segments.push_back(Segment{0, static_cast<size_t>(range)
+        });
+
+        auto computeArea = [](const Vector3 &minP, const Vector3 &maxP) {
+            Vector3 extent = maxP - minP;
+            double ex = extent.getX(), ey = extent.getY(), ez = extent.getZ();
+            return 2.0 * (ex * ey + ey * ez + ez * ex);
+        };
+
+        auto accumulateBounds = [&](const Segment &s, Vector3 &minP, Vector3 &maxP) {
+            double minX = std::numeric_limits<double>::max();
+            double minY = std::numeric_limits<double>::max();
+            double minZ = std::numeric_limits<double>::max();
+            double maxX = std::numeric_limits<double>::lowest();
+            double maxY = std::numeric_limits<double>::lowest();
+            double maxZ = std::numeric_limits<double>::lowest();
+            for (size_t i = s.begin; i < s.end; ++i) {
+                const Primitive *obj = *(begin + i);
+                minX = std::min(minX, obj->getMin().getX());
+                maxX = std::max(maxX, obj->getMax().getX());
+                minY = std::min(minY, obj->getMin().getY());
+                maxY = std::max(maxY, obj->getMax().getY());
+                minZ = std::min(minZ, obj->getMin().getZ());
+                maxZ = std::max(maxZ, obj->getMax().getZ());
+            }
+            minP = {minX, minY, minZ};
+            maxP = {maxX, maxY, maxZ};
+        };
+
+        auto segmentCost = [&](const Segment &s) {
+            Vector3 minP, maxP;
+            accumulateBounds(s, minP, maxP);
+            double area = computeArea(minP, maxP);
+            return area * static_cast<double>(s.end - s.begin);
+        };
+
+        std::vector<size_t> splits;
+
+        // Greedy splitting: each iteration split the highest-cost segment until reaching desired degree
+        while (segments.size() < static_cast<size_t>(degree)) {
+            size_t indexOfSegmentToSplit = SIZE_MAX;
+            double highestCost = -1.0;
+            for (size_t i = 0; i < segments.size(); ++i) {
+                const Segment &seg = segments[i];
+                size_t count = seg.end - seg.begin;
+                if (count < 2) continue; // cannot split further
+                double cost = segmentCost(seg);
+                if (cost > highestCost) {
+                    highestCost = cost;
+                    indexOfSegmentToSplit = i;
+                }
+            }
+            if (indexOfSegmentToSplit == SIZE_MAX) break; // no splittable segment
+
+            Segment seg = segments[indexOfSegmentToSplit];
+            size_t count = seg.end - seg.begin;
+
+            // Prefix (left) and suffix (right) cumulative bounds inside this segment
+            std::vector<Vector3> prefixMin(count), prefixMax(count);
+            for (size_t k = 0; k < count; ++k) {
+                const Primitive *obj = *(begin + seg.begin + k);
+                Vector3 omin = obj->getMin();
+                Vector3 omax = obj->getMax();
+                if (k == 0) {
+                    prefixMin[k] = omin;
+                    prefixMax[k] = omax;
+                } else {
+                    const Vector3 &prevMin = prefixMin[k - 1];
+                    const Vector3 &prevMax = prefixMax[k - 1];
+                    prefixMin[k] = {std::min(prevMin.getX(), omin.getX()),
+                                    std::min(prevMin.getY(), omin.getY()),
+                                    std::min(prevMin.getZ(), omin.getZ())};
+                    prefixMax[k] = {std::max(prevMax.getX(), omax.getX()),
+                                    std::max(prevMax.getY(), omax.getY()),
+                                    std::max(prevMax.getZ(), omax.getZ())};
+                }
+            }
+
+            std::vector<Vector3> suffixMin(count), suffixMax(count);
+            for (size_t k = count; k-- > 0;) {
+                const Primitive *obj = *(begin + seg.begin + k);
+                Vector3 omin = obj->getMin();
+                Vector3 omax = obj->getMax();
+                if (k == count - 1) {
+                    suffixMin[k] = omin;
+                    suffixMax[k] = omax;
+                } else {
+                    const Vector3 &nextMin = suffixMin[k + 1];
+                    const Vector3 &nextMax = suffixMax[k + 1];
+                    suffixMin[k] = {std::min(nextMin.getX(), omin.getX()),
+                                    std::min(nextMin.getY(), omin.getY()),
+                                    std::min(nextMin.getZ(), omin.getZ())};
+                    suffixMax[k] = {std::max(nextMax.getX(), omax.getX()),
+                                    std::max(nextMax.getY(), omax.getY()),
+                                    std::max(nextMax.getZ(), omax.getZ())};
+                }
+            }
+
+            size_t bestLocalOffset = 1; // position inside segment
+            double bestLocalCost = std::numeric_limits<double>::max();
+            for (size_t split = 1; split < count; ++split) {
+                const Vector3 &leftMin = prefixMin[split - 1];
+                const Vector3 &leftMax = prefixMax[split - 1];
+                const Vector3 &rightMin = suffixMin[split];
+                const Vector3 &rightMax = suffixMax[split];
+                double leftArea = computeArea(leftMin, leftMax);
+                double rightArea = computeArea(rightMin, rightMax);
+                double cost = leftArea * split + rightArea * (count - split);
+                if (cost < bestLocalCost) {
+                    bestLocalCost = cost;
+                    bestLocalOffset = split;
+                }
+            }
+
+            size_t absoluteSplitIndex = seg.begin + bestLocalOffset;
+            splits.emplace_back(absoluteSplitIndex);
+            Segment left{seg.begin, absoluteSplitIndex};
+            Segment right{absoluteSplitIndex, seg.end};
+            segments.erase(segments.begin() + indexOfSegmentToSplit);
+            segments.push_back(left);
+            segments.push_back(right);
+        }
+
+        return splits;
+    }
+
 public:
 
     static std::vector<std::size_t> median2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
@@ -113,59 +251,15 @@ public:
     }
 
     static std::vector<std::size_t> sah2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return sahSplit(begin, end, axis, 2);
+    }
 
-        std::sort(begin, end,
-                  [axis](const Primitive* a, const Primitive* b) {
-                      return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
-                  });
-        const size_t count = end - begin;
-        std::vector<Vector3> leftMins(count), leftMaxs(count), rightMins(count), rightMaxs(count);
+    static std::vector<std::size_t> sah4Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return sahSplit(begin, end, axis, 4);
+    }
 
-        // prefix bounds for left side
-        findBounds(begin, begin + 1, leftMins[0], leftMaxs[0]);
-
-        for (size_t i = 1; i < count; ++i) {
-            Vector3 tmpMin, tmpMax;
-            findBounds(begin + static_cast<long>(i), begin + static_cast<long>(i + 1), tmpMin, tmpMax);
-            const auto minX = std::min(leftMins[i - 1].getX(), tmpMin.getX());
-            const auto minY = std::min(leftMins[i - 1].getY(), tmpMin.getY());
-            const auto minZ = std::min(leftMins[i - 1].getZ(), tmpMin.getZ());
-            const auto maxX = std::max(leftMaxs[i - 1].getX(), tmpMax.getX());
-            const auto maxY = std::max(leftMaxs[i - 1].getY(), tmpMax.getY());
-            const auto maxZ = std::max(leftMaxs[i - 1].getZ(), tmpMax.getZ());
-            leftMins[i] = Vector3{minX, minY, minZ};
-            leftMaxs[i] = Vector3{maxX, maxY, maxZ};
-        }
-
-        // suffix bounds for right side
-        findBounds(begin + static_cast<long>(count - 1), begin + static_cast<long>(count), rightMins[count - 1], rightMaxs[count - 1]);
-        for (size_t i = count - 1; i-- > 0;) {
-            Vector3 tmpMin, tmpMax;
-            findBounds(begin + static_cast<long>(i), begin + static_cast<long>(i + 1), tmpMin, tmpMax);
-            const auto minX = std::min(rightMins[i + 1].getX(), tmpMin.getX());
-            const auto minY = std::min(rightMins[i + 1].getY(), tmpMin.getY());
-            const auto minZ = std::min(rightMins[i + 1].getZ(), tmpMin.getZ());
-            const auto maxX = std::max(rightMaxs[i + 1].getX(), tmpMax.getX());
-            const auto maxY = std::max(rightMaxs[i + 1].getY(), tmpMax.getY());
-            const auto maxZ = std::max(rightMaxs[i + 1].getZ(), tmpMax.getZ());
-            rightMins[i] = Vector3{minX, minY, minZ};
-            rightMaxs[i] = Vector3{maxX, maxY, maxZ};
-        }
-
-        size_t split = count / 2;
-        double minCost = std::numeric_limits<double>::max();
-        for (size_t i = 1; i < count - 1; ++i) {
-            const double leftArea = calculateSurfaceArea(leftMins[i - 1], leftMaxs[i - 1]);
-            const double rightArea = calculateSurfaceArea(rightMins[i], rightMaxs[i]);
-            if (const double cost = leftArea * static_cast<double>(i) + rightArea * static_cast<double>((count - i)); minCost > cost) {
-                minCost = cost;
-                split = i;
-            }
-        }
-
-        std::vector<std::size_t> splitVec;
-        splitVec.push_back(split);
-        return splitVec;
+    static std::vector<std::size_t> sah8Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return sahSplit(begin, end, axis, 8);
     }
 
     // BVH construction with lambda for splitting
@@ -194,9 +288,17 @@ public:
             BVHNode* node = nodes.back();
             nodes.pop_back();
 
+            const size_t nodeSize = node->end - node->begin;
+            if (nodeSize <= 1) {
+                continue; // This is a leaf node
+            }
+
             const int axis = calculateLongestAxis(node->box.getMin(), node->box.getMax());
-            const std::vector<std::size_t> splitIndices = partitionFunction(node->begin, node->end, axis);
+            std::vector<std::size_t> splitIndices = partitionFunction(node->begin, node->end, axis);
             if (splitIndices.empty()) continue; //leaf node
+
+            // Sort split indices to ensure they are in ascending order
+            std::sort(splitIndices.begin(), splitIndices.end());
 
             // allow for multiple splits
             auto rangeBegin = node->begin;
@@ -204,7 +306,14 @@ public:
                 if (splitIndex == 0 || splitIndex >= static_cast<std::size_t>(node->end - node->begin)) {
                     throw std::out_of_range("invalid split position"); //invalid split
                 }
+                // splitIndex is absolute position in node's range, convert to proper iterator
                 auto rangeEnd = node->begin + static_cast<std::ptrdiff_t>(splitIndex);
+
+                // Validation to prevent invalid ranges
+                if (rangeBegin >= rangeEnd) {
+                    throw std::out_of_range("Invalid iterator range");
+                }
+
                 Vector3 min, max;
                 findBounds(rangeBegin, rangeEnd, min, max);
                 node->children.emplace_back(BVHNode{AABB{min, max}, rangeBegin, rangeEnd, {}});
@@ -216,6 +325,7 @@ public:
             findBounds(rangeBegin, node->end, min, max);
             node->children.emplace_back(BVHNode{AABB{min, max}, rangeBegin, node->end, {}});
 
+            // Add children to stack AFTER all children are created to avoid pointer invalidation
             for (auto& child : node->children) {
                 nodes.push_back(&child);
             }
