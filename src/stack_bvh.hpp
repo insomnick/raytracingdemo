@@ -236,6 +236,130 @@ private:
         return splits;
     }
 
+    static std::vector<size_t> binnedSahSplit(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis, const int degree) {
+
+        const int BIN_SIZE = 16;
+
+        const auto range = end - begin;
+        if (isLeaf(range, degree)) return {};
+
+        std::sort(begin, end,
+                  [axis](const Primitive* a, const Primitive* b) {
+                      return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                  });
+
+        struct Bin {
+            int count = 0;
+            Vector3 min = Vector3{std::numeric_limits<double>::max(),
+                                    std::numeric_limits<double>::max(),
+                                    std::numeric_limits<double>::max()};
+            Vector3 max = Vector3{std::numeric_limits<double>::lowest(),
+                                    std::numeric_limits<double>::lowest(),
+                                    std::numeric_limits<double>::lowest()};
+        };
+
+        auto computeArea = [](const Vector3 &minP, const Vector3 &maxP) {
+            Vector3 extent = maxP - minP;
+            double ex = extent.getX(), ey = extent.getY(), ez = extent.getZ();
+            return 2.0 * (ex * ey + ey * ez + ez * ex);
+        };
+
+        std::vector<Bin> bins(BIN_SIZE);    //TODO Init Bins?
+        // Assign primitives to bins
+        for (auto it = begin; it != end; ++it) {
+            const Primitive* primitive = *it;
+            const double centerValue = primitive->getCenter().getAxis(axis);
+            // Determine bin index
+            int binIndex = static_cast<int>(((centerValue - (*begin)->getMin().getAxis(axis)) /
+                                            (end[-1]->getMax().getAxis(axis) - (*begin)->getMin().getAxis(axis))) * BIN_SIZE);
+            binIndex = std::clamp(binIndex, 0, BIN_SIZE - 1);
+
+            auto &[count, min, max] = bins[binIndex];
+            min = {
+                std::min(min.getX(), primitive->getMin().getX()),
+                std::min(min.getY(), primitive->getMin().getY()),
+                std::min(min.getZ(), primitive->getMin().getZ()),
+            };
+            max = {
+                std::max(max.getX(), primitive->getMax().getX()),
+                std::max(max.getY(), primitive->getMax().getY()),
+                std::max(max.getZ(), primitive->getMax().getZ()),
+            };
+            count++;
+        }
+
+        // calculate prefix and suffix
+        // Prefix (left) and suffix (right) cumulative bounds inside this segment
+         std::vector<Vector3> prefixMin(BIN_SIZE), prefixMax(BIN_SIZE);
+         for (size_t k = 0; k < BIN_SIZE; ++k) {
+             const Bin &bin = bins[k];
+             if (k == 0) {
+                 prefixMin[k] = bin.min;
+                 prefixMax[k] = bin.max;
+             } else {
+                 const Vector3 &prevMin = prefixMin[k - 1];
+                 const Vector3 &prevMax = prefixMax[k - 1];
+                 prefixMin[k] = {std::min(prevMin.getX(), bin.min.getX()),
+                                 std::min(prevMin.getY(), bin.min.getY()),
+                                 std::min(prevMin.getZ(), bin.min.getZ())};
+                 prefixMax[k] = {std::max(prevMax.getX(), bin.max.getX()),
+                                 std::max(prevMax.getY(), bin.max.getY()),
+                                 std::max(prevMax.getZ(), bin.max.getZ())};
+             }
+         }
+
+         std::vector<Vector3> suffixMin(BIN_SIZE), suffixMax(BIN_SIZE);
+         for (size_t k = BIN_SIZE; k-- > 0;) {
+             const Bin &bin = bins[k];
+             if (k == BIN_SIZE - 1) {
+                 suffixMin[k] = bin.min;
+                 suffixMax[k] = bin.max;
+             } else {
+                 const Vector3 &nextMin = suffixMin[k + 1];
+                 const Vector3 &nextMax = suffixMax[k + 1];
+                 suffixMin[k] = {std::min(nextMin.getX(), bin.min.getX()),
+                                 std::min(nextMin.getY(), bin.min.getY()),
+                                 std::min(nextMin.getZ(), bin.min.getZ())};
+                 suffixMax[k] = {std::max(nextMax.getX(), bin.max.getX()),
+                                 std::max(nextMax.getY(), bin.max.getY()),
+                                 std::max(nextMax.getZ(), bin.max.getZ())};
+             }
+         }
+
+        //calculate best splits
+        // TODO allow multiple splits
+        size_t bestSplit = 1; // position inside segment
+        int leftCount = 0;
+        int rightCount = static_cast<int>(range);
+        double bestLocalCost = std::numeric_limits<double>::max();
+        for (size_t split = 1; split < BIN_SIZE; ++split) {
+            leftCount += bins[split - 1].count;
+            rightCount -= bins[split - 1].count;
+
+            const Vector3 &leftMin = prefixMin[split - 1];
+            const Vector3 &leftMax = prefixMax[split - 1];
+            const Vector3 &rightMin = suffixMin[split];
+            const Vector3 &rightMax = suffixMax[split];
+            double leftArea = computeArea(leftMin, leftMax);
+            double rightArea = computeArea(rightMin, rightMax);
+            double cost = leftArea * leftCount + rightArea * rightCount;
+            if (cost < bestLocalCost) {
+                bestLocalCost = cost;
+                bestSplit = leftCount;
+
+            }
+        }
+
+        std::nth_element(begin, begin + bestSplit, end,
+            [axis](const Primitive* a, const Primitive* b) {
+                return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+            });
+
+        std::vector<size_t> splitVec;
+        splitVec.emplace_back(bestSplit);
+        return splitVec;
+    }
+
 public:
 
     static std::vector<std::size_t> median2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
@@ -260,6 +384,10 @@ public:
 
     static std::vector<std::size_t> sah8Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
         return sahSplit(begin, end, axis, 8);
+    }
+
+    static std::vector<std::size_t> binnedSah2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return binnedSahSplit(begin, end, axis, 2);
     }
 
     // BVH construction with lambda for splitting
@@ -406,6 +534,7 @@ public:
         }
         return closest;
     }
+
 };
 
 #endif // RAYTRACINGDEMO_STACK_BVH_HPP

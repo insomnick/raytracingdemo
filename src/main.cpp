@@ -53,16 +53,17 @@ void runTest(const TestrunConfiguration& config);
 int main() {
 
     std::multimap<std::string, int> bvh_algorithms = {
-            { "sah",    2 },
-            { "sah",    4 },
-            { "sah",    8 },
-            { "median", 2 },
-            { "median", 4 },
-            { "median", 8 },
-            { "sah-c",    4 },
-            { "sah-c",    8 },
-            { "median-c", 4 },
-            { "median-c", 8 },
+            { "bsah",    2 },
+            //{ "sah",    2 },
+            //{ "sah",    4 },
+            //{ "sah",    8 },
+            //{ "median", 2 },
+            //{ "median", 4 },
+            //{ "median", 8 },
+            //{ "sah-c",    4 },
+            //{ "sah-c",    8 },
+            //{ "median-c", 4 },
+            //{ "median-c", 8 },
     };
     std::map<std::string, double> object_files= {
               { "stanford-bunny.obj", 30.0}
@@ -111,7 +112,10 @@ void runTest(const TestrunConfiguration& config) {
     bool collapse = false;
     std::vector<std::size_t> (*partition_function)(const std::vector<Primitive *>::iterator &begin,
                                       const std::vector<Primitive *>::iterator &end, const int axis);
-    if (algorithm_name.find_first_of("sah") == 0) {
+    if (algorithm_name.find_first_of("bsah") == 0) {
+        printf("Using binned-sah-2...\n");
+        partition_function = StackBVH::binnedSah2Split;
+    } else if (algorithm_name.find_first_of("sah") == 0) {
         switch (bvh_degree) {
             case 2:
                 printf("Using sah-2...\n");
