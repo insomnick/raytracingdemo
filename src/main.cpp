@@ -54,28 +54,32 @@ int main() {
 
     std::multimap<std::string, int> bvh_algorithms = {
             { "bsah",    2 },
-            //{ "sah",    2 },
-            //{ "sah",    4 },
-            //{ "sah",    8 },
-            //{ "median", 2 },
-            //{ "median", 4 },
-            //{ "median", 8 },
-            //{ "sah-c",    4 },
-            //{ "sah-c",    8 },
-            //{ "median-c", 4 },
-            //{ "median-c", 8 },
+            { "bsah",    4 },
+            { "bsah",    8 },
+            { "sah",    2 },
+            { "sah",    4 },
+            { "sah",    8 },
+            { "median", 2 },
+            { "median", 4 },
+            { "median", 8 },
+            { "sah-c",    4 },
+            { "sah-c",    8 },
+            { "bsah-c",    4 },
+            { "bsah-c",    8 },
+            { "median-c", 4 },
+            { "median-c", 8 },
     };
     std::map<std::string, double> object_files= {
-              { "stanford-bunny.obj", 30.0}
-            , { "teapot.obj",        1.0 }
-            , { "suzanne.obj",       3.0 }
-            //, { "sponza.obj",         1.0 }
+            //  { "stanford-bunny.obj", 30.0}
+            //, { "teapot.obj",        1.0 }
+            //, { "suzanne.obj",       3.0 }
+             { "sponza.obj",         1.0 }
     };
 
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
         for (const auto &[object_file, object_scale]: object_files) {
             constexpr int camera_path_resolution = 36;
-            constexpr bool no_window = false;
+            constexpr bool no_window = true;
             const auto config = TestrunConfiguration{
                     .object_file = object_file,
                     .object_scale = object_scale,
@@ -153,7 +157,10 @@ void runTest(const TestrunConfiguration& config) {
         printf("Using SAH with collapse...\n");
         partition_function = StackBVH::sah2Split;
         collapse = true;
-
+    } else if (algorithm_name.find_first_of("bsah-c") == 0) {
+        printf("Using SAH with collapse...\n");
+        partition_function = StackBVH::binnedSah2Split;
+        collapse = true;
     } else if (algorithm_name.find_first_of("median-c") == 0) {
         printf("Using median with collapse...\n");
         partition_function = StackBVH::median2Split;
@@ -165,19 +172,22 @@ void runTest(const TestrunConfiguration& config) {
     //Log2 of degree to get number of collapse iterations
     int collapse_iterations = static_cast<int>(std::log2(bvh_degree)) - 1;
 
+    std::vector<Primitive*> emp;
+    StackBVH bvh = StackBVH::build(emp, partition_function);
     //Build BVH time calculation
     double elapsed = 0.0;
     printf("Building BVH using %s split...\n", algorithm_name.c_str());
-    timer.reset();
-    StackBVH bvh = StackBVH::build(objects, partition_function);
-    for (int i = 0; collapse && i < collapse_iterations; i++) {
-        StackBVH::collapse(bvh);
+    for (int it = 0; it < 10; it++) {
+        timer.reset();
+        bvh = StackBVH::build(objects, partition_function);
+        for (int i = 0; collapse && i < collapse_iterations; i++) {
+            StackBVH::collapse(bvh);
+        }
+        elapsed = timer.elapsed();
+        bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
+        printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
     }
-    elapsed = timer.elapsed();
-    printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
-    bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
-
-    /*
+        /*
     for (int i = 0; i < 1; i++) {
         timer.reset();
         if (algorithm_name.starts_with("sah")) {

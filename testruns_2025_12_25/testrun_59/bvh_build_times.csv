@@ -1,0 +1,11 @@
+file_name,model_name,model_scale,algorithm_name,cam_pos_x,cam_pos_y,cam_pos_z,cam_dir_x,cam_dir_y,cam_dir_z,time_seconds
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,10.9506
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0408
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0377
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0133
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0191
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0242
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0235
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0032
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,11.0122
+bvh_build_times.csv,sponza.obj,1,sah-c-8,-68.3827,364.885,-27.7539,0,0,-1,10.9134

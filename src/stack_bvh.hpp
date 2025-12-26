@@ -288,76 +288,94 @@ private:
             count++;
         }
 
-        // calculate prefix and suffix
-        // Prefix (left) and suffix (right) cumulative bounds inside this segment
-         std::vector<Vector3> prefixMin(BIN_SIZE), prefixMax(BIN_SIZE);
-         for (size_t k = 0; k < BIN_SIZE; ++k) {
-             const Bin &bin = bins[k];
-             if (k == 0) {
-                 prefixMin[k] = bin.min;
-                 prefixMax[k] = bin.max;
-             } else {
-                 const Vector3 &prevMin = prefixMin[k - 1];
-                 const Vector3 &prevMax = prefixMax[k - 1];
-                 prefixMin[k] = {std::min(prevMin.getX(), bin.min.getX()),
-                                 std::min(prevMin.getY(), bin.min.getY()),
-                                 std::min(prevMin.getZ(), bin.min.getZ())};
-                 prefixMax[k] = {std::max(prevMax.getX(), bin.max.getX()),
-                                 std::max(prevMax.getY(), bin.max.getY()),
-                                 std::max(prevMax.getZ(), bin.max.getZ())};
-             }
-         }
+        struct Segment { size_t begin; size_t end; }; // [begin, end)
+        std::vector<Segment> segments;
+        segments.push_back(Segment{0, static_cast<size_t>(BIN_SIZE)
+        });
 
-         std::vector<Vector3> suffixMin(BIN_SIZE), suffixMax(BIN_SIZE);
-         for (size_t k = BIN_SIZE; k-- > 0;) {
-             const Bin &bin = bins[k];
-             if (k == BIN_SIZE - 1) {
-                 suffixMin[k] = bin.min;
-                 suffixMax[k] = bin.max;
-             } else {
-                 const Vector3 &nextMin = suffixMin[k + 1];
-                 const Vector3 &nextMax = suffixMax[k + 1];
-                 suffixMin[k] = {std::min(nextMin.getX(), bin.min.getX()),
-                                 std::min(nextMin.getY(), bin.min.getY()),
-                                 std::min(nextMin.getZ(), bin.min.getZ())};
-                 suffixMax[k] = {std::max(nextMax.getX(), bin.max.getX()),
-                                 std::max(nextMax.getY(), bin.max.getY()),
-                                 std::max(nextMax.getZ(), bin.max.getZ())};
-             }
-         }
+        std::vector<size_t> splits;
+        while (segments.size() < static_cast<size_t>(degree)) {
+            Segment seg = segments.back();
+            segments.pop_back();
+            size_t count = seg.end - seg.begin;
 
-        //calculate best splits
-        // TODO allow multiple splits
-        size_t bestSplit = 1; // position inside segment
-        int leftCount = 0;
-        int rightCount = static_cast<int>(range);
-        double bestLocalCost = std::numeric_limits<double>::max();
-        for (size_t split = 1; split < BIN_SIZE; ++split) {
-            leftCount += bins[split - 1].count;
-            rightCount -= bins[split - 1].count;
-
-            const Vector3 &leftMin = prefixMin[split - 1];
-            const Vector3 &leftMax = prefixMax[split - 1];
-            const Vector3 &rightMin = suffixMin[split];
-            const Vector3 &rightMax = suffixMax[split];
-            double leftArea = computeArea(leftMin, leftMax);
-            double rightArea = computeArea(rightMin, rightMax);
-            double cost = leftArea * leftCount + rightArea * rightCount;
-            if (cost < bestLocalCost) {
-                bestLocalCost = cost;
-                bestSplit = leftCount;
-
+            // calculate prefix and suffix
+            // Prefix (left) and suffix (right) cumulative bounds inside this segment
+            std::vector<Vector3> prefixMin(count), prefixMax(count);
+            for (size_t k = 0; k < count; ++k) {
+                const Bin &bin = bins[k];
+                if (k == 0) {
+                    prefixMin[k] = bin.min;
+                    prefixMax[k] = bin.max;
+                } else {
+                    const Vector3 &prevMin = prefixMin[k - 1];
+                    const Vector3 &prevMax = prefixMax[k - 1];
+                    prefixMin[k] = {std::min(prevMin.getX(), bin.min.getX()),
+                                    std::min(prevMin.getY(), bin.min.getY()),
+                                    std::min(prevMin.getZ(), bin.min.getZ())};
+                    prefixMax[k] = {std::max(prevMax.getX(), bin.max.getX()),
+                                    std::max(prevMax.getY(), bin.max.getY()),
+                                    std::max(prevMax.getZ(), bin.max.getZ())};
+                }
             }
+
+            std::vector<Vector3> suffixMin(count), suffixMax(count);
+            for (size_t k = count; k-- > 0;) {
+                const Bin &bin = bins[k];
+                if (k == count - 1) {
+                    suffixMin[k] = bin.min;
+                    suffixMax[k] = bin.max;
+                } else {
+                    const Vector3 &nextMin = suffixMin[k + 1];
+                    const Vector3 &nextMax = suffixMax[k + 1];
+                    suffixMin[k] = {std::min(nextMin.getX(), bin.min.getX()),
+                                    std::min(nextMin.getY(), bin.min.getY()),
+                                    std::min(nextMin.getZ(), bin.min.getZ())};
+                    suffixMax[k] = {std::max(nextMax.getX(), bin.max.getX()),
+                                    std::max(nextMax.getY(), bin.max.getY()),
+                                    std::max(nextMax.getZ(), bin.max.getZ())};
+                }
+            }
+
+            //calculate best splits
+            // TODO allow multiple splits
+            size_t bestSplit = 1; // position inside segment
+            int leftCount = 0;
+            int rightCount = static_cast<int>(range);
+            double bestLocalCost = std::numeric_limits<double>::max();
+            for (size_t split = 1; split < count; ++split) {
+                leftCount += bins[split - 1].count;
+                rightCount -= bins[split - 1].count;
+
+                const Vector3 &leftMin = prefixMin[split - 1];
+                const Vector3 &leftMax = prefixMax[split - 1];
+                const Vector3 &rightMin = suffixMin[split];
+                const Vector3 &rightMax = suffixMax[split];
+                double leftArea = computeArea(leftMin, leftMax);
+                double rightArea = computeArea(rightMin, rightMax);
+                double cost = leftArea * leftCount + rightArea * rightCount;
+                if (cost < bestLocalCost) {
+                    bestLocalCost = cost;
+                    bestSplit = leftCount;
+
+                }
+            }
+
+            size_t absoluteSplitIndex = seg.begin + bestSplit;
+            splits.emplace_back(absoluteSplitIndex);
+            Segment left{seg.begin, absoluteSplitIndex};
+            Segment right{absoluteSplitIndex, seg.end};
+            segments.push_back(left);
+            segments.push_back(right);
         }
 
-        std::nth_element(begin, begin + bestSplit, end,
-            [axis](const Primitive* a, const Primitive* b) {
-                return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
-            });
-
-        std::vector<size_t> splitVec;
-        splitVec.emplace_back(bestSplit);
-        return splitVec;
+        for (const unsigned long splitIndex : splits) {
+            std::nth_element(begin, begin + static_cast<std::ptrdiff_t>(splitIndex), end,
+                [axis](const Primitive* a, const Primitive* b) {
+                    return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
+                });
+        }
+        return splits;
     }
 
 public:
@@ -390,6 +408,13 @@ public:
         return binnedSahSplit(begin, end, axis, 2);
     }
 
+    static std::vector<std::size_t> binnedSah4Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return binnedSahSplit(begin, end, axis, 4);
+    }
+
+    static std::vector<std::size_t> binnedSah8Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return binnedSahSplit(begin, end, axis, 8);
+    }
     // BVH construction with lambda for splitting
     template<typename PartitionFunction>
     static StackBVH build(std::vector<Primitive*>& inputPrimitives,
