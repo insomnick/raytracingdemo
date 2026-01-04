@@ -73,13 +73,13 @@ int main() {
             //  { "stanford-bunny.obj", 30.0}
             //, { "teapot.obj",        1.0 }
             //, { "suzanne.obj",       3.0 }
-             { "sponza.obj",         1.0 }
+             { "armadillo.obj",         0.035 }
     };
 
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
         for (const auto &[object_file, object_scale]: object_files) {
             constexpr int camera_path_resolution = 36;
-            constexpr bool no_window = true;
+            constexpr bool no_window = false;
             const auto config = TestrunConfiguration{
                     .object_file = object_file,
                     .object_scale = object_scale,
