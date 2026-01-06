@@ -44,7 +44,7 @@ GLFWwindow* window;
 void drawScreen();
 double mapToScreen(int j, int height);
 void calculateScreen(StackBVH& bvh, Camera& camera);
-static void shadeScreen(const Vector3& camera_pos);
+static int shadeScreen(const Vector3& camera_pos);
 std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_scale=1.0);
 int setupOpenGL();
 void runTest(const TestrunConfiguration& config);
@@ -237,13 +237,11 @@ void runTest(const TestrunConfiguration& config) {
         //printf("Time calculate Screen: %f \n", elapsed);
         bm.saveDataFrame("render_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
 
-        timer.reset();
-        shadeScreen(camera.getPosition());
-        elapsed = timer.elapsed();
-        //printf("Time shade Screen: %f \n", elapsed);
-        bm.saveDataFrame("shading_times.csv", object_file, config.object_scale,algorithm_name, camera, elapsed);
-        //TODO: save image to file here for each step?
-
+        //calculate hit rays
+        const int hitrayCount = shadeScreen(camera.getPosition());
+        bm.saveDataFrame("shading_times.csv", object_file, config.object_scale,algorithm_name, camera, static_cast<double>(hitrayCount));
+        //Save image of frame as .ppm
+        bm.saveScreen<SCREEN_WIDTH, SCREEN_HEIGHT>(screen);
 
         if(!config.no_window) {
             timer.reset();
@@ -331,7 +329,8 @@ void calculateScreen(StackBVH& bvh, Camera& camera) {
     }
 }
 
-static void shadeScreen(const Vector3& camera_pos) {
+static int shadeScreen(const Vector3& camera_pos) {
+    int hitrayCount = 0;
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
             const int idx = j + i * SCREEN_HEIGHT;
@@ -340,6 +339,7 @@ static void shadeScreen(const Vector3& camera_pos) {
                 screen[i][j] = Color(0.0, 0.0, 0.0);
                 continue;
             }
+            hitrayCount++;
             Vector3 N = h.normal;
             double nl = N.length();
             if (nl > 0.0) N = N * (1.0 / nl);
@@ -358,6 +358,7 @@ static void shadeScreen(const Vector3& camera_pos) {
             screen[i][j] = Color(nx * intensity, ny * intensity, nz * intensity);
         }
     }
+    return hitrayCount;
 }
 
 
@@ -366,7 +367,7 @@ void drawScreen() {
     /* Render here */
     for(int i = 0; i < SCREEN_WIDTH; i++)  {
         for(int j = 0; j < SCREEN_HEIGHT; j++) {
-            Color c = screen[i][j];
+            const auto c = screen[i][j];
             glColor3d(c.r(),c.g(),c.b());
             // invert j so row 0 (treated as top in calculateScreen) is rendered at y=+1
             glVertex2d(mapToScreen(i, SCREEN_WIDTH),

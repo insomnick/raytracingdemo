@@ -8,9 +8,9 @@ struct Color {
     Vector3 c;
     Color(): c({0.0, 0.0, 0.0}) {}
     Color(double r, double g, double b) : c({r, g, b}) {}
-    double r() { return c.getX(); }
-    double g() { return c.getY(); }
-    double b() { return c.getZ(); }
+    double r() const { return c.getX(); }
+    double g() const { return c.getY(); }
+    double b() const { return c.getZ(); }
 };
 
 #endif //RAYTRACINGDEMO_COLOR_HPP

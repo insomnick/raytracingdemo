@@ -9,7 +9,8 @@
 
 class Benchmark {
 private:
-    inline static int testrun_counter = 0;
+    int testrun_counter = 0;
+    int picture_counter = 0;
     std::filesystem::path run_directory;
 public:
     Benchmark() {
@@ -80,6 +81,39 @@ public:
         myfile << camera_params.getDirection().getX() <<","<< camera_params.getDirection().getY() <<","<< camera_params.getDirection().getZ() <<",";
         myfile << render_calculation_seconds << "\n";
         myfile.close();
+    }
+
+
+    template<int width, int height>
+    void saveScreen(const std::array<std::array<Color, width>, height>& array) {
+        //save screen as ppm file
+        std::error_code ec;
+        if (!std::filesystem::exists(run_directory, ec)) {
+            // Attempt recreate if removed after construction
+            std::filesystem::create_directories(run_directory, ec);
+            if (ec) {
+                std::cerr << "Cannot (re)create benchmark directory '" << run_directory << "': " << ec.message() << "\n";
+                return;
+            }
+        }
+        const auto filePath = run_directory / ("screen_" + std::to_string(picture_counter) + ".ppm");
+        std::ofstream ofs(filePath, std::ios::out | std::ios::binary);
+        if (!ofs.is_open()) {
+            std::cerr << "Could not open file for writing: " << filePath << "\n";
+            return;
+        }
+        ofs << "P6\n" << width << " " << height << "\n255\n";
+        for (int j = 0; j < height; ++j) {
+            for (int i = 0; i < width; ++i) {
+                const auto& c = array[i][j];
+                auto r = static_cast<unsigned char>(std::clamp(c.r() * 255.0, 0.0, 255.0));
+                auto g = static_cast<unsigned char>(std::clamp(c.g() * 255.0, 0.0, 255.0));
+                auto b = static_cast<unsigned char>(std::clamp(c.b() * 255.0, 0.0, 255.0));
+                ofs << r << g << b;
+            }
+        }
+        ofs.close();
+        picture_counter++;
     }
 };
 #endif //RAYTRACINGDEMO_BENCHMARK_HPP
