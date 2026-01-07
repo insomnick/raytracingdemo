@@ -53,27 +53,27 @@ void runTest(const TestrunConfiguration& config);
 int main() {
 
     std::multimap<std::string, int> bvh_algorithms = {
-            { "bsah",    2 },
+            // { "bsah",    2 },
             { "bsah",    4 },
             { "bsah",    8 },
             { "bsah",    16 },
-            { "sah",    2 },
-            { "sah",    4 },
-            { "sah",    8 },
-            { "sah",    16 },
-            { "median", 2 },
-            { "median", 4 },
-            { "median", 8 },
-            { "median", 16 },
-            { "sah-c",    4 },
-            { "sah-c",    8 },
-            { "sah-c",    16 },
-            { "bsah-c",    4 },
-            { "bsah-c",    8 },
-            { "bsah-c",    16 },
-            { "median-c", 4 },
-            { "median-c", 8 },
-            { "median-c", 16 },
+            // { "sah",    2 },
+            // { "sah",    4 },
+            // { "sah",    8 },
+            // { "sah",    16 },
+            // { "median", 2 },
+            // { "median", 4 },
+            // { "median", 8 },
+            // { "median", 16 },
+            // { "sah-c",    4 },
+            // { "sah-c",    8 },
+            // { "sah-c",    16 },
+            // { "bsah-c",    4 },
+            // { "bsah-c",    8 },
+            // { "bsah-c",    16 },
+            // { "median-c", 4 },
+            // { "median-c", 8 },
+            // { "median-c", 16 },
     };
     std::map<std::string, double> object_files= {
               { "stanford-bunny.obj", 30.0}
@@ -122,9 +122,39 @@ void runTest(const TestrunConfiguration& config) {
     bool collapse = false;
     std::vector<std::size_t> (*partition_function)(const std::vector<Primitive *>::iterator &begin,
                                       const std::vector<Primitive *>::iterator &end, const int axis);
-    if (algorithm_name.find_first_of("bsah") == 0) {
-        printf("Using binned-sah-2...\n");
+    if (algorithm_name.find_first_of("sah-c") == 0) {
+        printf("Using SAH with collapse...\n");
+        partition_function = StackBVH::sah2Split;
+        collapse = true;
+    } else if (algorithm_name.find_first_of("bsah-c") == 0) {
+        printf("Using SAH with collapse...\n");
         partition_function = StackBVH::binnedSah2Split;
+        collapse = true;
+    } else if (algorithm_name.find_first_of("median-c") == 0) {
+        printf("Using median with collapse...\n");
+        partition_function = StackBVH::median2Split;
+        collapse = true;
+    } else if (algorithm_name.find_first_of("bsah") == 0) {
+        switch (bvh_degree) {
+            case 2:
+                printf("Using binnedsah-2...\n");
+                partition_function = StackBVH::binnedSah2Split;
+                break;
+            case 4:
+                printf("Using binnedsah-4...\n");
+                partition_function = StackBVH::binnedSah4Split;
+                break;
+            case 8:
+                printf("Using binnedsah-8...\n");
+                partition_function = StackBVH::binnedSah8Split;
+                break;
+            case 16:
+                printf("Using binnedsah-8...\n");
+                partition_function = StackBVH::binnedSah16Split;
+                break;
+            default:
+                throw std::invalid_argument("Unsupported bvh degree");
+        }
     } else if (algorithm_name.find_first_of("sah") == 0) {
         switch (bvh_degree) {
             case 2:
@@ -138,6 +168,10 @@ void runTest(const TestrunConfiguration& config) {
             case 8:
                 printf("Using sah-8...\n");
                 partition_function = StackBVH::sah8Split;
+                break;
+            case 16:
+                printf("Using sah-8...\n");
+                partition_function = StackBVH::sah16Split;
                 break;
             default:
                 throw std::invalid_argument("Unsupported bvh degree");
@@ -156,21 +190,13 @@ void runTest(const TestrunConfiguration& config) {
                 printf("Using median-8...\n");
                 partition_function = StackBVH::median8Split;
             break;
+            case 16:
+                printf("Using median-8...\n");
+                partition_function = StackBVH::median16Split;
+                break;
             default:
                 throw std::invalid_argument("Unsupported bvh degree");
         }
-    } else if (algorithm_name.find_first_of("sah-c") == 0) {
-        printf("Using SAH with collapse...\n");
-        partition_function = StackBVH::sah2Split;
-        collapse = true;
-    } else if (algorithm_name.find_first_of("bsah-c") == 0) {
-        printf("Using SAH with collapse...\n");
-        partition_function = StackBVH::binnedSah2Split;
-        collapse = true;
-    } else if (algorithm_name.find_first_of("median-c") == 0) {
-        printf("Using median with collapse...\n");
-        partition_function = StackBVH::median2Split;
-        collapse = true;
     }else {
         throw std::out_of_range("Unknown algorithm");
     }

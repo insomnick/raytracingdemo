@@ -271,7 +271,7 @@ private:
             const double centerValue = primitive->getCenter().getAxis(axis);
             // Determine bin index
             int binIndex = static_cast<int>(((centerValue - (*begin)->getMin().getAxis(axis)) /
-                                            (end[-1]->getMax().getAxis(axis) - (*begin)->getMin().getAxis(axis))) * BIN_SIZE);
+                                            ((*(end-1))->getMax().getAxis(axis) - (*begin)->getMin().getAxis(axis))) * BIN_SIZE);
             binIndex = std::clamp(binIndex, 0, BIN_SIZE - 1);
 
             auto &[count, min, max] = bins[binIndex];
@@ -392,6 +392,10 @@ public:
         return medianSplit(begin, end, axis, 8);
     }
 
+    static std::vector<std::size_t> median16Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return medianSplit(begin, end, axis, 16);
+    }
+
     static std::vector<std::size_t> sah2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
         return sahSplit(begin, end, axis, 2);
     }
@@ -402,6 +406,10 @@ public:
 
     static std::vector<std::size_t> sah8Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
         return sahSplit(begin, end, axis, 8);
+    }
+
+    static std::vector<std::size_t> sah16Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return sahSplit(begin, end, axis, 16);
     }
 
     static std::vector<std::size_t> binnedSah2Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
@@ -415,6 +423,11 @@ public:
     static std::vector<std::size_t> binnedSah8Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
         return binnedSahSplit(begin, end, axis, 8);
     }
+
+    static std::vector<std::size_t> binnedSah16Split(const std::vector<Primitive*>::iterator& begin, const std::vector<Primitive*>::iterator& end, const int axis) {
+        return binnedSahSplit(begin, end, axis, 16);
+    }
+
     // BVH construction with lambda for splitting
     template<typename PartitionFunction>
     static StackBVH build(std::vector<Primitive*>& inputPrimitives,
@@ -559,7 +572,6 @@ public:
         }
         return closest;
     }
-
 };
 
 #endif // RAYTRACINGDEMO_STACK_BVH_HPP
