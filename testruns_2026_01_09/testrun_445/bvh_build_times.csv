@@ -1,0 +1,11 @@
+file_name,model_name,model_scale,algorithm_name,cam_pos_x,cam_pos_y,cam_pos_z,cam_dir_x,cam_dir_y,cam_dir_z,time_seconds
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.9229
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.92432
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.90801
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.90623
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.90945
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.91224
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.91144
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.91187
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.90775
+bvh_build_times.csv,stanford-bunny.obj,30,bsah-c-16,-0.800326,2.85226,5.26859,0,0,-1,1.90931

@@ -1,0 +1,11 @@
+file_name,model_name,model_scale,algorithm_name,cam_pos_x,cam_pos_y,cam_pos_z,cam_dir_x,cam_dir_y,cam_dir_z,time_seconds
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.140079
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.140051
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.139794
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.139867
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.139316
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.139685
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.139022
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.140156
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.139354
+bvh_build_times.csv,teapot.obj,1,bsah-16,0.0374822,1.72706,5,0,0,-1,0.139814

@@ -1,0 +1,11 @@
+file_name,model_name,model_scale,algorithm_name,cam_pos_x,cam_pos_y,cam_pos_z,cam_dir_x,cam_dir_y,cam_dir_z,time_seconds
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.00646005
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.006538
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.00660597
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.00653721
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.00654954
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.00661607
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.00659187
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.00655797
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.0065535
+bvh_build_times.csv,suzanne.obj,3,median-c-16,-7.48219,3.93534,18.249,0,0,-1,0.0065491
