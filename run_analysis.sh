@@ -66,7 +66,7 @@ echo "============================================"
 
 # Run the analysis
 echo "Running performance analysis..."
-if ! python analyze_performance.py "$@"; then
+if ! python bvh_analysis.py "$@"; then
     echo "ERROR: Performance analysis failed!"
     exit 1
 fi
