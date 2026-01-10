@@ -1,0 +1,509 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Vorlage für das Dokument laden:
+%   - scrartl  -> Artikel
+%   - scrreprt -> Bericht
+%   - scrbook  -> Buch
+\documentclass[
+    a4paper,
+    11pt,
+    headings=small    
+]{scrreprt}
+
+% Eingabecodierung utf8
+\usepackage[utf8]{inputenc}
+% Ausgabecodierung von Sonderzeichen
+\usepackage[T1]{fontenc}
+% Silbentrennung und Sprachanpassungen
+\usepackage[ngerman]{babel}
+
+% AMS-Pakete für mathematische Formeln
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage[centerdots]{mathtools}
+
+% Weitere nützliche Pakete
+\usepackage{xcolor}   % farbiger Text
+\usepackage{graphicx} % Für das Einbinden von Bildern
+\usepackage{csquotes} % Für korrekte Zitate
+\usepackage{hyperref} % Für Hyperlinks
+\usepackage{geometry} % Für Seitenränder
+\usepackage{scrlayer-scrpage} % Für Kopf- und Fußzeilen
+\usepackage{setspace} % Für Zeilenabstand
+\usepackage{listings} % für Programmcode/Pseudocode
+\usepackage{lmodern}  % schoenere Schriftart
+\usepackage[backend=biber, style=alphabetic]{biblatex} % Für die Einbindung von BibTeX
+
+\input{template-config.tex}
+
+% Einstellungen für Seitenlayout
+\geometry{a4paper, left=3cm, right=3cm, top=2.5cm, bottom=3.5cm}
+
+% Einstellungen für Kopf- und Fußzeilen
+\pagestyle{scrheadings}
+\clearpairofpagestyles
+\chead{\leftmark}
+\cfoot[\pagemark]{\pagemark}
+\automark[section]{section}
+
+% BibTeX-Datei einbinden
+\addbibresource{literatur.bib}
+
+% Titel und Autor
+\subject{Bachelorarbeit}
+\title{Analyse der Qualität von Top-Down erzeugten Wide BVHs in statischen 3D-Szenen} % Titel der Arbeit eintragen
+\author{Nick Garczorz}        % Namen eintragen
+\publishers{%
+\textsf{Heinrich-Heine-Universität Düsseldorf}\\[\baselineskip]
+\begin{tabular}{rl}
+Erstgutachter:in: & Dr. Andreas Abels\\ % Namen eintragen
+Zweitgutachter:in:& Dr. Markus Brenneis\\ % Namen eintragen
+\end{tabular}}
+\date{\today}
+
+% Listings für Codeschnipsel
+\lstdefinelanguage{Pseudocode}{
+  morekeywords={function,return,if,then,else,end,while,do,for,each,continue},
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]"
+}
+
+\lstdefinestyle{codestyle}{
+  language=Pseudocode,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape\color{gray},
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  numbersep=6pt,
+  tabsize=2,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  frame=single,
+  captionpos=b,
+  xleftmargin=1em,
+  framexleftmargin=0.5em,
+  keepspaces=true,
+}
+
+\begin{document}
+
+\maketitle
+
+\chapter*{Zusammenfassung}
+
+tbc
+
+\tableofcontents
+
+\newpage
+
+\chapter{Einleitung}
+
+\section{Motivation}
+
+Effiziente Kollisionserkennung hat grundlegenden Nutzen in diversen Feldern, über physikbasierte Simulation und Robotik, bis hin zu Darstellungen in Animation und Videospielen [1]. Im Fall von Animation und Bildgebung im Allgemeinen handelt es sich vor allem um Kollisionen einfacher geometrischer Formen, häufig Geraden oder Strahle, Dreiecke und Quader. Unter Zuhilfenahme dieser einfachen Werkzeuge lassen sich komplexe dreidimensionale Szenen mit einfachen Mitteln berechnen und darstellen. Für jeden Bildpunkt werden Strahlen, genannt Rays, auf die digitale Szene geworfen. Diese besteht in gängiger Praxis aus einer Ansammlung von Dreiecken, genannt Polygone, oder anderen fundamentalen Formen, die allgemein als Primitive bezeichnet werden. Um herauszufinden, ob und wo es eine Kollision zwischen einem Ray und einem bestimmten Polygon gibt, kann man Beispielsweise den weitverbreiteten Algorithmus von Möller und Trumbore [2] verwenden. Wenn es einen Treffer gibt, lässt sich aufbauend auf Position und Abstand des Schnittpunktes der korrekte Farbwert für den Pixel berechnen. Diese Rechnung müsste man naiv gesehen für jede Kombination aus Rays und Primitive wiederholen, um ein vollständiges Bild zu generieren. 
+
+\section{Thema und fachliche Einordnung}
+
+Um den Vorgang zu beschleunigen, kommen zwei Datenstrukturen ins Spiel: Die Axis Aligned Bounding Box (AABB) und darauf aufbauend die Bounding Volume Hierarchy (BVH) [3]. Eine AABB definiert achsenorientierte obere und untere Schranken für Teilmengen von Primitives in Form eines Quaders, der diese im Raum einschließt. Durch die Einführung von AABB lassen sich die nötigen Ray-Object-Intersection-Tests verringern, indem man für jeden Ray erst die Kollision mit den AABBs überprüft. Wenn es bereits keine Kollision mit der umschließenden Bounding Box gibt, kann von vornherein ausgeschlossen werden, dass es eine Kollision mit den innenliegenden Primitiven gibt. 
+Um den Vorteil dieses Verfahrens effektiv zu nutzen, kann man nun rekursiv die eingeschlossenen Teilmengen wieder aufteilen und mit AABBs umschließen. Dadurch lassen sich die Bounding Boxes in eine hierarchische Reihenfolge bringen, die eine Baumstruktur aufweist. Diese Struktur ist eine Bounding Volume Hierarchy. Durch eine BVH wird die Laufzeit auf ein Niveau gesenkt, das logarithmisch von der Anzahl an Primitives in der Szene abhängt, was die Zeit für ein fertig gerendertes Bild drastisch sinken lassen kann.
+Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit. 
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.3]{images/bunny_bvh1.png}
+\caption{Stanford Bunny mit sichtbaren Bounding Boxes}
+\end{figure}
+
+\section{Zielsetzung}
+
+Es existieren Konstruktionsverfahren verschiedener Komplexitätsklassen, deren Endprodukt sich auf die Traversal Time (Renderzeit) auswirkt. Von der Construction Time (Konstruktionszeit) lässt sich die Nutzbarkeit einer BVH in dynamischen Szenen, also Szenen mit bewegten Objekten, ableiten. Die Traversal Time ist das Hauptqualitätsmerkmal für eine BVH, da sich durch niedrigere Zeiten höhere Auflösungen und Bildwiederholraten, sowohl in statischen wie auch dynamischen Szenen, realisieren lassen.
+Ein genutzter Vorteil der Baumstruktur ist, dass sich sowohl Construction (Konstruktion) als auch Traversal (Durchsuchung) auf GPUs parallelisieren lassen. Dabei spielt auch die konstruktion mit höheren Verzweigungsgraden eine Rolle, wobei man auch dies durch unterschiedliche Konstruktionsverfahren erreichen kann, wie dem \emph{k-way splitting} oder durch \emph{collapse} (Kollabierung) der Hierarchie. Diese Art von BVH wird Wide BVH (Weite BVH) oder auch BVHk genannt. 
+Ziel der Arbeit ist die Analyse verschiedener Konstruktionsverfahren von Wide BVHs mit Hinblick auf Einsparung in Traversal- aber auch Construction-Zeit in statischen Szenen. Dabei sollen die Ergebnisse abhängig von dem verwendeten konstruktionsalgorithmus, dem Verzweigungsgrad der Hierarchie und der Primitive-Anzahl der Szene beleuchtete werden. 
+Dabei haben sich drei Problemfragen ergeben, die den Scope dieser Arbeit definieren:
+\begin{itemize} 
+\item
+Wie verändert sich die Traversal-Time bei Top-Down-Konstruierten Wide BVHs für Verzweigungsgrade $k \in \{2, 4, 8, 16\}$ in statischen Szenen?
+\item
+Unterscheidet sich die Qualität der BVHs zwischen direktem k-way splitting und collapse einer binären BVH abhängig von der gewählten statischen Szene?
+\item
+Wie groß ist der Trade-off zwischen Construction- und Traversal-Time mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$ in statischen Szenen?
+\end{itemize}
+
+\section{Abgrenzung zu vorherigen Arbeiten}
+In der zugrundeliegenden Arbeit werden lediglich statische dreidimensionale Szenen untersucht. Vefahren die darauf abzielen die BVH dynamisch anzupassen (Refitting etc.) werden nicht untersucht.
+
+Zudem werden ausschließlich Top-Down-Konstruktionsmethoden verwendet, da dies der Industriestandard ist [?].
+
+Die Verglichenen Datenstrukturen sind lediglich BVH bzw Wide BVH, es werden keine anderen Beschleunigungsstrukturen, wie k-d-Trees beachtet. Wide BVHs werden im Vergleich zu ihrer binären Referenzimplementation untersucht. 
+
+Es werden ganz explizit verschiedene Verfahren zur Konstruktion von Wide BVHs untersucht und verglichen. Das sogenannte k-way splitting, also das Partitionieren der Menge in k Teilmengen in einem Iterationsschritt entlang einer Achse, ist das erste Untersuchte Verfahren. Auf der anderen Seite steht das Collapse-Verfahren bei dem Nodes einer Binären Hierarchie nach der Konstruktion mit ihren Kindern verschmolzen werden um den Verzweigungsgrad zu verdoppeln.
+
+Es werden lediglich Median-Split und SAH-Split, sowie die Optimierungsvariante binned SAH-Split untersucht, keine komplexeren Varianten wie Spatial-Splits. Zudem ist die Anzahl der Bins auf 16 festgelegt. Der Fokus soll nicht auf den verwendet Algorithmen, sondern auf den Auswirkungen der Verfahren bezüglich dem Verzweigungsgrad liegen.
+
+Die gemessenen Metriken beziehen sich auf CPU-Zeit, also lineare Berechnungen. Spezielle Raytracing-Hardware oder parallelisierte Messergebnisse werden nicht untersucht, das der Fokus auf Gewinn durch strukturelle Eigenschaften der Hierarchien liegen soll.
+
+Die bei der Traversal-Zeit verwendeten Rays sind lediglich \emph{Primärstrahlen}, also direkte Strahlen zwischen virtueller Kamera und Objekt. Dadurch fallen Verfahren wie Refelktion, Refraktion o.Ä. aus der Bewertung, was die Vergleichbarkeit vereinfacht und die Komplexität verringert.   
+
+Die Qualität einer BVH wird rein durch die Traversal-Time definiert. Andere Aspekte wie zum Beispiel Bildqualität durch Verwendung verschiedener Shader sind nicht Teil der Untersuchung.
+
+\newpage
+
+\chapter{Grundlagen}
+
+\section{Modell}
+
+Für das weitere vorgehen werden unter Primitives immer Polygone, also Dreiecke, verstanden. Polygone werden durch ihre drei Eckpunkte definiert, die jeweils durch dreidimensionale Vektoren beschrieben werden. zudem wird für die Vereinfachung von Berechnungen der Mittelpunkt des Polygons bestimmt, \emph{Centroid} genannt. Eine zusammenhängende Struktur aus Polygonen wird als \emph{Mesh} verstanden. 
+
+Wenn sich im Traversal-Schritt die Frage stellt, ob ein Ray ein Primitive schneidet, stellt sich eigentlich die Frage, ob ein bestimmtes Primitive das erste ist, was der untersuchte Ray schneidet. Man spricht hier von \emph{first hit traversal}[?].
+
+\section{Axis Aligned Bounding Box}
+
+Um Konstruktion und Traversal von Nodes einer BVH möglichst einfach zu gestalten müssen einige Punkte gegeben sein: 
+\begin{itemize}
+    \item Sie müssen eine möglichst performante Möglichkeit bieten die Kollision mit einem Ray zu überprüfen.
+    \item Ihre räumlichen Grenzen sollen möglichst einfach Berechnet werden können.
+    \item Sie sollen möglichst wenig Speicherplatz verbrauchen, bzw. möglichst wenig Zusatzinformationen benötigen.
+\end{itemize}
+Die am häufigsten verwendete Datenstruktur, die diese Punkte miteinander vereint ist die Axis Aligned Bounding Box. Man kann sie sich vorstellen wie ein an den Koordinatenachsen ausgerichteter Quader, der die darin enthaltenen Primitives möglichst Eng einschließt. Die räumlichen Grenzen lassen sich durch zwei Vektoren, die die oberen und unteren Schranken der Box definieren leicht definieren und durch eine lineare Suche in den enthaltenen Primitives relativ effizient berechnen.
+
+Die Kollision mit Rays ist durch die \emph{SLAB-Methode} sehr performant [?]. Hierbei ...
+
+\section{Bounding Volume Hierarchy}
+
+Eine BVH ist im Kern eine Baumstruktur, die eine sinnvolle Partiotionierung der Primitive in der Szene erwirkt. Um einen inneren Knoten zu definieren benötigt man eine AABB, Referenzen zu den eingeschlossenen Primitives und Referenzen zu ihren Child-Nodes. Die AABBs von Child-Nodes befinden sich immer innerhalb der grenzen der AABB ihres Parent-Nodes. Es ist allerdings möglich, dass die AABBS der Child-Nodes sich überschneiden. Die Wurzel ist gleich definiert. Die Blätter der Datenstruktur sind konzeptionel Nodes, deren Menge an Primitives kleiner gleich dem festgelegten Verzweigungsgrad sind. 
+Qualitätsmerkmale einer BVH sind in etwa wenig Überschneidungen von AABBs oder AABBs mit möglichst kleinen Flächeninhalten [?]. 
+
+Dabei hängt die Qualität einer BVH von der verwendeten Konstruktionsmethode ab, welche wiederum variierende Komplexität haben. Häufig existiert eine Abwägung zwischen Construction und Traversal Time. 
+
+\subsection{Wide Bounding Volume Hierarchy}
+
+Wide BVH werden für das Arbeiten mit Grafikkarten immer interessanter, da sich durch die erweiterte Breite der BVH noch mehr Möglichkeiten für parallelisiertes Arbeiten ergeben. Dabei existiert für die in dieser Arbeit untersuchten Algorithmen immer eine Referenzmethode zur Erstellung von Binärbäumen. Die untersuchten Verzweigungsgrade sind, wie auch in Referenzarbeiten [?], vielfache von Zwei. Zudem wird so die Vergleichbarkeit zwischen den verschiedenen Konstruktionsmethoden gewährleistet, da das Collapse-Verfahren in dieser Implementation auf Binärbäumen basiert.
+Die direkte Konsequenzen von Wide BVH sind eine geringere Tiefe und mehr Kollisionschecks mit Child-Nodes pro Knoten. Vor- und Nachteile bezogen auf Construction und Traversal werden innerhalb dieser Arbeit untersucht.
+
+\subsection{Traversal}
+Der Traversal-Schritt ist der Kerngrund für die Verwendung einer BVH. Die Traversal-Time zu minimieren ist ihre Hauptauptaufgabe. Die Traversal geschieht dabei Top-Down durch die Hierarchie. Falls es eine Kollision zwischen Ray und AABB eines Knotens gibt, sollen auch die Child-Nodes, bzw. bei einem Blatt die Primitives, überprüft werden. Falls nicht kann der gesamte Teilbaum ausgelassen werden. Die Reihenfolge wird hier durch einen Stack gegeben. In diesem Fall handelt es sich um eine Art der Breitensuche mit frühem Abbruchkriterium pro Teilbaum.
+Die Zeit für einen AABB-Test und einen Primitive-Test unterscheiden sich, wodurch sich ein weiteres Abbruchkriterium ergeben kann. Dies geschieht indem man die Zeit für Ray-Primitive-Kollision, die Dauer des durchsuchens eines Teilbaums und die Menge an Primitiven im Teilbaum in eine Kostengleichung einträgt. Es existieren auch Vereinfachungen dieser Gleichung, diese werden im folgenden Erklärt.
+
+\subsection{Kostenmodelle}
+Es gibt eine Reihe von sogenannten \emph{Traversal-Cost-Models} [?]. Hierbei gibt es eine \emph{Cost- bzw. Loss-Function} die bei der Konstruktion des Baumes verwendet wird um den, für die Funktion, optimalen Split zu finden.
+
+Das Grundgerüst der Kostenfunktion sieht in den meisten Fällen ähnlich aus und unterscheidet sich je nach Heuristik in der bemessenen Wahrscheinlichkeit, mit der der Teilbaum eines gegebene Nodes besucht wird.  
+Dabei entsprechen die Kosten eines inneren Nodes $N$:
+\[
+c(N) = c_T + \sum_{N_{child}} P(N_{child} \mid N)\ c(N_{child})
+\][?]
+
+Dabei entspricht $c_T$ der durchschnittlichen Zeit für einen Schritt während der Traversal und $N_{child}$ wird als Iterator über alle Kinder des Knoten $N$ verstanden.
+
+Falls es sich nicht um einen inneren Node handelt ist die Kostenfunktion $c(N) = c_I \lvert N \rvert$ mit Ray-Primitive-Intersection-Time $c_I$ und Anzahl an Primitiven in Node $\lvert N \rvert$.
+
+Das bekannteste Kostenmodell zur Konstruktion einer BVH ist die \emph{Surface Area Heuristic}, welche die in dieser Arbeit untersuchte Heuristik darstellt. Es existieren allerdings eine ganze Reihe an Modellen wie zum Beispiel die \emph{Ray Distribution Heuristic (RDH)}[?], \emph{Occlusion Heuristic (OH)} [?] oder \emph{End-point Overlap Heuristic (EPO)} [?], um eine Auswahl zu nennen.
+
+Die Untersuchung dieser Modelle ist nicht Teil dieser Arbeit.
+\subsection{Construction}
+
+Die Konstruktion von BVH wird klassischerweise entweder Top-Down oder Bottom-Up durchgeführt. Der Großteil der verwendeten Algorithmen sind Top-Down-Construction Algorithmen, welche exklusiv in dieser Arbeit besprochen werden.
+
+
+\subsubsection{Median Split}
+
+Die naivste Partitionsstrategie ist der Median Split. Dabei wird die entlang einer Achse sortierte Menge an Primitiven am Median geteilt. Das wird rekursiv für die neu entstandenen Teilmengen wiederholt, bis ein festgelegtes Abbruchkriterium erreicht wird. Sie basiert damit nicht auf einm Kostenmodell und eignet sich vor allem für im Raum gleichverteilte Primitive [?]. Sie besitzt de facto den kleinsten Overhead für die Konstruktion, da keine Abwägung der Teilmengen nötig ist. 
+
+\subsubsection{Surface Area Heuristic Split}
+
+Dagegen stehen Kostenmodelle wie die Surface Area Heuristic (SAH). Von ihr leiten sich einige spezialisierte Partitionierungsstrategien ab, wovon eine auch näher in dieser Arbeit besprochen wird.
+
+Die Grundidee ist es, die Wahrscheinlichkeit, dass ein Ray auf die AABB eines Nodes trifft, als geometrische Wahrscheinlichkeit zu sehen. Das bedeutet, dass der Flächeninhalt der AABB einer Node mit den potenziellen Flächeninhalten ihrer Child-Nodes ins Verhältnis gesetzt werden [?]. Daraus ergibt sich, dass kleinere Flächeninhalte die Kostenfunktion minimieren, also als besser gesehen werden. Die SAH geht davon aus, dass die Ausrichtung von Rays gleichverteilt ist [?].
+
+\[
+P(N_{child} \mid  N)_{SAH} = \frac{Area(N_{child})}{ Area(N)} 
+\]
+
+Um die Kostenfunktion zu minimieren muss jeder mögliche Split untersucht werden. Da das Kostenmodell verwendet wird um Vergleichswerte zu erstellen und nicht absolute Werte zu errechnen, können Konsatnten, wie die Traversal-Time des Teilbaums oder die Zeit für die Kollisionserkennung vernachlässigt werden, was die Funktion stark vereinfacht.
+
+Theoretisch lassen sich durch die Verwendung dieser Konstanten und das Berechnen absoluter Werte ein neues Abbruchkriterium für das Erstellen einer BVH ermitteln, allerding müssten diese Konstanten im besten Fall vorher empirisch bestimmt werden. Da ein optimales Kostenmodell nicht der Schwerpunkt dieser Arbeit ist, wurde dies nicht behandelt. 
+
+\subsubsection{Binned Surface Area Heuristic}
+
+Die Binned Surface Area Heuristic ist eine Abwandlung, der SAH. Sie verwendet das gleiche Kostenmodell, hat allerdings einen Implementationsspezifischen Unterschied. Statt Splits zwischen jedem Primitive zuzulassen, werden die Primitives vorerst entlang der Achse in eine beliebige Menge Bins, im diesem falle 16, einsortiert. Dann wird der optimale Split zwischen diesen Bins ermittelt. Der Vorteil ist, dass lediglich ein Bruchteil an Berechnungen gemacht werden muss, um einen Split zu berechnen. Dieser Gewinn in der Construction-Time geht allerdings gegebenenfalls auf Kosten der BVH-Qualität.
+
+\newpage
+
+\chapter{Methoden}
+
+\section{Aufbau}
+
+\subsection{Überblick}
+
+Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heurustic Split} und \emph{Binned Surface Are Heuristic Split}. Als Baseline wird in jedem Fall ein Binärer Testdurchlauf mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht. Dabei existiert jeweils eine Variante in der die binäre BVH collapsed wird um die höheren Grade zu erreichen und eine Variante mit direktem k-way-split. 
+Innerhalb der Szenen wird eine einfache Kamerafahrt in 36 Snapshots unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stehts im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. 
+Dabei werden als Hauptmetriken die Construction-Time und die Traversal-Time erfasst und verglichen. Zudem wird die Anzahl an \emph{Hit Rays}, also die Anzahl an Rays, die tatsächlich mit einem Polygon kollidieren, erfasst. Dies geschieht um die Modelle anhand ihrer Polygonanzahl zu vergleichen, obwohl diese unterschiedlich skaliert sind. Die Tests erfolgen lediglich auf der CPU.
+
+\subsection{Datenmodell}
+
+Punkte im Raum werden als Vektoren im Stil von 3er-Tupeln erfasst, hier \emph{Vector3} genannt.
+
+Die implementierte BVH verwendet nicht direkt Polygone, sondern ist in der Lage Primitive verschiedener Arten zu verarbeiten, solange sie die benötigten Grundeigenschaften besitzen. Dazu gehören ein Mittelpunkt (Center oder auch Centroid), einen Minimal- und Maximalpunkt im Sinne einer Bounding Box, die nur das Primitive selbst einschließt und eine Funktion um Kollisionen (Intersections) mit Rays zu erkennen und gegebenenfalls den dazugehörigen Punkt im Raum zu bestimmen. 
+Polygone verfügen über all diese Eigenschaften.
+
+\begin{lstlisting}[style=codestyle,caption={Primitive}]
+class Primitive 
+{
+    Vector3 getCenter()
+    Vector3 getMin()
+    Vector3 getMax()
+    Vector3 intersect(ray)
+}
+\end{lstlisting}
+
+AABBs verfügen über ähnliche Attribute. Sie benötigen allerdings keine referenz zu ihrem Mittelpunkt, da sie während der Laufzeit nicht entlang einer Achse sortiert werden müssen. 
+
+\begin{lstlisting}[style=codestyle,caption={Axis Alignet Bounding Box}]
+class AABB 
+{
+    Vector3 getMin()
+    Vector3 getMax()
+    Vector3 intersect(ray)
+}
+\end{lstlisting}
+
+Die BVH selbst besteht aus aufeinander referenzierende Nodes. Ein Node wird dabei durch seine Bounding Box, referenzen zu den eingeschlossenen Primitiven und Referenzen zu seinen Child-Nodes definiert.
+
+Innerhalb der BVH muss so nur eine Referenz auf die Wurzel (Root) gegeben sein, alle anderen Referenzen erfolgen implizit. 
+Zudem liegt die Working-Copy aller Primitives innerhalb der BVH, auf die die jeweiligen Nodes jeweils ihre referenzen besitzen. 
+\begin{lstlisting}[style=codestyle,caption={Bounding Volume Hierarchie}]
+class BVHNode 
+{
+    AABB aabb
+    Primitve [] primitives
+    BVHNode [] children 
+}
+
+class BVH
+{
+    BVHNode root
+    Primitive [] primitives
+}
+\end{lstlisting}
+
+Das festgelegte Leaf-Kriterium ist wie folgt: Es existieren gleich oder weniger Primitive in der zu teilenden Menge, als vom Verzweigungsgrad verlangte splits nötig sind. 
+
+
+\newpage
+
+\section{Algorithmenanalyse}
+
+\subsection{Traversal}
+
+Für die Traversal wird ein Stack verwendet. Anfangs wird die Root der BVH auf den Stack gelegt. Im folgenden wird immer der oberste Node vom Stack genommen. 
+
+Falls es eine Kollision zwischen Ray und Bounding Box des Nodes gibt, werden falls vorhanden alle Child-Nodes auf den Stack gelegt, andernfalls geschieht nichts. Für denn Fall, dass es sich um einen Leaf-Node handelt, werden die Primitive des Nodes näher angeschaut. 
+
+Kommt es zu einer Kollision zwischen Ray und Primitive, wird die Distanz zwischen Ray-Origin und Schnittpunkt berechnet. Ist nun die Distanz kürzer als die jeder zuvor gefundene Kollision, wird sie gespeichert. Für komplexere Raytracer würde man den Schnittpunkt, sowie Eigenschaften des Primitives, wie Material oder Oberflächenwinkel des Rays, abzuspeichern, dies ist in diesem Anwendungsfall allerdings nicht notwendig. 
+
+Die Funktion gibt letztendlich die kürzeste Distanz einer Kollision zurück. Diese Art von Traversal wird als \emph{closest hit} bezeichnet.
+
+\begin{lstlisting}[style=codestyle,caption={BVH Traversal},mathescape]
+function traverse(bvh, ray):
+    stack := empty list
+    push(stack, bvh.root)
+    
+    closestDistance := +$\infty$
+
+    while stack is not empty do
+        node := pop(stack)
+    
+        if not node.aabb.intersect(ray) then
+            continue
+        end if
+
+        if node.children is empty then  //Leaf node
+            for primitive in node.primitives do
+                intersection := primitive.intersect(ray)
+                if intersection then
+                    distance := distance(ray.origin, intersection)
+                    if distance < closestDistance then
+                        closestDistande := distance
+                    end if
+                end if
+            end for
+        end if
+        
+        for child in node.children do
+            push(stack, child)
+        end for
+    end while
+    return closestDistance
+
+end function
+
+\end{lstlisting}
+
+\subsection{Construction}
+
+Die Konstruktionsfunktion 
+
+\begin{lstlisting}[style=codestyle,caption={BVH-Konstruktion mit gegebener Partitionsfunktion}]
+function build(inputPrimitives, partitionFunction):
+    // move input primitives into a single owned list inside the BVH
+    ownedPrimitives := copy of inputPrimitives
+
+    if ownedPrimitives is empty then
+        return BVH(root = emptyRoot, primitives = ownedPrimitives)
+    end if
+
+    // compute global bounds of all primitives
+    box := computeBoundingBox(ownedPrimitives)
+
+    // create BVH with a single root node
+    rootNode := BVHNode(box       = box,
+                       primitives = ownedPrimitives
+                       children   = empty list)
+    bvh      := BVH(root = rootNode, primitives = ownedPrimitives)
+
+    // stack of nodes to process
+    nodes := empty list
+    push(nodes, bvh.root)
+
+    while nodes is not empty do
+        node := pop(nodes)
+
+        // choose splitting axis based on longest extent
+        axis := calculateLongestAxis(node.box)
+
+        // Find right subsets according to partitionFunction
+        splitIndices      := partitionFunction(primitives, axis)
+        if splitIndices is empty then
+            continue //Leaf Node
+        end if        
+        primitiveSubsets  := calculateSubsets(primitives, splitIndices)
+
+        for each primitiveSubset in primitiveSubsets do
+            boundingBox  := computeBoundingBox(primitiveSubset)
+            child        :=  BVHNode(box       = boundingBox,
+                                    primitives = primitiveSubset
+                                    children   = empty list)
+            append child to node.children
+        end for
+
+        // push children onto stack for further splitting
+        for each child in node.children do
+            push(nodes, reference to child)
+        end for
+    end while
+
+    return bvh
+end function
+\end{lstlisting}
+
+\subsubsection{Median Split}
+
+\begin{lstlisting}[style=codestyle,caption={Median Partition}]
+function medianSplit(primitives, axis, degree):    //O(n)
+    count := primitives.size()
+    splitIndices := empty list
+
+    for i in degree do
+        split := (count * i) / degree
+        if split == 0 or split >= count then
+            break
+        end if
+        push(splitIndices, split)
+    end for
+
+    // partially sort so that element at split is in its median position in O(n)
+    for split in splitIndices do 
+        nth_element(set    = primitives,
+                    middle = split,
+                    compare(primitiveA, primitiveB):
+                        return center(primitiveA).component(axis) < center(primitiveB).component(axis))
+    end for
+    return splitIndices
+end function
+\end{lstlisting}
+
+\subsubsection{Surface Area Heuristic Split}
+
+\begin{lstlisting}[style=codestyle,caption={Surface Area Heuristic Partition},mathescape]
+function sahSplit(primitives, axis, degree):   //O(n * log(n))
+
+    count := primitives.size()
+    if isLeaf(count, degree) then
+        return {}
+    end if
+    
+    //O(n * log(n))
+    sort(set = primitives,
+         compare(primitiveA, primitiveB):
+             return center(primitiveA).component(axis) < center(primitiveB).component(axis))
+
+    splitIndices := empty list
+    segments := empty list
+    push(segments, primitives)
+    while segments.size() < degree do
+
+        seg := findSegmentToSplitGreedily(segments)   //highest cost segment has to be split
+        // bounds of primitives from segment from begin to index
+        prefixBoundingBoxes := calculatePrefix(seg)  //O(n)
+        // bounds of primitives from segment from index to end (included)
+        suffixBoundingBoxes := calculateSuffix(seg) // O(n)
+
+        segCount := seg.count() 
+        split   := segCount / 2
+        minCost := +$\infty$
+        for i from 1 to segCount - 2 do
+            leftArea  := surfaceArea(prefixBoundingBoxes[i - 1])
+            rightArea := surfaceArea(suffixBoundingBoxes[i])
+            cost      := leftArea * i + rightArea * (segCount - i) //simplified cost function
+            if cost < minCost then
+                minCost := cost
+                split   := i
+            end if
+        end for
+        
+        push(splitIndices, seg.begin + split)   //convert relative split to absolute
+        erase(segments, seg)
+        //push subsets
+        push(segments, seg[seg.begin, split])
+        push(segments, seg[split, seg.end])
+    end do
+    return splitIndices
+end function
+\end{lstlisting}
+
+\subsubsection{Binned Surface Area Heuristic Split}
+
+\newpage
+
+\chapter{Ergebnisse}
+
+- k = 4 als Sieger des statischen und 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{results/statistical_results_table.png}
+\caption{Detailierte Ergebisse}
+\end{figure}
+
+\newpage
+
+\chapter{Diskussion}
+tbc
+\newpage
+
+\chapter{Fazit}
+tbc
+\newpage
+
+\chapter{Appendix}
+
+\end{document}
