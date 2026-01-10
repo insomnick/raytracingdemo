@@ -57,6 +57,34 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
         if '% Change' in col or 'Change' in col:
             formatted_df = formatted_df.rename(columns={col: col.replace('%', '\\%')})
 
+    # delete speedup column if it exists
+    if 'Speedup' in formatted_df.columns:
+        formatted_df = formatted_df.drop(columns=['Speedup'])
+
+    # delete t-statistic column if it exists
+    if 't-statistic' in formatted_df.columns:
+        formatted_df = formatted_df.drop(columns=['t-statistic'])
+
+    # delete Time columns
+    for col in formatted_df.columns:
+        if 'Time' in col:
+            formatted_df = formatted_df.drop(columns=[col])
+
+    # round percentage change columns to 2 decimal places
+    for col in formatted_df.columns:
+        if '% Change' in col:
+            formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:.1f}" if pd.notnull(x) else x)
+
+    # round time columns to 4 decimal places
+    for col in formatted_df.columns:
+        if 'Time' in col:
+            formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:.4f}" if pd.notnull(x) else x)
+
+    # cap collapsed string to col.
+    if 'Type' in formatted_df.columns:
+        formatted_df['Type'] = formatted_df['Type'].apply(lambda x: 'col.' if str(x) == 'collapsed' else x)
+
+
     # Generate LaTeX
     latex_table = formatted_df.to_latex(
         index=False,
@@ -64,7 +92,8 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
         longtable=True,
         caption=table_config['caption'],
         label=table_config['label'],
-        column_format=table_config.get('column_format', None)
+        column_format=table_config.get('column_format', None),
+        position='b'  # Caption at bottom
     )
 
     # Save individual LaTeX file

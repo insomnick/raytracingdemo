@@ -26,7 +26,7 @@
 \contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{14}{subsubsection*.13}%
 \contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{14}{subsubsection*.15}%
 \contentsline {chapter}{\numberline {4}Ergebnisse}{15}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Diskussion}{16}{chapter.5}%
-\contentsline {chapter}{\numberline {6}Fazit}{17}{chapter.6}%
-\contentsline {chapter}{\numberline {7}Appendix}{18}{chapter.7}%
+\contentsline {chapter}{\numberline {5}Diskussion}{17}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Fazit}{18}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendix}{19}{chapter.7}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
