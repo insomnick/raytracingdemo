@@ -27,12 +27,12 @@
 \contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{16}{subsubsection*.17}%
 \contentsline {subsection}{\numberline {3.2.3}Collapse Funktion}{16}{subsection.3.2.3}%
 \contentsline {chapter}{\numberline {4}Ergebnisse}{17}{chapter.4}%
-\contentsline {subsection}{\numberline {4.0.1}Versuchssetup}{17}{subsection.4.0.1}%
-\contentsline {subsection}{\numberline {4.0.2}Korrektheit}{17}{subsection.4.0.2}%
-\contentsline {subsection}{\numberline {4.0.3}Traversal}{17}{subsection.4.0.3}%
-\contentsline {subsubsection}{\nonumberline Zusammenfassung}{19}{subsubsection*.19}%
-\contentsline {subsection}{\numberline {4.0.4}Dynamisches Modell}{19}{subsection.4.0.4}%
-\contentsline {subsubsection}{\nonumberline Zusammenfassung}{19}{subsubsection*.21}%
+\contentsline {section}{\numberline {4.1}Versuchssetup}{17}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Korrektheit}{17}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Traversal}{17}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Zusammenfassung}{19}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Dynamisches Modell}{19}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Zusammenfassung}{19}{subsection.4.4.1}%
 \contentsline {chapter}{\numberline {5}Diskussion}{20}{chapter.5}%
 \contentsline {chapter}{\numberline {6}Fazit}{21}{chapter.6}%
 \contentsline {chapter}{\numberline {7}Appendix}{22}{chapter.7}%

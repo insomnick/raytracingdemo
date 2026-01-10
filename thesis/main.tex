@@ -136,9 +136,9 @@ Dabei haben sich drei Problemfragen ergeben, die den Scope dieser Arbeit definie
 \item
 Wie verändert sich die Traversal-Time bei Top-Down-Konstruierten Wide BVHs für Verzweigungsgrade $k \in \{2, 4, 8, 16\}$ in statischen Szenen?
 \item
-Unterscheidet sich die Qualität der BVHs zwischen direktem k-way splitting und collapse einer binären BVH abhängig von der gewählten statischen Szene?
+Unterscheidet sich die Traversal-Time der BVHs zwischen direktem k-way splitting und collapse einer binären BVH abhängig von der gewählten statischen Szene?
 \item
-Wie groß ist der Trade-off zwischen Construction- und Traversal-Time mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$ in statischen Szenen?
+Wie verändern sich Construction- und Traversal-Time als kombinierte Qualitätsmetrik für die modellierung dynamischer Szenen mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$?
 \end{itemize}
 
 \section{Abgrenzung zu vorherigen Arbeiten}
@@ -532,14 +532,18 @@ end function
 \newpage
 
 \chapter{Ergebnisse}
+Alle Graphen:
+- Traversal-Speedup vs k (log-Skala): x = k, y = log2(Speedup)
+- Direct vs Collapse: Dumbbell, y = log2(Speedup)
 
-\subsection{Versuchssetup}
+
+\section{Versuchssetup}
 Was wurde wie gemacht -> pipeline
 
-\subsection{Korrektheit}
-Gleiche Anzahl an Hits pro Modell, alle bilder sehen gleich aus, keine Nan werte, 
+\section{Korrektheit}
+Die visuelle Ausgabe der Testruns ist für die jeweiligen Testszenen über alle möglichen Konstruktionsparameter konstant. Somit wird immer das gleiche Ergebnis geliefert 
 
-\subsection{Traversal}
+\section{Traversal}
 - Hypothese Traversalzeiten ändern sich abhängig von k
 - H0 keine Änderung
 Die Darstellung der Ergebnisse orientiert sich an den Problemfragen.    
@@ -548,13 +552,12 @@ Die Darstellung der Ergebnisse orientiert sich an den Problemfragen.
     \input{results/statistical_results_table.tex}
 \end{center}
 
-\subsubsection{Zusammenfassung}
+\subsection{Zusammenfassung}
 
-\subsection{Dynamisches Modell}
+\section{Dynamisches Modell}
 - Construction + Traversal Time
 
-\subsubsection{Zusammenfassung}
-
+\subsection{Zusammenfassung}
 
 \newpage
 

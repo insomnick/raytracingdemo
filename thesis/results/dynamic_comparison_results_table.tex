@@ -1,12 +1,12 @@
 \begin{longtable}{llrll}
 \caption{Collapsed vs k-way Algorithm Comparison Results} \label{tab:comparison_results} \\
 \toprule
-Model & Algorithm & k & \% Change & p-value \\
+Model & Algorithm & k & Speedup & p-value \\
 \midrule
 \endfirsthead
 \caption[]{Collapsed vs k-way Algorithm Comparison Results} \\
 \toprule
-Model & Algorithm & k & \% Change & p-value \\
+Model & Algorithm & k & Speedup & p-value \\
 \midrule
 \endhead
 \midrule
@@ -15,40 +15,40 @@ Model & Algorithm & k & \% Change & p-value \\
 \endfoot
 \bottomrule
 \endlastfoot
-armadillo & bsah & 4 & -0.4 & 2.84e-01 \\
-stanford-bunny & bsah & 4 & -0.2 & 3.24e-01 \\
-suzanne & bsah & 4 & 0.0 & 9.25e-01 \\
-teapot & bsah & 4 & 0.1 & 6.90e-02 \\
-armadillo & median & 4 & 0.0 & 7.01e-01 \\
-stanford-bunny & median & 4 & 0.2 & 3.80e-01 \\
-suzanne & median & 4 & -0.0 & 4.51e-01 \\
-teapot & median & 4 & -0.0 & 7.57e-01 \\
-armadillo & sah & 4 & -0.0 & 8.34e-01 \\
-stanford-bunny & sah & 4 & -0.0 & 9.32e-01 \\
-suzanne & sah & 4 & 0.1 & 3.05e-01 \\
-teapot & sah & 4 & 0.0 & 8.07e-01 \\
-armadillo & bsah & 8 & -0.0 & 6.83e-01 \\
-stanford-bunny & bsah & 8 & 0.1 & 4.75e-01 \\
-suzanne & bsah & 8 & 0.2 & 3.62e-01 \\
-teapot & bsah & 8 & 0.1 & 1.76e-01 \\
-armadillo & median & 8 & 0.1 & 9.91e-02 \\
-stanford-bunny & median & 8 & 0.1 & 2.57e-01 \\
-suzanne & median & 8 & -0.1 & 2.51e-01 \\
-teapot & median & 8 & -0.0 & 9.39e-01 \\
-armadillo & sah & 8 & -0.0 & 8.69e-01 \\
-stanford-bunny & sah & 8 & -0.0 & 7.65e-01 \\
-suzanne & sah & 8 & -0.0 & 7.63e-01 \\
-teapot & sah & 8 & -0.1 & 9.64e-02 \\
-armadillo & bsah & 16 & -0.0 & 6.33e-01 \\
-stanford-bunny & bsah & 16 & 0.2 & 6.81e-02 \\
-suzanne & bsah & 16 & -0.1 & 2.08e-01 \\
-teapot & bsah & 16 & -0.0 & 6.20e-01 \\
-armadillo & median & 16 & 0.0 & 6.00e-01 \\
-stanford-bunny & median & 16 & 0.1 & 1.59e-01 \\
-suzanne & median & 16 & 0.0 & 5.91e-01 \\
-teapot & median & 16 & -0.0 & 8.74e-01 \\
-armadillo & sah & 16 & -0.0 & 6.04e-01 \\
-stanford-bunny & sah & 16 & 0.1 & 8.67e-02 \\
-suzanne & sah & 16 & 0.1 & 1.30e-01 \\
-teapot & sah & 16 & 0.0 & 9.57e-01 \\
+armadillo & bsah & 4 & 1.004 & 2.84e-01 \\
+stanford-bunny & bsah & 4 & 1.002 & 3.24e-01 \\
+suzanne & bsah & 4 & 1.000 & 9.25e-01 \\
+teapot & bsah & 4 & 0.999 & 6.90e-02 \\
+armadillo & median & 4 & 1.000 & 7.01e-01 \\
+stanford-bunny & median & 4 & 0.998 & 3.80e-01 \\
+suzanne & median & 4 & 1.000 & 4.51e-01 \\
+teapot & median & 4 & 1.000 & 7.57e-01 \\
+armadillo & sah & 4 & 1.000 & 8.34e-01 \\
+stanford-bunny & sah & 4 & 1.000 & 9.32e-01 \\
+suzanne & sah & 4 & 0.999 & 3.05e-01 \\
+teapot & sah & 4 & 1.000 & 8.07e-01 \\
+armadillo & bsah & 8 & 1.000 & 6.83e-01 \\
+stanford-bunny & bsah & 8 & 0.999 & 4.75e-01 \\
+suzanne & bsah & 8 & 0.998 & 3.62e-01 \\
+teapot & bsah & 8 & 0.999 & 1.76e-01 \\
+armadillo & median & 8 & 0.999 & 9.91e-02 \\
+stanford-bunny & median & 8 & 0.999 & 2.57e-01 \\
+suzanne & median & 8 & 1.001 & 2.51e-01 \\
+teapot & median & 8 & 1.000 & 9.39e-01 \\
+armadillo & sah & 8 & 1.000 & 8.69e-01 \\
+stanford-bunny & sah & 8 & 1.000 & 7.65e-01 \\
+suzanne & sah & 8 & 1.000 & 7.63e-01 \\
+teapot & sah & 8 & 1.001 & 9.64e-02 \\
+armadillo & bsah & 16 & 1.000 & 6.33e-01 \\
+stanford-bunny & bsah & 16 & 0.998 & 6.81e-02 \\
+suzanne & bsah & 16 & 1.001 & 2.08e-01 \\
+teapot & bsah & 16 & 1.000 & 6.20e-01 \\
+armadillo & median & 16 & 1.000 & 6.00e-01 \\
+stanford-bunny & median & 16 & 0.999 & 1.59e-01 \\
+suzanne & median & 16 & 1.000 & 5.91e-01 \\
+teapot & median & 16 & 1.000 & 8.74e-01 \\
+armadillo & sah & 16 & 1.000 & 6.04e-01 \\
+stanford-bunny & sah & 16 & 0.999 & 8.67e-02 \\
+suzanne & sah & 16 & 0.999 & 1.30e-01 \\
+teapot & sah & 16 & 1.000 & 9.57e-01 \\
 \end{longtable}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  10 JAN 2026 17:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  10 JAN 2026 17:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1002,7 +1002,7 @@ Class scrreprt Warning: \float@addtolists detected!
 (scrreprt)              a package that still implements the
 (scrreprt)              deprecated \float@addtolist interface.
 
-<images/bunny_boxes.png, id=82, 642.4pt x 642.4pt>
+<images/bunny_boxes.png, id=86, 642.4pt x 642.4pt>
 File: images/bunny_boxes.png Graphic file (type png)
 <use images/bunny_boxes.png>
 Package pdftex.def Info: images/bunny_boxes.png  used on input line 125.
@@ -1022,22 +1022,22 @@ chapter 2.
 
 ] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}] [9]
 chapter 3.
-<images/suzanne.png, id=126, 501.875pt x 501.875pt>
+<images/suzanne.png, id=130, 501.875pt x 501.875pt>
 File: images/suzanne.png Graphic file (type png)
 <use images/suzanne.png>
 Package pdftex.def Info: images/suzanne.png  used on input line 280.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/teapot.png, id=127, 501.875pt x 501.875pt>
+<images/teapot.png, id=131, 501.875pt x 501.875pt>
 File: images/teapot.png Graphic file (type png)
 <use images/teapot.png>
 Package pdftex.def Info: images/teapot.png  used on input line 281.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/bunny.png, id=128, 501.875pt x 501.875pt>
+<images/bunny.png, id=132, 501.875pt x 501.875pt>
 File: images/bunny.png Graphic file (type png)
 <use images/bunny.png>
 Package pdftex.def Info: images/bunny.png  used on input line 282.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/armadillo.png, id=129, 501.875pt x 501.875pt>
+<images/armadillo.png, id=133, 501.875pt x 501.875pt>
 File: images/armadillo.png Graphic file (type png)
 <use images/armadillo.png>
 Package pdftex.def Info: images/armadillo.png  used on input line 283.
@@ -1086,17 +1086,17 @@ Package logreq Info: Writing requests to 'main.run.xml'.
  ) 
 Here is how much of TeX's memory you used:
  29014 strings out of 474222
- 541512 string characters out of 5748733
+ 541480 string characters out of 5748733
  2301975 words of memory out of 5000000
- 50651 multiletter control sequences out of 15000+600000
+ 50653 multiletter control sequences out of 15000+600000
  637976 words of font info for 99 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
  108i,21n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (22 pages, 650823 bytes).
+Output written on main.pdf (22 pages, 651208 bytes).
 PDF statistics:
- 610 PDF objects out of 1000 (max. 8388607)
- 538 compressed objects within 6 object streams
- 253 named destinations out of 1000 (max. 500000)
- 258 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 614 PDF objects out of 1000 (max. 8388607)
+ 542 compressed objects within 6 object streams
+ 251 named destinations out of 1000 (max. 500000)
+ 274 words of extra memory for PDF output out of 10000 (max. 10000000)
 
