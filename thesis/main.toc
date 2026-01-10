@@ -19,14 +19,21 @@
 \contentsline {section}{\numberline {3.1}Aufbau}{10}{section.3.1}%
 \contentsline {subsection}{\numberline {3.1.1}Überblick}{10}{subsection.3.1.1}%
 \contentsline {subsection}{\numberline {3.1.2}Datenmodell}{10}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Algorithmenanalyse}{12}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Traversal}{12}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Construction}{12}{subsection.3.2.2}%
-\contentsline {subsubsection}{\nonumberline Median Split}{13}{subsubsection*.11}%
-\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{14}{subsubsection*.13}%
-\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{14}{subsubsection*.15}%
-\contentsline {chapter}{\numberline {4}Ergebnisse}{15}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Diskussion}{17}{chapter.5}%
-\contentsline {chapter}{\numberline {6}Fazit}{18}{chapter.6}%
-\contentsline {chapter}{\numberline {7}Appendix}{19}{chapter.7}%
+\contentsline {section}{\numberline {3.2}Algorithmenanalyse}{13}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Traversal}{13}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Construction}{13}{subsection.3.2.2}%
+\contentsline {subsubsection}{\nonumberline Median Split}{15}{subsubsection*.13}%
+\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{15}{subsubsection*.15}%
+\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{16}{subsubsection*.17}%
+\contentsline {subsection}{\numberline {3.2.3}Collapse Funktion}{16}{subsection.3.2.3}%
+\contentsline {chapter}{\numberline {4}Ergebnisse}{17}{chapter.4}%
+\contentsline {subsection}{\numberline {4.0.1}Versuchssetup}{17}{subsection.4.0.1}%
+\contentsline {subsection}{\numberline {4.0.2}Korrektheit}{17}{subsection.4.0.2}%
+\contentsline {subsection}{\numberline {4.0.3}Traversal}{17}{subsection.4.0.3}%
+\contentsline {subsubsection}{\nonumberline Zusammenfassung}{19}{subsubsection*.19}%
+\contentsline {subsection}{\numberline {4.0.4}Dynamisches Modell}{19}{subsection.4.0.4}%
+\contentsline {subsubsection}{\nonumberline Zusammenfassung}{19}{subsubsection*.21}%
+\contentsline {chapter}{\numberline {5}Diskussion}{20}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Fazit}{21}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendix}{22}{chapter.7}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

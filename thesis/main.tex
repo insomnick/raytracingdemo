@@ -122,7 +122,7 @@ Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit.
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.3]{images/bunny_bvh1.png}
+\includegraphics[scale=0.3]{images/bunny_boxes.png}
 \caption{Stanford Bunny mit sichtbaren Bounding Boxes}
 \end{figure}
 
@@ -248,8 +248,43 @@ Die Binned Surface Area Heuristic ist eine Abwandlung, der SAH. Sie verwendet da
 \subsection{Überblick}
 
 Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heurustic Split} und \emph{Binned Surface Are Heuristic Split}. Als Baseline wird in jedem Fall ein Binärer Testdurchlauf mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht. Dabei existiert jeweils eine Variante in der die binäre BVH collapsed wird um die höheren Grade zu erreichen und eine Variante mit direktem k-way-split. 
-Innerhalb der Szenen wird eine einfache Kamerafahrt in 36 Snapshots unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stehts im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. 
-Dabei werden als Hauptmetriken die Construction-Time und die Traversal-Time erfasst und verglichen. Zudem wird die Anzahl an \emph{Hit Rays}, also die Anzahl an Rays, die tatsächlich mit einem Polygon kollidieren, erfasst. Dies geschieht um die Modelle anhand ihrer Polygonanzahl zu vergleichen, obwohl diese unterschiedlich skaliert sind. Die Tests erfolgen lediglich auf der CPU.
+Innerhalb der Szenen wird eine einfache Kamerafahrt in 36 Frames unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stehts im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. Die Frames unterscheiden sich damit lediglich in Kameraposition und -Ausrichtung. 
+Dabei werden als Hauptmetriken die Construction-Time und die Traversal-Time erfasst. 
+Insgesamt werden pro Testdurchlauf 10 Datenpunkte für die Construction-Time und dann pro Frame jeweils die Traversal-Time gesammelt. 
+Alle Tests wurden um Messfehler auszuschließen 10 mal wiederholt.
+Damit kommt man für jede Permutation von Algorithmus, Verzweigungsgrad, Wide BVH Variante und Modell auf 84 verschiedene Testruns mit je 46 Datenpunkte und 10 Wiederholungen. Also gesamtheitlich auf \emph{38.640 Datenpunkte}.
+Im ersten Schritt werden Unterschiede in der Traversal-Time untersucht um auf Veränderungen in der BVH-Qualität zurückzuschließen. Im zweiten Schritt wird die Summe von Construction- und Traversal-Time betrachtet, um die Performance in einer dynamischen Szene zu modellieren, da in dynamischen Szenen die BVH theoretisch nach jeder Änderung an der Szene neu berechnet werden muss.  
+
+Die gewählten Szenen sind bekannte Testmodelle mit unterschiedlichen Größenordnungen im Bezug auf Polygonanzahl, die sich in einem ansonsten leeren Raum aufhalten.
+Die Szenengröße kann man folgender Tabelle entnehmen:
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l r}
+    \hline
+    Szene & Polygonanzahl \\
+    \hline
+    Suzanne & 968 \\
+    Utah Teapot & 6320 \\
+    Stanford Bunny & 69451 \\
+    Stanford Armadillo & 99976 \\
+    \hline
+    \end{tabular}
+    \caption{Polygonanzahl untersuchter 3D-Modelle}
+    \label{tab:object-meta}
+    \end{table}
+    
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.24\textwidth]{images/suzanne.png}
+    \includegraphics[width=0.24\textwidth]{images/teapot.png}
+    \includegraphics[width=0.24\textwidth]{images/bunny.png}
+    \includegraphics[width=0.24\textwidth]{images/armadillo.png}
+    \caption{Suzanne, Utah Teapot, Stanford Bunny. Stanford Armadillo}
+\end{figure}
+
+Zu jedem Frame wird wie oben dargestellt ein Bild erzeugt, welches dazu dient die Korrektheit der Traversal zu untersuchen. Damit kann zudem sicehrgestellt werden, dass die untersuchte BVH eine gültige Form besitzt. Unabhängig von von Testrun sollen die erzeugten Bilder pro Testszene immer gleich sein. 
 
 \subsection{Datenmodell}
 
@@ -279,7 +314,7 @@ class AABB
 }
 \end{lstlisting}
 
-Die BVH selbst besteht aus aufeinander referenzierende Nodes. Ein Node wird dabei durch seine Bounding Box, referenzen zu den eingeschlossenen Primitiven und Referenzen zu seinen Child-Nodes definiert.
+Die BVH selbst besteht aus aufeinander referenzierende Nodes. Ein Node wird dabei durch seine Bounding Box, Referenzen zu den eingeschlossenen Primitiven und Referenzen zu seinen Child-Nodes definiert.
 
 Innerhalb der BVH muss so nur eine Referenz auf die Wurzel (Root) gegeben sein, alle anderen Referenzen erfolgen implizit. 
 Zudem liegt die Working-Copy aller Primitives innerhalb der BVH, auf die die jeweiligen Nodes jeweils ihre referenzen besitzen. 
@@ -353,7 +388,12 @@ end function
 
 \subsection{Construction}
 
-Die Konstruktionsfunktion 
+Die Konstruktionsfunktion unterstützt eine variable Split-Funktion, hier \emph{partitionFunction} mit variablem Verzweigungsgrad.
+Nachdem eine Kopie fer Primitive für die BVH erstellt und sichergegangen wird, dass überhaupt Primitive in der Szene existieren, wird die \emph{Root-Node} erstellt. Diese wird auf einen Stack gelegt. 
+
+Solange Nodes auf dem Stack liegen, wird der oberste vom Stack genommen und behandelt. Nachdem die längste Achse der korrespondierenden AABB berechnet wurde, wird die ausgewählte Split-Funtion mit den Primitiven des Nodes und der Achse aufgerufen. Die daraus resultierenden Indexe werden verwendet um die Primitive aufzuteilen. Falls keine Indexe zurückgegeben werden, wird der behandelte Node als Leaf angesehen und der Schleifendurchlauf abgebrochen. Für alle neuen Teilmengen werden dann neue AABBs berechnet und neue Nodes erstellt. Diese neue Nodes werden in den behandelten Nodes als Child-Nodes referenziert. Daraufhin werden sie auf den Stack gelegt und die Schleife beginnt von neuen. 
+
+Letztendlich wird eine BVH-Instanz mit dem zuerst berechneten Root-Node und der Kopie aller Primitive zurückgegeben. 
 
 \begin{lstlisting}[style=codestyle,caption={BVH-Konstruktion mit gegebener Partitionsfunktion}]
 function build(inputPrimitives, partitionFunction):
@@ -409,6 +449,8 @@ end function
 \end{lstlisting}
 
 \subsubsection{Median Split}
+
+Der Median-Split ist die einfachste variante einer Split-Funtion. Die Menge der Primitive wird in, vom Verzweigungsgrad abhängige, gleichgroße Teile gespalten. Dafür wird die Menge der Primitive $n$ durch den Verzweigungsgrad geteilt um die Größe einer Teilmenge zu bestimmen. Vielfache dieser Zahl innerhalb des Intervalls $(0, n)$ werden als Indexe fürs Splitting verwendet. Allerdings muss dafür noch die Menge an Primitiven, entlang der gegebenen Achse, partiell Sortiert werden, sodass für alle Indexe gilt, dass der Mittelpunkt der Position der Primitive links des Index kleiner sind als die rechts des Indexes.   
 
 \begin{lstlisting}[style=codestyle,caption={Median Partition}]
 function medianSplit(primitives, axis, degree):    //O(n)
@@ -485,12 +527,34 @@ end function
 
 \subsubsection{Binned Surface Area Heuristic Split}
 
+\subsection{Collapse Funktion}
+
 \newpage
 
 \chapter{Ergebnisse}
+
+\subsection{Versuchssetup}
+Was wurde wie gemacht -> pipeline
+
+\subsection{Korrektheit}
+Gleiche Anzahl an Hits pro Modell, alle bilder sehen gleich aus, keine Nan werte, 
+
+\subsection{Traversal}
+- Hypothese Traversalzeiten ändern sich abhängig von k
+- H0 keine Änderung
+Die Darstellung der Ergebnisse orientiert sich an den Problemfragen.    
+
 \begin{center}
     \input{results/statistical_results_table.tex}
 \end{center}
+
+\subsubsection{Zusammenfassung}
+
+\subsection{Dynamisches Modell}
+- Construction + Traversal Time
+
+\subsubsection{Zusammenfassung}
+
 
 \newpage
 

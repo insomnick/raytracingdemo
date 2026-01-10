@@ -80,11 +80,6 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
         if 'Time' in col:
             formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:.4f}" if pd.notnull(x) else x)
 
-    # cap collapsed string to col.
-    if 'Type' in formatted_df.columns:
-        formatted_df['Type'] = formatted_df['Type'].apply(lambda x: 'col.' if str(x) == 'collapsed' else x)
-
-
     # Generate LaTeX
     latex_table = formatted_df.to_latex(
         index=False,
@@ -92,8 +87,7 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
         longtable=True,
         caption=table_config['caption'],
         label=table_config['label'],
-        column_format=table_config.get('column_format', None),
-        position='b'  # Caption at bottom
+        column_format=table_config.get('column_format', None)
     )
 
     # Save individual LaTeX file
