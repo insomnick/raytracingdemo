@@ -12,9 +12,9 @@
 \contentsline {subsection}{\numberline {2.3.2}Traversal}{8}{subsection.2.3.2}%
 \contentsline {subsection}{\numberline {2.3.3}Kostenmodelle}{8}{subsection.2.3.3}%
 \contentsline {subsection}{\numberline {2.3.4}Construction}{9}{subsection.2.3.4}%
-\contentsline {subsubsection}{\nonumberline Median Split}{9}{subsubsection*.4}%
-\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{9}{subsubsection*.6}%
-\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic}{9}{subsubsection*.8}%
+\contentsline {subsubsection}{\nonumberline Median Split}{9}{subsubsection*.5}%
+\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{9}{subsubsection*.7}%
+\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic}{9}{subsubsection*.9}%
 \contentsline {chapter}{\numberline {3}Methoden}{10}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Aufbau}{10}{section.3.1}%
 \contentsline {subsection}{\numberline {3.1.1}Überblick}{10}{subsection.3.1.1}%
@@ -22,11 +22,11 @@
 \contentsline {section}{\numberline {3.2}Algorithmenanalyse}{12}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}Traversal}{12}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {3.2.2}Construction}{12}{subsection.3.2.2}%
-\contentsline {subsubsection}{\nonumberline Median Split}{13}{subsubsection*.10}%
-\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{14}{subsubsection*.12}%
-\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{14}{subsubsection*.14}%
+\contentsline {subsubsection}{\nonumberline Median Split}{13}{subsubsection*.11}%
+\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{14}{subsubsection*.13}%
+\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{14}{subsubsection*.15}%
 \contentsline {chapter}{\numberline {4}Ergebnisse}{15}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Diskussion}{17}{chapter.5}%
-\contentsline {chapter}{\numberline {6}Fazit}{18}{chapter.6}%
-\contentsline {chapter}{\numberline {7}Appendix}{19}{chapter.7}%
+\contentsline {chapter}{\numberline {5}Diskussion}{16}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Fazit}{17}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendix}{18}{chapter.7}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

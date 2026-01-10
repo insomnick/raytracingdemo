@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  10 JAN 2026 13:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  10 JAN 2026 14:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**main.tex
+**main
 (./main.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -601,12 +601,85 @@ LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
 )
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen179
+\lightrulewidth=\dimen180
+\cmidrulewidth=\dimen181
+\belowrulesep=\dimen182
+\belowbottomsep=\dimen183
+\aboverulesep=\dimen184
+\abovetopsep=\dimen185
+\cmidrulesep=\dimen186
+\cmidrulekern=\dimen187
+\defaultaddspace=\dimen188
+\@cmidla=\count311
+\@cmidlb=\count312
+\@aboverulesep=\dimen189
+\@belowrulesep=\dimen190
+\@thisruleclass=\count313
+\@lastruleclass=\count314
+\@thisrulewidth=\dimen191
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2023-11-01 v4.19 Multi-page Table package (DPC)
+\LTleft=\skip76
+\LTright=\skip77
+\LTpre=\skip78
+\LTpost=\skip79
+\LTchunksize=\count315
+\LTcapwidth=\dimen192
+\LT@head=\box59
+\LT@firsthead=\box60
+\LT@foot=\box61
+\LT@lastfoot=\box62
+\LT@gbox=\box63
+\LT@cols=\count316
+\LT@rows=\count317
+\c@LT@tables=\count318
+\c@LT@chunks=\count319
+\LT@p@ftn=\toks34
+)
+Class scrreprt Info: longtable captions redefined on input line 38.
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
+\caption@tempdima=\dimen193
+\captionmargin=\dimen194
+\caption@leftmargin=\dimen195
+\caption@rightmargin=\dimen196
+\caption@width=\dimen197
+\caption@indent=\dimen198
+\caption@parindent=\dimen199
+\caption@hangindent=\dimen256
+Package caption Info: KOMA-Script document class detected.
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption-koma.sto
+File: caption-koma.sto 2023/09/08 v2.0e Adaption of the caption package to the 
+KOMA-Script document classes (AR)
+))
+\c@caption@flags=\count320
+\c@continuedfloat=\count321
+Package caption Info: hyperref package is loaded.
+Package caption Info: listings package is loaded.
+Package caption Info: longtable package is loaded.
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty
+Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
+)
+Package caption Info: KOMA-Script scrextend package detected.
+\caption@addmargin@hsize=\dimen257
+\caption@addmargin@linewidth=\dimen258
+)
 (/usr/share/texlive/texmf-dist/tex/latex/biblatex/biblatex.sty
 Package: biblatex 2023/03/05 v3.19 programmable bibliographies (PK/MW)
 
 (/usr/share/texlive/texmf-dist/tex/latex/logreq/logreq.sty
 Package: logreq 2010/08/04 v1.0 xml request logger
-\lrq@indent=\count311
+\lrq@indent=\count322
 
 (/usr/share/texlive/texmf-dist/tex/latex/logreq/logreq.def
 File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
@@ -614,63 +687,63 @@ File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
 (/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
 )
-\c@tabx@nest=\count312
-\c@listtotal=\count313
-\c@listcount=\count314
-\c@liststart=\count315
-\c@liststop=\count316
-\c@citecount=\count317
-\c@citetotal=\count318
-\c@multicitecount=\count319
-\c@multicitetotal=\count320
-\c@instcount=\count321
-\c@maxnames=\count322
-\c@minnames=\count323
-\c@maxitems=\count324
-\c@minitems=\count325
-\c@citecounter=\count326
-\c@maxcitecounter=\count327
-\c@savedcitecounter=\count328
-\c@uniquelist=\count329
-\c@uniquename=\count330
-\c@refsection=\count331
-\c@refsegment=\count332
-\c@maxextratitle=\count333
-\c@maxextratitleyear=\count334
-\c@maxextraname=\count335
-\c@maxextradate=\count336
-\c@maxextraalpha=\count337
-\c@abbrvpenalty=\count338
-\c@highnamepenalty=\count339
-\c@lownamepenalty=\count340
-\c@maxparens=\count341
-\c@parenlevel=\count342
-\blx@tempcnta=\count343
-\blx@tempcntb=\count344
-\blx@tempcntc=\count345
-\c@blx@maxsection=\count346
-\blx@maxsegment@0=\count347
-\blx@notetype=\count348
-\blx@parenlevel@text=\count349
-\blx@parenlevel@foot=\count350
-\blx@sectionciteorder@0=\count351
-\blx@sectionciteorderinternal@0=\count352
-\blx@entrysetcounter=\count353
-\blx@biblioinstance=\count354
-\labelnumberwidth=\skip76
-\labelalphawidth=\skip77
-\biblabelsep=\skip78
-\bibitemsep=\skip79
-\bibnamesep=\skip80
-\bibinitsep=\skip81
-\bibparsep=\skip82
-\bibhang=\skip83
+\c@tabx@nest=\count323
+\c@listtotal=\count324
+\c@listcount=\count325
+\c@liststart=\count326
+\c@liststop=\count327
+\c@citecount=\count328
+\c@citetotal=\count329
+\c@multicitecount=\count330
+\c@multicitetotal=\count331
+\c@instcount=\count332
+\c@maxnames=\count333
+\c@minnames=\count334
+\c@maxitems=\count335
+\c@minitems=\count336
+\c@citecounter=\count337
+\c@maxcitecounter=\count338
+\c@savedcitecounter=\count339
+\c@uniquelist=\count340
+\c@uniquename=\count341
+\c@refsection=\count342
+\c@refsegment=\count343
+\c@maxextratitle=\count344
+\c@maxextratitleyear=\count345
+\c@maxextraname=\count346
+\c@maxextradate=\count347
+\c@maxextraalpha=\count348
+\c@abbrvpenalty=\count349
+\c@highnamepenalty=\count350
+\c@lownamepenalty=\count351
+\c@maxparens=\count352
+\c@parenlevel=\count353
+\blx@tempcnta=\count354
+\blx@tempcntb=\count355
+\blx@tempcntc=\count356
+\c@blx@maxsection=\count357
+\blx@maxsegment@0=\count358
+\blx@notetype=\count359
+\blx@parenlevel@text=\count360
+\blx@parenlevel@foot=\count361
+\blx@sectionciteorder@0=\count362
+\blx@sectionciteorderinternal@0=\count363
+\blx@entrysetcounter=\count364
+\blx@biblioinstance=\count365
+\labelnumberwidth=\skip80
+\labelalphawidth=\skip81
+\biblabelsep=\skip82
+\bibitemsep=\skip83
+\bibnamesep=\skip84
+\bibinitsep=\skip85
+\bibparsep=\skip86
+\bibhang=\skip87
 \blx@bcfin=\read3
 \blx@bcfout=\write3
 \blx@langwohyphens=\language90
-\c@mincomprange=\count355
-\c@maxcomprange=\count356
-\c@mincompwidth=\count357
+\c@mincomprange=\count366
+\c@maxcomprange=\count367
+\c@mincompwidth=\count368
 Package biblatex Info: Trying to load biblatex default data model...
 Package biblatex Info: ... file 'blx-dm.def' found.
 
@@ -681,88 +754,88 @@ Package biblatex Info: Trying to load biblatex style data model...
 Package biblatex Info: ... file 'alphabetic.dbx' not found.
 Package biblatex Info: Trying to load biblatex custom data model...
 Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
-\c@afterword=\count358
-\c@savedafterword=\count359
-\c@annotator=\count360
-\c@savedannotator=\count361
-\c@author=\count362
-\c@savedauthor=\count363
-\c@bookauthor=\count364
-\c@savedbookauthor=\count365
-\c@commentator=\count366
-\c@savedcommentator=\count367
-\c@editor=\count368
-\c@savededitor=\count369
-\c@editora=\count370
-\c@savededitora=\count371
-\c@editorb=\count372
-\c@savededitorb=\count373
-\c@editorc=\count374
-\c@savededitorc=\count375
-\c@foreword=\count376
-\c@savedforeword=\count377
-\c@holder=\count378
-\c@savedholder=\count379
-\c@introduction=\count380
-\c@savedintroduction=\count381
-\c@namea=\count382
-\c@savednamea=\count383
-\c@nameb=\count384
-\c@savednameb=\count385
-\c@namec=\count386
-\c@savednamec=\count387
-\c@translator=\count388
-\c@savedtranslator=\count389
-\c@shortauthor=\count390
-\c@savedshortauthor=\count391
-\c@shorteditor=\count392
-\c@savedshorteditor=\count393
-\c@labelname=\count394
-\c@savedlabelname=\count395
-\c@institution=\count396
-\c@savedinstitution=\count397
-\c@lista=\count398
-\c@savedlista=\count399
-\c@listb=\count400
-\c@savedlistb=\count401
-\c@listc=\count402
-\c@savedlistc=\count403
-\c@listd=\count404
-\c@savedlistd=\count405
-\c@liste=\count406
-\c@savedliste=\count407
-\c@listf=\count408
-\c@savedlistf=\count409
-\c@location=\count410
-\c@savedlocation=\count411
-\c@organization=\count412
-\c@savedorganization=\count413
-\c@origlocation=\count414
-\c@savedoriglocation=\count415
-\c@origpublisher=\count416
-\c@savedorigpublisher=\count417
-\c@publisher=\count418
-\c@savedpublisher=\count419
-\c@language=\count420
-\c@savedlanguage=\count421
-\c@origlanguage=\count422
-\c@savedoriglanguage=\count423
-\c@pageref=\count424
-\c@savedpageref=\count425
-\shorthandwidth=\skip84
-\shortjournalwidth=\skip85
-\shortserieswidth=\skip86
-\shorttitlewidth=\skip87
-\shortauthorwidth=\skip88
-\shorteditorwidth=\skip89
-\locallabelnumberwidth=\skip90
-\locallabelalphawidth=\skip91
-\localshorthandwidth=\skip92
-\localshortjournalwidth=\skip93
-\localshortserieswidth=\skip94
-\localshorttitlewidth=\skip95
-\localshortauthorwidth=\skip96
-\localshorteditorwidth=\skip97
+\c@afterword=\count369
+\c@savedafterword=\count370
+\c@annotator=\count371
+\c@savedannotator=\count372
+\c@author=\count373
+\c@savedauthor=\count374
+\c@bookauthor=\count375
+\c@savedbookauthor=\count376
+\c@commentator=\count377
+\c@savedcommentator=\count378
+\c@editor=\count379
+\c@savededitor=\count380
+\c@editora=\count381
+\c@savededitora=\count382
+\c@editorb=\count383
+\c@savededitorb=\count384
+\c@editorc=\count385
+\c@savededitorc=\count386
+\c@foreword=\count387
+\c@savedforeword=\count388
+\c@holder=\count389
+\c@savedholder=\count390
+\c@introduction=\count391
+\c@savedintroduction=\count392
+\c@namea=\count393
+\c@savednamea=\count394
+\c@nameb=\count395
+\c@savednameb=\count396
+\c@namec=\count397
+\c@savednamec=\count398
+\c@translator=\count399
+\c@savedtranslator=\count400
+\c@shortauthor=\count401
+\c@savedshortauthor=\count402
+\c@shorteditor=\count403
+\c@savedshorteditor=\count404
+\c@labelname=\count405
+\c@savedlabelname=\count406
+\c@institution=\count407
+\c@savedinstitution=\count408
+\c@lista=\count409
+\c@savedlista=\count410
+\c@listb=\count411
+\c@savedlistb=\count412
+\c@listc=\count413
+\c@savedlistc=\count414
+\c@listd=\count415
+\c@savedlistd=\count416
+\c@liste=\count417
+\c@savedliste=\count418
+\c@listf=\count419
+\c@savedlistf=\count420
+\c@location=\count421
+\c@savedlocation=\count422
+\c@organization=\count423
+\c@savedorganization=\count424
+\c@origlocation=\count425
+\c@savedoriglocation=\count426
+\c@origpublisher=\count427
+\c@savedorigpublisher=\count428
+\c@publisher=\count429
+\c@savedpublisher=\count430
+\c@language=\count431
+\c@savedlanguage=\count432
+\c@origlanguage=\count433
+\c@savedoriglanguage=\count434
+\c@pageref=\count435
+\c@savedpageref=\count436
+\shorthandwidth=\skip88
+\shortjournalwidth=\skip89
+\shortserieswidth=\skip90
+\shorttitlewidth=\skip91
+\shortauthorwidth=\skip92
+\shorteditorwidth=\skip93
+\locallabelnumberwidth=\skip94
+\locallabelalphawidth=\skip95
+\localshorthandwidth=\skip96
+\localshortjournalwidth=\skip97
+\localshortserieswidth=\skip98
+\localshorttitlewidth=\skip99
+\localshortauthorwidth=\skip100
+\localshorteditorwidth=\skip101
 Package biblatex Info: Trying to load compatibility code...
 Package biblatex Info: ... file 'blx-compat.def' found.
 
@@ -774,19 +847,19 @@ Package biblatex Info: ... file 'biblatex.def' found.
 
 (/usr/share/texlive/texmf-dist/tex/latex/biblatex/biblatex.def
 File: biblatex.def 2023/03/05 v3.19 biblatex compatibility (PK/MW)
-\c@textcitecount=\count426
-\c@textcitetotal=\count427
-\c@textcitemaxnames=\count428
-\c@biburlbigbreakpenalty=\count429
-\c@biburlbreakpenalty=\count430
-\c@biburlnumpenalty=\count431
-\c@biburlucpenalty=\count432
-\c@biburllcpenalty=\count433
+\c@textcitecount=\count437
+\c@textcitetotal=\count438
+\c@textcitemaxnames=\count439
+\c@biburlbigbreakpenalty=\count440
+\c@biburlbreakpenalty=\count441
+\c@biburlnumpenalty=\count442
+\c@biburlucpenalty=\count443
+\c@biburllcpenalty=\count444
 \biburlbigskip=\muskip18
 \biburlnumskip=\muskip19
 \biburlucskip=\muskip20
 \biburllcskip=\muskip21
-\c@smartand=\count434
+\c@smartand=\count445
 )
 Package biblatex Info: Trying to load bibliography style 'alphabetic'...
 Package biblatex Info: ... file 'alphabetic.bbx' found.
@@ -798,8 +871,8 @@ Package biblatex Info: ... file 'standard.bbx' found.
 
 (/usr/share/texlive/texmf-dist/tex/latex/biblatex/bbx/standard.bbx
 File: standard.bbx 2023/03/05 v3.19 biblatex bibliography style (PK/MW)
-\c@bbx:relatedcount=\count435
-\c@bbx:relatedtotal=\count436
+\c@bbx:relatedcount=\count446
+\c@bbx:relatedtotal=\count447
 ))
 Package biblatex Info: Trying to load citation style 'alphabetic'...
 Package biblatex Info: ... file 'alphabetic.cbx' found.
@@ -835,7 +908,7 @@ Package: blx-case-expl3 2023/03/05 v3.19 expl3 case changing code for biblatex
 ))
 (./template-config.tex
 Package hyperref Info: Option `colorlinks' set `true' on input line 5.
-\c@theorem=\count437
+\c@theorem=\count448
 )
 1: section
 1: section
@@ -843,45 +916,45 @@ Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... found 'babel' package.
 Package csquotes Info: Adjusting default style.
 Package csquotes Info: Redefining alias 'default' -> 'ngerman'.
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 94
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 97
 .
 (/usr/share/texmf/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 94.
-LaTeX Font Info:    ... okay on input line 94.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 97.
+LaTeX Font Info:    ... okay on input line 97.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count438
-\scratchdimen=\dimen179
-\scratchbox=\box59
-\nofMPsegments=\count439
-\nofMParguments=\count440
-\everyMPshowfont=\toks34
-\MPscratchCnt=\count441
-\MPscratchDim=\dimen180
-\MPnumerator=\count442
-\makeMPintoPDFobject=\count443
-\everyMPtoPDFconversion=\toks35
+\scratchcounter=\count449
+\scratchdimen=\dimen259
+\scratchbox=\box64
+\nofMPsegments=\count450
+\nofMParguments=\count451
+\everyMPshowfont=\toks35
+\MPscratchCnt=\count452
+\MPscratchDim=\dimen260
+\MPnumerator=\count453
+\makeMPintoPDFobject=\count454
+\everyMPtoPDFconversion=\toks36
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -891,7 +964,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring ON on input line 94.
+Package hyperref Info: Link coloring ON on input line 97.
 
 (./main.out) (./main.out)
 \@outlinefile=\write4
@@ -904,7 +977,7 @@ Class scrreprt Info: loading recommended package `bookmark'.
 (scrreprt)           `bookmarkpackage=false' before \begin{document} and
 (scrreprt)           you can avoid this message adding:
 (scrreprt)             \usepackage{bookmark}
-(scrreprt)           before \begin{document} on input line 94.
+(scrreprt)           before \begin{document} on input line 97.
 
 (/usr/share/texlive/texmf-dist/tex/latex/bookmark/bookmark.sty
 Package: bookmark 2023-12-10 v1.31 PDF bookmarks (HO)
@@ -912,7 +985,7 @@ Package: bookmark 2023-12-10 v1.31 PDF bookmarks (HO)
 (/usr/share/texlive/texmf-dist/tex/latex/bookmark/bkm-pdftex.def
 File: bkm-pdftex.def 2023-12-10 v1.31 bookmark driver for pdfTeX and luaTeX (HO
 )
-\BKM@id=\count444
+\BKM@id=\count455
 ))
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -948,7 +1021,9 @@ File: bkm-pdftex.def 2023-12-10 v1.31 bookmark driver for pdfTeX and luaTeX (HO
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\c@lstlisting=\count445
+\c@lstlisting=\count456
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
 Package biblatex Info: Trying to load language 'ngerman'...
 Package biblatex Info: ... file 'ngerman.lbx' found.
 (/usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/ngerman.lbx
@@ -973,61 +1048,61 @@ Package biblatex Info: Automatic encoding selection.
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' found.
  (./main.bbl)
-Package biblatex Info: Reference section=0 on input line 94.
-Package biblatex Info: Reference segment=0 on input line 94.
-LaTeX Font Info:    Trying to load font information for T1+lmss on input line 9
-7.
+Package biblatex Info: Reference section=0 on input line 97.
+Package biblatex Info: Reference segment=0 on input line 97.
+LaTeX Font Info:    Trying to load font information for T1+lmss on input line 1
+00.
 (/usr/share/texmf/tex/latex/lm/t1lmss.fd
 File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 9
-7.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
+00.
 
 (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 9
-7.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
+00.
 
 (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-97.
+100.
 
 (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-97.
+100.
 
 (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <14.4> on input line 97.
+(Font)              <14.4> on input line 100.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 97.
+(Font)              <10> on input line 100.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 97.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 97.
-
+(Font)              <7> on input line 100.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 100
+.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 97.
-
+LaTeX Font Info:    Trying to load font information for U+msb on input line 100
+.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 97.
+(Font)              <12> on input line 100.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 97.
+(Font)              <8> on input line 100.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 97.
+(Font)              <6> on input line 100.
  [1
 
 
@@ -1035,7 +1110,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/
 dvips/lm/lm-ec.enc}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 102.
+(Font)              <10.95> on input line 105.
  [2
 
 ] (./main.toc)
@@ -1064,7 +1139,7 @@ Class scrreprt Warning: \float@addtolists detected!
 <images/bunny_bvh1.png, id=72, 642.4pt x 642.4pt>
 File: images/bunny_bvh1.png Graphic file (type png)
 <use images/bunny_bvh1.png>
-Package pdftex.def Info: images/bunny_bvh1.png  used on input line 122.
+Package pdftex.def Info: images/bunny_bvh1.png  used on input line 125.
 (pdftex.def)             Requested size: 192.72148pt x 192.72148pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1073,7 +1148,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 ]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
-34.
+37.
  (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [5{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/share/texmf/fonts/enc
@@ -1085,45 +1160,58 @@ chapter 2.
 ] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}] [9]
 chapter 3.
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 258.
+nput line 261.
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
-58.
+61.
 (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [10
 
 ] [11]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <8> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 316.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 319.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 320.
+(Font)              <5> on input line 323.
  [12] [13] [14]
 chapter 4.
-<results/statistical_results_table.png, id=329, 910.602pt x 1604.1531pt>
-File: results/statistical_results_table.png Graphic file (type png)
-<use results/statistical_results_table.png>
-Package pdftex.def Info: results/statistical_results_table.png  used on input l
-ine 493.
-(pdftex.def)             Requested size: 382.7837pt x 674.32718pt.
-
-LaTeX Warning: Float too large for page by 27.6769pt on input line 495.
+(./results/comparison_results_table.tex
+Overfull \hbox (153.09117pt too wide) in alignment at lines 1--6
+ [] [] [] [] [] [] [] [] [] 
+ []
 
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+Overfull \hbox (153.09117pt too wide) in alignment at lines 6--11
+ [] [] [] [] [] [] [] [] [] 
+ []
 
-[15
 
-] [16 <./results/statistical_results_table.png>]
+Overfull \hbox (153.09117pt too wide) in alignment at lines 11--15
+ [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (153.09117pt too wide) in alignment at lines 15--17
+ [] [] [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (153.09117pt too wide) in alignment at lines 17--54
+ [] [] [] [] [] [] [] [] [] 
+ []
+
+) [15
+
+]
 chapter 5.
-[17
+[16
 
 ]
 chapter 6.
-[18
+[17
 
 ]
 chapter 7.
-[19
+[18
 
 ] (./main.aux)
  ***********
@@ -1137,13 +1225,13 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 27421 strings out of 474222
- 510657 string characters out of 5748733
+ 28962 strings out of 474222
+ 540381 string characters out of 5748733
  2409975 words of memory out of 5000000
- 49096 multiletter control sequences out of 15000+600000
+ 50615 multiletter control sequences out of 15000+600000
  637976 words of font info for 99 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
- 108i,21n,107p,10899b,2376s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,21n,107p,10895b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/ty
 pe1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></u
 sr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/pu
@@ -1155,10 +1243,10 @@ pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/font
 s/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb>
 </usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type
 1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (19 pages, 2018691 bytes).
+Output written on main.pdf (18 pages, 442540 bytes).
 PDF statistics:
- 560 PDF objects out of 1000 (max. 8388607)
- 494 compressed objects within 5 object streams
- 239 named destinations out of 1000 (max. 500000)
- 203 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 553 PDF objects out of 1000 (max. 8388607)
+ 490 compressed objects within 5 object streams
+ 238 named destinations out of 1000 (max. 500000)
+ 198 words of extra memory for PDF output out of 10000 (max. 10000000)
 

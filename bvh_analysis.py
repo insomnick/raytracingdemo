@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
+import jinja2
 
 plt.ioff()  # Turn off interactive mode
 sns.set_style("whitegrid")
@@ -298,6 +299,7 @@ def create_detailed_results_table(results_df, results_dir: Path):
     publication_df.to_csv(csv_path, index=False)
     print(f"Results table saved to: {csv_path}")
 
+
     # Create a fancy visualization of the table
     fig, ax = plt.subplots(figsize=(16, max(8, int(len(publication_df) * 0.4))))
     ax.axis('tight')
@@ -425,6 +427,7 @@ def k_way_vs_collapsed_results_table(results_df, results_dir):
     csv_path = results_dir / "comparison_results_table.csv"
     publication_df.to_csv(csv_path, index=False)
     print(f"Comparison results table saved to: {csv_path}")
+
 
     # Create a fancy visualization of the table (like detailed results)
     fig, ax = plt.subplots(figsize=(18, max(8, int(len(publication_df) * 0.4))))
@@ -1149,6 +1152,7 @@ def dynamic_model_results_table(results_df, results_dir):
     publication_df.to_csv(csv_path, index=False)
     print(f"Dynamic model results table saved to: {csv_path}")
 
+
     # Create a fancy visualization of the table
     fig, ax = plt.subplots(figsize=(18, max(8, int(len(publication_df) * 0.4))))
     ax.axis('tight')
@@ -1438,6 +1442,7 @@ def dynamic_comparison_results_table(results_summary, results_dir: Path):
     csv_path = results_dir / "dynamic_comparison_results_table.csv"
     publication_df.to_csv(csv_path, index=False)
     print(f"Dynamic comparison results table saved to: {csv_path}")
+
 
     # Create a fancy visualization of the table
     fig, ax = plt.subplots(figsize=(20, max(8, int(len(publication_df) * 0.4))))

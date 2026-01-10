@@ -33,6 +33,9 @@
 \usepackage{setspace} % Für Zeilenabstand
 \usepackage{listings} % für Programmcode/Pseudocode
 \usepackage{lmodern}  % schoenere Schriftart
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{caption}
 \usepackage[backend=biber, style=alphabetic]{biblatex} % Für die Einbindung von BibTeX
 
 \input{template-config.tex}
@@ -488,11 +491,7 @@ end function
 
 - k = 4 als Sieger des statischen und 
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{results/statistical_results_table.png}
-\caption{Detailierte Ergebisse}
-\end{figure}
+\input{results/comparison_results_table.tex}
 
 \newpage
 
