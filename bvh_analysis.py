@@ -83,20 +83,12 @@ def detailed_analysis(df, results_dir: Path):
     df = df.copy()
     # Check if there is a significant difference between k = 2 and k € {4, 8 ,16}
 
-    print("OVERVIEW")
     models = df["model_name"].unique()
-    print("Model names: ", models)
-    testrun_indices = df["testrun_index"].unique()
-    print("Testrun Indices: ", sorted(testrun_indices))
     algorithm_prefixes = df["algorithm_prefix"].unique()
-    print("Algorithm prefixes: ", algorithm_prefixes)
     algorithm_types = df["algorithm_type"].unique()
-    print("Algorithm types: ", algorithm_types)
     algorithm_degrees = df["algorithm_degree"].unique()
-    print("Algorithm degrees: ", algorithm_degrees)
 
     # 1. Aggregate over all camera steps to get mean per testrun
-    print("Aggregating camera steps...")
     testrun_means = df.groupby([
         "model_name", "algorithm_prefix", "algorithm_type", "algorithm_degree", "testrun_index"
     ]).agg({
@@ -104,12 +96,10 @@ def detailed_analysis(df, results_dir: Path):
         "construction_time": "mean",
         "hitray_count": "mean"
     }).reset_index()
-    print(f"After aggregation: {len(testrun_means)} testrun measurements")
 
     results_summary = []
 
     # 2. Statistical analysis over repetitions for each combination
-    print("Starting statistical analysis...")
     for model in models:
         for algorithm_prefix in algorithm_prefixes:
             for algorithm_type in algorithm_types:
@@ -167,49 +157,105 @@ def detailed_analysis(df, results_dir: Path):
                         'baseline_n': len(baseline_times),
                         'test_n': len(test_times)
                     })
-
-                    # Create plots
-                    detailed_plot(results_dir, baseline_times, test_times, model, algorithm_prefix, algorithm_degree, algorithm_type,
-                                    baseline_mean, test_mean, speedup_factor, percent_change, t_stat, p_value, is_significant, len(baseline_times), len(test_times))
-    print("Detailed analysis completed.")
     return pd.DataFrame(results_summary)
 
-def detailed_plot(results_dir, baseline_times, test_times, model, algorithm_prefix, algorithm_degree, algorithm_type, baseline_mean, test_mean, speedup_factor, percent_change, t_stat, p_value, significant, baseline_n, test_n):
+def unified_plot(results_dir, data1, data2, model, algorithm_prefix, degree,
+                 data1_label, data2_label, data1_mean, data2_mean,
+                 speedup_factor, percent_change, t_stat, p_value, significant,
+                 data1_n, data2_n, plot_type, time_unit="[s]", algorithm_type=None):
+    """
+    Gawrsh! A unified plotting function that can handle all plot types!
+    *nervous chuckle* Sometimes... consolidation reveals truths that were meant to stay hidden...
 
+    Parameters:
+    - data1, data2: pandas Series with the time data
+    - data1_label, data2_label: strings for the algorithm labels (e.g., "k=2", "k-way", "collapsed")
+    - plot_type: "detailed", "comparison", or "dynamic"
+    - time_unit: unit label for y-axis (e.g., "[s]")
+    - algorithm_type: for detailed/dynamic plots (e.g., "k-way", "collapsed")
+    """
+
+    # Create plot data DataFrame
     plot_data = pd.DataFrame({
-        'Algorithm': ['k=2'] * len(baseline_times) + [f'k={algorithm_degree}'] * len(test_times),
-        'Traversal_Time': pd.concat([baseline_times.reset_index(drop=True), test_times.reset_index(drop=True)])
+        'Algorithm': [data1_label] * len(data1) + [data2_label] * len(data2),
+        'Time': pd.concat([data1.reset_index(drop=True), data2.reset_index(drop=True)])
     })
 
     fig, axes = plt.subplots(1, 2, figsize=(12,8))
-    # Histogram of differences (only for matched pairs)
-    min_len = min(len(baseline_times), len(test_times))
-    differences = baseline_times.iloc[:min_len].values - test_times.iloc[:min_len].values
+
+    # Left plot: Histogram of differences (for matched pairs)
+    min_len = min(len(data1), len(data2))
+    differences = data1.iloc[:min_len].values - data2.iloc[:min_len].values
     axes[0].hist(differences, bins='auto')
-    axes[0].set_xlabel(f'Time Difference (k=2 - k={algorithm_degree}) [s]')
+
+    # Configure labels based on plot type
+    y_label = f'Time {time_unit}'  # Default
+    box_title = f'Time Distribution: {data1_label} vs {data2_label}'  # Default
+    plot_filename = results_dir / f"plot_{model}_{algorithm_prefix}_{degree}.png"  # Default
+
+    if plot_type == "detailed":
+        axes[0].set_xlabel(f'Time Difference ({data1_label} - {data2_label}) {time_unit}')
+        axes[0].set_title(f"{model} | {algorithm_prefix} | {degree} | {algorithm_type}")
+        y_label = f'Traversal Time {time_unit}'
+        box_title = f'Traversal Time Distribution: {data1_label} vs {data2_label}'
+        plot_filename = results_dir / f"detailed_{model}_{algorithm_prefix}_{algorithm_type}_{degree}.png"
+    elif plot_type == "comparison":
+        axes[0].set_xlabel(f'Time Difference ({data1_label} - {data2_label}) {time_unit}')
+        axes[0].set_title(f"{model} | {algorithm_prefix} | k={degree}")
+        y_label = f'Traversal Time {time_unit}'
+        box_title = f'Traversal Time Distribution: {data1_label} vs {data2_label}'
+        plot_filename = results_dir / f"comparison_{model}_{algorithm_prefix}_k{degree}.png"
+    elif plot_type == "dynamic":
+        axes[0].set_xlabel(f'Combined Time Difference ({data1_label} - {data2_label}) {time_unit}')
+        if algorithm_type:
+            axes[0].set_title(f"{model} | {algorithm_prefix} | {degree} | {algorithm_type}")
+            plot_filename = results_dir / f"dynamic_{model}_{algorithm_prefix}_{algorithm_type}_{degree}.png"
+        else:
+            axes[0].set_title(f"{model} | {algorithm_prefix} | k={degree}")
+            plot_filename = results_dir / f"dynamic_comparison_{model}_{algorithm_prefix}_k{degree}.png"
+        y_label = f'Combined Time (Construction + Traversal) {time_unit}'
+        box_title = f'Combined Time Distribution: {data1_label} vs {data2_label}'
+
     axes[0].set_ylabel('Count')
-    axes[0].set_title(f"{model} | {algorithm_prefix} | {algorithm_degree} | {algorithm_type}")
     axes[0].grid(True)
 
+    # Create statistics text
     text = '\n'.join((
         r'$t=%.2f$' % (t_stat,),
         r'$p=%.2e$' % (p_value,),
         r'Reject H0' if significant else r'Fail to reject H0',
-        r'%.2f%% speed' % percent_change
+        r'%.2f%% change' % percent_change
     ))
-    if significant:
-        print("Significant result!")
-        if percent_change < 0:
-            print("Algorithm is faster!")
-            text +=" (FASTER)"
-        else:
-            print("Algorithm is slower!")
-            text += " (SLOWER)"
 
-    # Boxplot comparing k=2 vs k=X
-    sns.boxplot(x='Algorithm', y='Traversal_Time', hue='Algorithm', data=plot_data, palette='pastel', legend=False, ax=axes[1])
-    axes[1].set_title(f'Traversal Time Distribution: k=2 vs k={algorithm_degree}')
-    axes[1].set_ylabel('Traversal Time [s]')
+    # Add significance indicators based on plot type
+    if significant:
+        if plot_type == "detailed":
+            if percent_change < 0:
+                text += " (FASTER)"
+            else:
+                text += " (SLOWER)"
+        elif plot_type == "comparison":
+            if percent_change < 0:
+                text += " (COLLAPSED FASTER)"
+            else:
+                text += " (COLLAPSED SLOWER)"
+        elif plot_type == "dynamic":
+            if data2_label == "collapsed":  # dynamic comparison
+                if percent_change < 0:
+                    text += " (COLLAPSED FASTER)"
+                else:
+                    text += " (COLLAPSED SLOWER)"
+            else:  # dynamic detailed
+                if percent_change < 0:
+                    text += " (FASTER)"
+                else:
+                    text += " (SLOWER)"
+
+    # Right plot: Boxplot comparing the two algorithms
+    sns.boxplot(x='Algorithm', y='Time', hue='Algorithm', data=plot_data,
+                palette='pastel', legend=False, ax=axes[1])
+    axes[1].set_title(box_title)
+    axes[1].set_ylabel(y_label)
 
     axes[1].text(
         0.95, 0.95, text,
@@ -223,11 +269,29 @@ def detailed_plot(results_dir, baseline_times, test_times, model, algorithm_pref
     # Figure layout
     fig.tight_layout()
 
-    # Save plot to results folder instead of showing
-    plot_filename = results_dir / f"detailed_{model}_{algorithm_prefix}_{algorithm_type}_{algorithm_degree}.png"
+    # Save plot
     plt.savefig(plot_filename, dpi=300, bbox_inches='tight')
-    print(f"Plot saved to: {plot_filename}")
+
+    # Print appropriate message
+    if plot_type == "detailed":
+        print(f"Plot saved to: {plot_filename}")
+    elif plot_type == "comparison":
+        print(f"Comparison plot saved to: {plot_filename}")
+    elif plot_type == "dynamic":
+        if algorithm_type:
+            print(f"Dynamic plot saved to: {plot_filename}")
+        else:
+            print(f"  Dynamic comparison plot saved to: {plot_filename}")
+
     plt.close()  # Close figure to free memory
+
+
+def detailed_plot(results_dir, baseline_times, test_times, model, algorithm_prefix, algorithm_degree, algorithm_type, baseline_mean, test_mean, speedup_factor, percent_change, t_stat, p_value, significant, baseline_n, test_n):
+    """Create a detailed comparison plot for traversal time"""
+    unified_plot(results_dir, baseline_times, test_times, model, algorithm_prefix, algorithm_degree,
+                 "k=2", f"k={algorithm_degree}", baseline_mean, test_mean,
+                 speedup_factor, percent_change, t_stat, p_value, significant,
+                 baseline_n, test_n, "detailed", "[s]", algorithm_type)
 
 def create_detailed_results_table(results_df, results_dir: Path):
     # Create sorting key: degree first, then type, then algorithm, then model
@@ -498,8 +562,6 @@ def k_way_vs_collapsed_results_table(results_df, results_dir):
                   f"{row['% Change']:.1f}% slower (p={row['p-value']})")
 
 def create_comprehensive_summary_graphs(detailed_results_df, comparison_results, dynamic_results_df, dynamic_comparison_results, results_dir: Path):
-    """Create comprehensive summary graphs that combine all analysis results"""
-    import numpy as np
 
     print("\nCreating comprehensive summary graphs...")
 
@@ -788,7 +850,6 @@ def create_summary_graph_type2_split(static_df, dynamic_df, results_dir):
 def collapsed_vs_kway_analysis(df, results_dir: Path):
 
     # 1. Aggregate over all camera steps to get mean per testrun (same as detailed analysis)
-    print("Aggregating camera steps for dynamic model analysis...")
     testrun_means = df.groupby([
         "model_name", "algorithm_prefix", "algorithm_type", "algorithm_degree", "testrun_index"
     ]).agg({
@@ -809,7 +870,7 @@ def collapsed_vs_kway_analysis(df, results_dir: Path):
         if degree == 2:  # Skip k=2 as it doesn't have collapsed variant
             continue
 
-        print(f"\nAnalyzing {model} | {algorithm_prefix} | k={degree}")
+        print(f"Analyzing {model} | {algorithm_prefix} | k={degree}")
 
         # Get k-way and collapsed data
         kway_data = group_df[group_df['algorithm_type'] == 'k-way']['traversal_time']
@@ -853,87 +914,21 @@ def collapsed_vs_kway_analysis(df, results_dir: Path):
             'p_value': p_value,
             'significant': is_significant,
         })
-
-        print(f"  k-way: {kway_mean:.4f}s ± {kway_std:.4f} (n={len(kway_data)})")
-        print(f"  collapsed: {collapsed_mean:.4f}s ± {collapsed_std:.4f} (n={len(collapsed_data)})")
-        print(f"  % Change (collapsed vs k-way): {percent_change:+.1f}%")
-        print(f"  t-statistic: {t_stat:.3f}, p-value: {p_value:.2e}")
-
-        # Create comparison plot
-        try:
-            comparison_plot(results_dir, kway_data, collapsed_data, model, algorithm_prefix, degree,
-                          kway_mean, collapsed_mean, speedup_factor, percent_change, t_stat, p_value,
-                          is_significant, len(kway_data), len(collapsed_data))
-        except Exception as e:
-            print(f"Error creating comparison plot: {e}")
-
-    print("Collapsed vs k-way analysis completed.")
     return results_summary
 
 def comparison_plot(results_dir, kway_data, collapsed_data, model, algorithm_prefix, degree,
                    kway_mean, collapsed_mean, speedup_factor, percent_change, t_stat, p_value,
                    significant, kway_n, collapsed_n):
-
-    plot_data = pd.DataFrame({
-        'Algorithm': ['k-way'] * len(kway_data) + ['collapsed'] * len(collapsed_data),
-        'Traversal_Time': pd.concat([kway_data.reset_index(drop=True), collapsed_data.reset_index(drop=True)])
-    })
-
-    fig, axes = plt.subplots(1, 2, figsize=(12,8))
-
-    # Histogram of differences (only for matched pairs)
-    min_len = min(len(kway_data), len(collapsed_data))
-    differences = kway_data.iloc[:min_len].values - collapsed_data.iloc[:min_len].values
-    axes[0].hist(differences, bins='auto')
-    axes[0].set_xlabel(f'Time Difference (k-way - collapsed) [s]')
-    axes[0].set_ylabel('Count')
-    axes[0].set_title(f"{model} | {algorithm_prefix} | k={degree}")
-    axes[0].grid(True)
-
-    text = '\n'.join((
-        r'$t=%.2f$' % (t_stat,),
-        r'$p=%.2e$' % (p_value,),
-        r'Reject H0' if significant else r'Fail to reject H0',
-        r'%.2f%% change' % percent_change
-    ))
-
-    if significant:
-        print("Significant result!")
-        if percent_change < 0:
-            print("Collapsed is faster!")
-            text += " (COLLAPSED FASTER)"
-        else:
-            print("Collapsed is slower!")
-            text += " (COLLAPSED SLOWER)"
-
-    # Boxplot comparing k-way vs collapsed
-    sns.boxplot(x='Algorithm', y='Traversal_Time', hue='Algorithm', data=plot_data, palette='pastel', legend=False, ax=axes[1])
-    axes[1].set_title(f'Traversal Time Distribution: k-way vs collapsed')
-    axes[1].set_ylabel('Traversal Time [s]')
-
-    axes[1].text(
-        0.95, 0.95, text,
-        transform=axes[1].transAxes,
-        fontsize=12,
-        verticalalignment='top',
-        horizontalalignment='right',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8)
-    )
-
-    # Figure layout
-    fig.tight_layout()
-
-    # Save plot to results folder
-    plot_filename = results_dir / f"comparison_{model}_{algorithm_prefix}_k{degree}.png"
-    plt.savefig(plot_filename, dpi=300, bbox_inches='tight')
-    print(f"Comparison plot saved to: {plot_filename}")
-    plt.close()  # Close figure to free memory
+    """Create a comparison plot for k-way vs collapsed traversal time"""
+    unified_plot(results_dir, kway_data, collapsed_data, model, algorithm_prefix, degree,
+                 "k-way", "collapsed", kway_mean, collapsed_mean,
+                 speedup_factor, percent_change, t_stat, p_value, significant,
+                 kway_n, collapsed_n, "comparison", "[s]")
 
 
 def dynamic_model_results(df, results_dir: Path):
 
     # 1. Aggregate over all camera steps to get mean per testrun (same as detailed analysis)
-    print("Aggregating camera steps for dynamic model analysis...")
     testrun_means = df.groupby([
         "model_name", "algorithm_prefix", "algorithm_type", "algorithm_degree", "testrun_index"
     ]).agg({
@@ -954,7 +949,7 @@ def dynamic_model_results(df, results_dir: Path):
         if degree == 2:  # Skip k=2 as it doesn't have collapsed variant
             continue
 
-        print(f"\nAnalyzing {model} | {algorithm_prefix} | k={degree}")
+        print(f"Analyzing {model} | {algorithm_prefix} | k={degree}")
 
         # Get k=2 baseline data
         baseline_data = testrun_means[
@@ -1006,80 +1001,16 @@ def dynamic_model_results(df, results_dir: Path):
                 'test_n': len(test_data)
             })
 
-            print(f"  {algorithm_type}: baseline={baseline_mean:.4f}s, test={test_mean:.4f}s")
-            print(f"  % Change: {percent_change:+.1f}%")
-            print(f"  t-statistic: {t_stat:.3f}, p-value: {p_value:.2e}")
-
-            # Create comparison plot
-            try:
-                dynamic_plot(results_dir, baseline_data, test_data, model, algorithm_prefix, degree, algorithm_type,
-                           baseline_mean, test_mean, speedup_factor, percent_change, t_stat, p_value,
-                           is_significant, len(baseline_data), len(test_data))
-            except Exception as e:
-                print(f"Error creating dynamic plot: {e}")
-
-    print("Dynamic model analysis completed.")
     return pd.DataFrame(results_summary)
 
 def dynamic_plot(results_dir, baseline_data, test_data, model, algorithm_prefix, degree, algorithm_type,
                 baseline_mean, test_mean, speedup_factor, percent_change, t_stat, p_value,
                 significant, baseline_n, test_n):
     """Create a detailed comparison plot for combined construction + traversal time"""
-
-    plot_data = pd.DataFrame({
-        'Algorithm': ['k=2'] * len(baseline_data) + [f'k={degree}'] * len(test_data),
-        'Combined_Time': pd.concat([baseline_data.reset_index(drop=True), test_data.reset_index(drop=True)])
-    })
-
-    fig, axes = plt.subplots(1, 2, figsize=(12,8))
-
-    # Histogram of differences (only for matched pairs)
-    min_len = min(len(baseline_data), len(test_data))
-    differences = baseline_data.iloc[:min_len].values - test_data.iloc[:min_len].values
-    axes[0].hist(differences, bins='auto')
-    axes[0].set_xlabel(f'Combined Time Difference (k=2 - k={degree}) [s]')
-    axes[0].set_ylabel('Count')
-    axes[0].set_title(f"{model} | {algorithm_prefix} | {degree} | {algorithm_type}")
-    axes[0].grid(True)
-
-    text = '\n'.join((
-        r'$t=%.2f$' % (t_stat,),
-        r'$p=%.2e$' % (p_value,),
-        r'Reject H0' if significant else r'Fail to reject H0',
-        r'%.2f%% speed' % percent_change
-    ))
-
-    if significant:
-        print("Significant result!")
-        if percent_change < 0:
-            print("Algorithm is faster!")
-            text +=" (FASTER)"
-        else:
-            print("Algorithm is slower!")
-            text += " (SLOWER)"
-
-    # Boxplot comparing k=2 vs k=X
-    sns.boxplot(x='Algorithm', y='Combined_Time', hue='Algorithm', data=plot_data, palette='pastel', legend=False, ax=axes[1])
-    axes[1].set_title(f'Combined Time Distribution: k=2 vs k={degree}')
-    axes[1].set_ylabel('Combined Time (Construction + Traversal) [s]')
-
-    axes[1].text(
-        0.95, 0.95, text,
-        transform=axes[1].transAxes,
-        fontsize=12,
-        verticalalignment='top',
-        horizontalalignment='right',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8)
-    )
-
-    # Figure layout
-    fig.tight_layout()
-
-    # Save plot to results folder
-    plot_filename = results_dir / f"dynamic_{model}_{algorithm_prefix}_{algorithm_type}_{degree}.png"
-    plt.savefig(plot_filename, dpi=300, bbox_inches='tight')
-    print(f"Dynamic plot saved to: {plot_filename}")
-    plt.close()  # Close figure to free memory
+    unified_plot(results_dir, baseline_data, test_data, model, algorithm_prefix, degree,
+                 "k=2", f"k={degree}", baseline_mean, test_mean,
+                 speedup_factor, percent_change, t_stat, p_value, significant,
+                 baseline_n, test_n, "dynamic", "[s]", algorithm_type)
 
 def dynamic_model_results_table(results_df, results_dir):
     """Create a formatted table for dynamic model results (combined construction + traversal time)"""
@@ -1224,7 +1155,6 @@ def dynamic_model_results_table(results_df, results_dir):
 def dynamic_comparison_analysis(df, results_dir: Path):
 
     # 1. Aggregate over all camera steps to get mean per testrun (same as other analyses)
-    print("Aggregating camera steps for dynamic comparison analysis...")
     testrun_means = df.groupby([
         "model_name", "algorithm_prefix", "algorithm_type", "algorithm_degree", "testrun_index"
     ]).agg({
@@ -1245,7 +1175,7 @@ def dynamic_comparison_analysis(df, results_dir: Path):
         if degree == 2:  # Skip k=2 as it doesn't have collapsed variant
             continue
 
-        print(f"\nAnalyzing dynamic comparison {model} | {algorithm_prefix} | k={degree}")
+        print(f"Analyzing dynamic comparison {model} | {algorithm_prefix} | k={degree}")
 
         # Get k-way and collapsed data
         kway_data = group_df[group_df['algorithm_type'] == 'k-way']['combined_time']
@@ -1293,18 +1223,6 @@ def dynamic_comparison_analysis(df, results_dir: Path):
             'significant': is_significant,
         })
 
-        print(f"  k-way: {kway_mean:.4f}s ± {kway_std:.4f} (n={len(kway_data)})")
-        print(f"  collapsed: {collapsed_mean:.4f}s ± {collapsed_std:.4f} (n={len(collapsed_data)})")
-        print(f"  % Change (collapsed vs k-way): {percent_change:+.1f}%")
-        print(f"  t-statistic: {t_stat:.3f}, p-value: {p_value:.2e}")
-
-        # Create comparison plot
-        try:
-            dynamic_comparison_plot(group_df, model, algorithm_prefix, degree, results_dir)
-        except Exception as e:
-            print(f"Error creating dynamic comparison plot: {e}")
-
-    print("Dynamic comparison analysis completed.")
     return results_summary
 
 def dynamic_comparison_plot(group_df, model, algorithm_prefix, degree, results_dir):
@@ -1314,70 +1232,35 @@ def dynamic_comparison_plot(group_df, model, algorithm_prefix, degree, results_d
     kway_data = group_df[group_df['algorithm_type'] == 'k-way']['combined_time']
     collapsed_data = group_df[group_df['algorithm_type'] == 'collapsed']['combined_time']
 
-    plot_data = pd.DataFrame({
-        'Algorithm': ['k-way'] * len(kway_data) + ['collapsed'] * len(collapsed_data),
-        'Combined_Time': pd.concat([kway_data.reset_index(drop=True), collapsed_data.reset_index(drop=True)])
-    })
-
-    fig, axes = plt.subplots(1, 2, figsize=(12,8))
-
-    # Histogram of differences (only for matched pairs)
-    min_len = min(len(kway_data), len(collapsed_data))
-    differences = kway_data.iloc[:min_len].values - collapsed_data.iloc[:min_len].values
-    axes[0].hist(differences, bins='auto')
-    axes[0].set_xlabel(f'Combined Time Difference (k-way - collapsed) [s]')
-    axes[0].set_ylabel('Count')
-    axes[0].set_title(f"{model} | {algorithm_prefix} | k={degree}")
-    axes[0].grid(True)
-
-    # Calculate statistics for display
+    # Calculate statistics for the unified plot
     kway_mean = kway_data.mean() if len(kway_data) > 0 else 0
     collapsed_mean = collapsed_data.mean() if len(collapsed_data) > 0 else 0
     percent_change = ((collapsed_mean - kway_mean) / kway_mean) * 100 if kway_mean > 0 else 0
+    speedup_factor = kway_mean / collapsed_mean if collapsed_mean > 0 else float('inf')
 
     if len(kway_data) > 0 and len(collapsed_data) > 0:
         t_stat, p_value = stats.ttest_ind(kway_data, collapsed_data)
+        significant = p_value < 0.05
 
-        text = '\n'.join((
-            r'$t=%.2f$' % (t_stat,),
-            r'$p=%.2e$' % (p_value,),
-            r'Reject H0' if p_value < 0.05 else r'Fail to reject H0',
-            r'%.2f%% change' % percent_change
-        ))
-
-        if p_value < 0.05:
+        # Print results like the original
+        if significant:
             print("Significant result!")
             if percent_change < 0:
                 print("Collapsed is faster!")
-                text += " (COLLAPSED FASTER)"
             else:
                 print("Collapsed is slower!")
-                text += " (COLLAPSED SLOWER)"
     else:
-        text = "Insufficient data"
+        t_stat = 0
+        p_value = 1.0
+        significant = False
 
-    # Boxplot comparing k-way vs collapsed
-    sns.boxplot(x='Algorithm', y='Combined_Time', hue='Algorithm', data=plot_data, palette='pastel', legend=False, ax=axes[1])
-    axes[1].set_title(f'Combined Time Distribution: k-way vs collapsed')
-    axes[1].set_ylabel('Combined Time (Construction + Traversal) [s]')
+    unified_plot(results_dir, kway_data, collapsed_data, model, algorithm_prefix, degree,
+                 "k-way", "collapsed", kway_mean, collapsed_mean,
+                 speedup_factor, percent_change, t_stat, p_value, significant,
+                 len(kway_data), len(collapsed_data), "dynamic", "[s]")
 
-    axes[1].text(
-        0.95, 0.95, text,
-        transform=axes[1].transAxes,
-        fontsize=12,
-        verticalalignment='top',
-        horizontalalignment='right',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8)
-    )
 
-    # Figure layout
-    fig.tight_layout()
 
-    # Save plot to results folder
-    plot_filename = results_dir / f"dynamic_comparison_{model}_{algorithm_prefix}_k{degree}.png"
-    plt.savefig(plot_filename, dpi=300, bbox_inches='tight')
-    print(f"  Dynamic comparison plot saved to: {plot_filename}")
-    plt.close()  # Close figure to free memory
 
 def dynamic_comparison_results_table(results_summary, results_dir: Path):
     """Create a formatted table for dynamic comparison results (collapsed vs k-way combined time)"""
