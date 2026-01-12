@@ -52,25 +52,7 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
     if 'p-value' in formatted_df.columns:
         formatted_df['p-value'] = formatted_df['p-value'].apply(format_p_value_with_stars)
 
-    # Escape % symbols for LaTeX
-    for col in formatted_df.columns:
-        if '% Change' in col or 'Change' in col:
-            formatted_df = formatted_df.rename(columns={col: col.replace('%', '\\%')})
-
-    # delete t-statistic column if it exists
-    if 't-statistic' in formatted_df.columns:
-        formatted_df = formatted_df.drop(columns=['t-statistic'])
-
-    # delete Time columns
-    for col in formatted_df.columns:
-        if 'Time' in col:
-            formatted_df = formatted_df.drop(columns=[col])
-
-    # delete percentage change columns
-    for col in formatted_df.columns:
-        if '% Change' in col:
-            formatted_df = formatted_df.drop(columns=[col])
-
+    # Format numeric columns BEFORE deleting them
     # round speedup columns to 3 decimal places
     for col in formatted_df.columns:
         if 'Speedup' in col:
@@ -80,6 +62,32 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
     for col in formatted_df.columns:
         if 'Time' in col:
             formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:.4f}" if pd.notnull(x) else x)
+
+    # Escape % symbols for LaTeX in column names
+    for col in formatted_df.columns:
+        if '% Change' in col or 'Change' in col:
+            formatted_df = formatted_df.rename(columns={col: col.replace('%', '\\%')})
+
+    # Delete unwanted columns AFTER formatting
+    # delete t-statistic column if it exists
+    if 't-statistic' in formatted_df.columns:
+        formatted_df = formatted_df.drop(columns=['t-statistic'])
+
+    # delete Time columns (but keep formatted ones if needed)
+    cols_to_drop = []
+    for col in formatted_df.columns:
+        if 'Time' in col:
+            cols_to_drop.append(col)
+    if cols_to_drop:
+        formatted_df = formatted_df.drop(columns=cols_to_drop)
+
+    # delete percentage change columns
+    cols_to_drop = []
+    for col in formatted_df.columns:
+        if '\\% Change' in col or '% Change' in col:
+            cols_to_drop.append(col)
+    if cols_to_drop:
+        formatted_df = formatted_df.drop(columns=cols_to_drop)
 
     # Generate LaTeX
     latex_table = formatted_df.to_latex(
@@ -91,8 +99,12 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
         column_format=table_config.get('column_format', None)
     )
 
-    # Save individual LaTeX file
-    latex_filename = csv_path.stem + '.tex'
+    # Save individual LaTeX file with folder prefix
+    folder_name = csv_path.parent.name
+    if folder_name != "results":
+        latex_filename = f"{folder_name}_{csv_path.stem}.tex"
+    else:
+        latex_filename = f"{csv_path.stem}.tex"
     latex_path = output_dir / latex_filename
 
     with open(latex_path, 'w') as f:
@@ -109,7 +121,6 @@ def process_csv_to_latex(csv_path, output_dir, table_config):
 
 
 def create_consolidated_latex_document(table_data, output_dir):
-    """Create a consolidated LaTeX document with all tables"""
     latex_file = output_dir / "all_tables_consolidated.tex"
 
     with open(latex_file, 'w') as f:
@@ -186,32 +197,32 @@ def main():
 
     # Define table configurations
     table_configs = {
-        'statistical_results_table': {
-            'caption': 'BVH Performance Comparison Results',
-            'label': 'tab:statistical_results',
-            'section_title': 'Statistical Results Table'
+        'statistical': {
+            'caption': 'Statistical Analysis Results',
+            'label': 'tab:statistical',
+            'section_title': 'Statistical Analysis'
         },
-        'comparison_results_table': {
-            'caption': 'Collapsed vs k-way Algorithm Comparison Results',
-            'label': 'tab:comparison_results',
-            'section_title': 'Collapsed vs k-way Algorithm Comparison'
+        'comparison': {
+            'caption': 'Algorithm Comparison Results',
+            'label': 'tab:comparison',
+            'section_title': 'Algorithm Comparison'
         },
-        'dynamic_model_results_table': {
-            'caption': 'Dynamic Model Analysis: Combined Construction + Traversal Time',
-            'label': 'tab:dynamic_model_results',
-            'section_title': 'Dynamic Model Analysis Results'
+        'dynamic': {
+            'caption': 'Dynamic Analysis Results',
+            'label': 'tab:dynamic',
+            'section_title': 'Dynamic Analysis'
         },
-        'dynamic_comparison_results_table': {
-            'caption': 'Dynamic Comparison: Collapsed vs k-way Combined Time',
-            'label': 'tab:dynamic_comparison_results',
-            'section_title': 'Dynamic Comparison Results'
+        'detailed': {
+            'caption': 'Detailed Quality Analysis Results',
+            'label': 'tab:detailed',
+            'section_title': 'Detailed Quality Analysis'
         }
     }
 
-    # Find CSV files
-    csv_files = list(results_dir.glob(args.pattern))
+    # Find CSV files recursively in all subdirectories
+    csv_files = list(results_dir.rglob(args.pattern))
     if not csv_files:
-        print(f"No CSV files found matching pattern '{args.pattern}' in {results_dir}")
+        print(f"No CSV files found matching pattern '{args.pattern}' in {results_dir} or its subdirectories")
         return
 
     print(f"Found {len(csv_files)} CSV files to process:")
@@ -222,19 +233,25 @@ def main():
     processed_tables = []
 
     for csv_file in csv_files:
-        # Try to match with known table types
+        # Get the folder name to determine table type
+        folder_name = csv_file.parent.name
+        relative_path = csv_file.relative_to(results_dir)
+
+        # Try to match with known table types based on folder name
         table_config = None
         for config_key, config in table_configs.items():
-            if config_key in csv_file.stem:
+            if config_key in folder_name or config_key in csv_file.stem:
                 table_config = config
                 break
 
         # Use default config if no match found
         if not table_config:
+            # Include folder info in the title for better identification
+            folder_info = f" - {folder_name}" if folder_name != "results" else ""
             table_config = {
-                'caption': f'Analysis Results Table: {csv_file.stem.replace("_", " ").title()}',
-                'label': f'tab:{csv_file.stem}',
-                'section_title': f'{csv_file.stem.replace("_", " ").title()}'
+                'caption': f'Analysis Results Table: {csv_file.stem.replace("_", " ").title()}{folder_info}',
+                'label': f'tab:{csv_file.stem}_{folder_name}',
+                'section_title': f'{csv_file.stem.replace("_", " ").title()}{folder_info}'
             }
 
         table_info = process_csv_to_latex(csv_file, output_dir, table_config)
@@ -246,7 +263,7 @@ def main():
         create_consolidated_latex_document(processed_tables, output_dir)
         print(f"Individual LaTeX files and consolidated document saved to: {output_dir}")
     else:
-        print("No tables were processed successfully. Gawrsh!")
+        print("No tables were processed successfully.")
 
 
 if __name__ == "__main__":

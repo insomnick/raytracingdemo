@@ -1,0 +1,90 @@
+\begin{longtable}{llrlllll}
+\caption{Statistical Analysis Results} \label{tab:statistical} \\
+\toprule
+Model & Algorithm & k & Type & Speedup & Speedup CI Min & Speedup CI Max & p-value \\
+\midrule
+\endfirsthead
+\caption[]{Statistical Analysis Results} \\
+\toprule
+Model & Algorithm & k & Type & Speedup & Speedup CI Min & Speedup CI Max & p-value \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+armadillo & bsah & 4 & k-way & 1.032 & 1.023 & 1.041 & 3.40e-06*** \\
+stanford-bunny & bsah & 4 & k-way & 1.043 & 1.038 & 1.052 & 1.65e-07*** \\
+suzanne & bsah & 4 & k-way & 1.082 & 1.077 & 1.090 & 3.37e-09*** \\
+teapot & bsah & 4 & k-way & 1.043 & 1.039 & 1.051 & 4.93e-07*** \\
+armadillo & median & 4 & k-way & 1.050 & 1.045 & 1.058 & 3.11e-07*** \\
+stanford-bunny & median & 4 & k-way & 1.061 & 1.056 & 1.069 & 8.86e-08*** \\
+suzanne & median & 4 & k-way & 1.069 & 1.064 & 1.078 & 3.92e-08*** \\
+teapot & median & 4 & k-way & 1.069 & 1.063 & 1.078 & 2.01e-08*** \\
+armadillo & sah & 4 & k-way & 1.033 & 1.030 & 1.035 & 1.74e-14*** \\
+stanford-bunny & sah & 4 & k-way & 1.038 & 1.036 & 1.040 & 1.38e-18*** \\
+suzanne & sah & 4 & k-way & 1.074 & 1.073 & 1.076 & 2.92e-20*** \\
+teapot & sah & 4 & k-way & 1.036 & 1.035 & 1.037 & 1.73e-21*** \\
+armadillo & bsah & 4 & collapsed & 1.036 & 1.031 & 1.043 & 1.09e-06*** \\
+stanford-bunny & bsah & 4 & collapsed & 1.045 & 1.040 & 1.053 & 3.23e-07*** \\
+suzanne & bsah & 4 & collapsed & 1.082 & 1.077 & 1.090 & 3.73e-09*** \\
+teapot & bsah & 4 & collapsed & 1.042 & 1.037 & 1.049 & 5.79e-07*** \\
+armadillo & median & 4 & collapsed & 1.050 & 1.045 & 1.058 & 2.88e-07*** \\
+stanford-bunny & median & 4 & collapsed & 1.057 & 1.046 & 1.068 & 5.24e-09*** \\
+suzanne & median & 4 & collapsed & 1.070 & 1.065 & 1.078 & 3.65e-08*** \\
+teapot & median & 4 & collapsed & 1.069 & 1.064 & 1.078 & 3.25e-08*** \\
+armadillo & sah & 4 & collapsed & 1.032 & 1.030 & 1.034 & 1.13e-14*** \\
+stanford-bunny & sah & 4 & collapsed & 1.038 & 1.036 & 1.040 & 5.44e-17*** \\
+suzanne & sah & 4 & collapsed & 1.074 & 1.072 & 1.075 & 9.59e-19*** \\
+teapot & sah & 4 & collapsed & 1.036 & 1.035 & 1.037 & 1.66e-19*** \\
+armadillo & bsah & 8 & k-way & 0.646 & 0.644 & 0.651 & 1.10e-19*** \\
+stanford-bunny & bsah & 8 & k-way & 0.668 & 0.665 & 0.673 & 1.46e-17*** \\
+suzanne & bsah & 8 & k-way & 0.770 & 0.766 & 0.775 & 2.59e-15*** \\
+teapot & bsah & 8 & k-way & 0.712 & 0.709 & 0.717 & 6.97e-17*** \\
+armadillo & median & 8 & k-way & 0.633 & 0.630 & 0.638 & 1.82e-17*** \\
+stanford-bunny & median & 8 & k-way & 0.716 & 0.712 & 0.721 & 2.15e-15*** \\
+suzanne & median & 8 & k-way & 0.757 & 0.753 & 0.763 & 6.21e-15*** \\
+teapot & median & 8 & k-way & 0.704 & 0.701 & 0.710 & 1.34e-16*** \\
+armadillo & sah & 8 & k-way & 0.645 & 0.644 & 0.646 & 2.96e-40*** \\
+stanford-bunny & sah & 8 & k-way & 0.656 & 0.655 & 0.657 & 1.15e-33*** \\
+suzanne & sah & 8 & k-way & 0.751 & 0.750 & 0.752 & 1.14e-34*** \\
+teapot & sah & 8 & k-way & 0.705 & 0.704 & 0.706 & 3.06e-37*** \\
+armadillo & bsah & 8 & collapsed & 0.646 & 0.643 & 0.650 & 1.74e-18*** \\
+stanford-bunny & bsah & 8 & collapsed & 0.668 & 0.663 & 0.673 & 7.15e-26*** \\
+suzanne & bsah & 8 & collapsed & 0.768 & 0.764 & 0.775 & 1.34e-20*** \\
+teapot & bsah & 8 & collapsed & 0.711 & 0.708 & 0.716 & 1.64e-16*** \\
+armadillo & median & 8 & collapsed & 0.633 & 0.630 & 0.637 & 3.06e-17*** \\
+stanford-bunny & median & 8 & collapsed & 0.715 & 0.712 & 0.721 & 3.32e-16*** \\
+suzanne & median & 8 & collapsed & 0.758 & 0.754 & 0.764 & 7.62e-15*** \\
+teapot & median & 8 & collapsed & 0.704 & 0.701 & 0.710 & 3.95e-16*** \\
+armadillo & sah & 8 & collapsed & 0.645 & 0.644 & 0.646 & 2.50e-34*** \\
+stanford-bunny & sah & 8 & collapsed & 0.656 & 0.655 & 0.657 & 4.46e-38*** \\
+suzanne & sah & 8 & collapsed & 0.751 & 0.750 & 0.752 & 3.19e-25*** \\
+teapot & sah & 8 & collapsed & 0.706 & 0.705 & 0.707 & 2.36e-33*** \\
+armadillo & bsah & 16 & k-way & 0.098 & 0.098 & 0.099 & 6.08e-38*** \\
+stanford-bunny & bsah & 16 & k-way & 0.123 & 0.123 & 0.124 & 4.96e-47*** \\
+suzanne & bsah & 16 & k-way & 0.166 & 0.165 & 0.167 & 2.04e-43*** \\
+teapot & bsah & 16 & k-way & 0.158 & 0.157 & 0.159 & 7.07e-44*** \\
+armadillo & median & 16 & k-way & 0.097 & 0.096 & 0.097 & 3.42e-45*** \\
+stanford-bunny & median & 16 & k-way & 0.138 & 0.138 & 0.139 & 2.99e-45*** \\
+suzanne & median & 16 & k-way & 0.169 & 0.168 & 0.170 & 2.88e-36*** \\
+teapot & median & 16 & k-way & 0.185 & 0.184 & 0.187 & 3.51e-42*** \\
+armadillo & sah & 16 & k-way & 0.097 & 0.097 & 0.097 & 5.02e-27*** \\
+stanford-bunny & sah & 16 & k-way & 0.120 & 0.119 & 0.120 & 1.70e-27*** \\
+suzanne & sah & 16 & k-way & 0.162 & 0.162 & 0.163 & 7.05e-31*** \\
+teapot & sah & 16 & k-way & 0.154 & 0.154 & 0.154 & 1.03e-28*** \\
+armadillo & bsah & 16 & collapsed & 0.099 & 0.098 & 0.099 & 1.59e-34*** \\
+stanford-bunny & bsah & 16 & collapsed & 0.123 & 0.122 & 0.124 & 2.09e-30*** \\
+suzanne & bsah & 16 & collapsed & 0.166 & 0.166 & 0.168 & 1.21e-37*** \\
+teapot & bsah & 16 & collapsed & 0.158 & 0.157 & 0.159 & 2.76e-42*** \\
+armadillo & median & 16 & collapsed & 0.097 & 0.096 & 0.097 & 9.59e-43*** \\
+stanford-bunny & median & 16 & collapsed & 0.138 & 0.137 & 0.139 & 1.86e-40*** \\
+suzanne & median & 16 & collapsed & 0.169 & 0.168 & 0.170 & 1.91e-38*** \\
+teapot & median & 16 & collapsed & 0.185 & 0.184 & 0.187 & 2.17e-32*** \\
+armadillo & sah & 16 & collapsed & 0.097 & 0.097 & 0.098 & 9.06e-26*** \\
+stanford-bunny & sah & 16 & collapsed & 0.119 & 0.119 & 0.120 & 1.06e-31*** \\
+suzanne & sah & 16 & collapsed & 0.162 & 0.162 & 0.163 & 1.52e-36*** \\
+teapot & sah & 16 & collapsed & 0.154 & 0.154 & 0.154 & 6.23e-28*** \\
+\end{longtable}
