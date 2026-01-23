@@ -43,7 +43,7 @@ GLFWwindow* window;
 
 void drawScreen();
 double mapToScreen(int j, int height);
-void calculateScreen(StackBVH& bvh, Camera& camera);
+void calculateScreen(StackBVH& bvh, Camera& camera, Benchmark& bm);
 static int shadeScreen(const Vector3& camera_pos);
 std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_scale=1.0);
 int setupOpenGL();
@@ -53,38 +53,38 @@ void runTest(const TestrunConfiguration& config);
 int main() {
 
     std::multimap<std::string, int> bvh_algorithms = {
-             { "bsah",    2 },
-            { "bsah",    4 },
-            { "bsah",    8 },
-            { "bsah",    16 },
-             { "sah",    2 },
-             { "sah",    4 },
-             { "sah",    8 },
-             { "sah",    16 },
-             { "median", 2 },
-             { "median", 4 },
-             { "median", 8 },
-             { "median", 16 },
-             { "sah-c",    4 },
-             { "sah-c",    8 },
-             { "sah-c",    16 },
-             { "bsah-c",    4 },
-             { "bsah-c",    8 },
-             { "bsah-c",    16 },
-             { "median-c", 4 },
-             { "median-c", 8 },
-             { "median-c", 16 },
+            //  { "bsah",    2 },
+            // { "bsah",    4 },
+            // { "bsah",    8 },
+            // { "bsah",    16 },
+             // { "sah",    2 },
+             // { "sah",    4 },
+             // { "sah",    8 },
+             // { "sah",    16 },
+              { "median", 2 },
+              { "median", 4 },
+              { "median", 8 },
+              { "median", 16 },
+             // { "sah-c",    4 },
+             // { "sah-c",    8 },
+             // { "sah-c",    16 },
+             // { "bsah-c",    4 },
+             // { "bsah-c",    8 },
+             // { "bsah-c",    16 },
+              { "median-c", 4 },
+              { "median-c", 8 },
+              { "median-c", 16 },
     };
     std::map<std::string, double> object_files= {
-              { "stanford-bunny.obj", 30.0}
-            , { "teapot.obj",        1.0 }
-            , { "suzanne.obj",       3.0 }
-            , { "armadillo.obj",         0.035 }
+               { "stanford-bunny.obj", 30.0}
+            // , { "teapot.obj",        1.0 }
+            // , { "suzanne.obj",       3.0 }
+            // , { "armadillo.obj",         0.035 }
     };
 
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
         for (const auto &[object_file, object_scale]: object_files) {
-            constexpr int camera_path_resolution = 36;
+            constexpr int camera_path_resolution = 4;
             constexpr bool no_window = true;
             const auto config = TestrunConfiguration{
                     .object_file = object_file,
@@ -209,7 +209,7 @@ void runTest(const TestrunConfiguration& config) {
     //Build BVH time calculation
     double elapsed = 0.0;
     printf("Building BVH using %s split...\n", algorithm_name.c_str());
-    for (int it = 0; it < 10; it++) {
+    for (int it = 0; it < 1; it++) {
         timer.reset();
         bvh = StackBVH::build(objects, partition_function);
         for (int i = 0; collapse && i < collapse_iterations; i++) {
@@ -244,6 +244,7 @@ void runTest(const TestrunConfiguration& config) {
             return;
         }
     }
+    bm.setHitDataMeta("hit_ray_data.csv", object_file, config.object_scale, algorithm_name, camera);
     //App loop
     int resolution = config.camera_path_resolution;
     CameraPath camera_path(camera.getPosition() - Vector3{0.0, 0.0, 5.0}, resolution);   //TODO: hacky position change later
@@ -264,7 +265,7 @@ void runTest(const TestrunConfiguration& config) {
         }
 
         timer.reset();
-        calculateScreen(bvh, camera);   //MAGIC: fills ray_hits
+        calculateScreen(bvh, camera, bm);   //MAGIC: fills ray_hits
         elapsed = timer.elapsed();
         //printf("Time calculate Screen: %f \n", elapsed);
         bm.saveDataFrame("render_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
@@ -332,7 +333,7 @@ std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_s
     return loaded_object_ptrs;
 }
 
-void calculateScreen(StackBVH& bvh, Camera& camera) {
+void calculateScreen(StackBVH& bvh, Camera& camera, Benchmark& bm) {
     const Vector3 camera_pos = camera.getPosition();
     const Vector3 camera_dir = camera.getDirection();
     const Vector3 world_up{0.0, 1.0, 0.0};
@@ -340,7 +341,6 @@ void calculateScreen(StackBVH& bvh, Camera& camera) {
     if (right.length() < 1e-8) right = Vector3{0.0, 0.0, 1.0};
     right = right.normalize();
     Vector3 up = Vector3::cross(right, camera_dir).normalize();
-
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
         const double px = camera.getPixelX(i);
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
@@ -350,7 +350,13 @@ void calculateScreen(StackBVH& bvh, Camera& camera) {
             Ray ray{camera_pos, dir};
 
             const int idx = j + i * SCREEN_HEIGHT;
-            if (const auto hitRay = StackBVH::traverse(bvh, ray)) {
+            int aabbTestCountPositive = 0;
+            int aabbTestCountNegative = 0;
+            int triTestCountPositive = 0;
+            int triTestCountNegative = 0;
+            const auto hitRay = StackBVH::traverse(bvh, ray, &aabbTestCountPositive, &aabbTestCountNegative, &triTestCountPositive, &triTestCountNegative);
+            bm.saveHitData(aabbTestCountPositive, aabbTestCountNegative, triTestCountPositive, triTestCountNegative);
+            if (hitRay) {
                 ray_hits[idx].hit = true;
                 ray_hits[idx].position = hitRay->getOrigin();
                 ray_hits[idx].normal = hitRay->getDirection();

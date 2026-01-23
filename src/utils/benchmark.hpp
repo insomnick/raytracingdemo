@@ -83,6 +83,26 @@ public:
         myfile.close();
     }
 
+    std::string hit_file_name;
+    std::string hit_model_name;
+    std::string hit_algorithm_name;
+    double hit_model_scale;
+    Camera hit_camera_params = Camera(0,0);
+    void setHitDataMeta(std::string file_name, std::string model_name, double model_scale, std::string alorithm_name, Camera camera_params) {
+        // set
+        hit_file_name = file_name;
+        hit_model_name = model_name;
+        hit_model_scale = model_scale;
+        hit_algorithm_name = alorithm_name;
+        hit_camera_params = camera_params;
+    }
+    void saveHitData(int aabbTestCountPositive, int aabbTestCountNegative, int triTestCountPositive, int triTestCountNegative) {
+        this->saveDataFrame("aabb_pos_" + hit_file_name, hit_model_name, hit_model_scale, hit_algorithm_name, hit_camera_params, static_cast<double>(aabbTestCountPositive));
+        this->saveDataFrame("tri_pos_" + hit_file_name, hit_model_name, hit_model_scale, hit_algorithm_name, hit_camera_params, static_cast<double>(triTestCountPositive));
+        this->saveDataFrame("aabb_neg_" + hit_file_name, hit_model_name, hit_model_scale, hit_algorithm_name, hit_camera_params, static_cast<double>(aabbTestCountNegative));
+        this->saveDataFrame("tri_neg_" + hit_file_name, hit_model_name, hit_model_scale, hit_algorithm_name, hit_camera_params, static_cast<double>(triTestCountNegative));
+    }
+
 
     template<int width, int height>
     void saveScreen(const std::array<std::array<Color, width>, height>& array) {

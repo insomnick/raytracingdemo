@@ -538,7 +538,7 @@ public:
     }
 
     //first-hit-traversal
-    static std::unique_ptr<Ray> traverse(const StackBVH& bvh, const Ray& ray) {
+    static std::unique_ptr<Ray> traverse(const StackBVH& bvh, const Ray& ray, int* aabbTestCountPositive, int* aabbTestCountNegative, int* triTestCountPositive, int* triTestCountNegative) {
         std::vector<const BVHNode*> stack;
         stack.reserve(64);  //Won't be deeper than 64 levels, no reallocs
         stack.push_back(&bvh.root);
@@ -551,17 +551,22 @@ public:
             stack.pop_back();
 
             if (!node->box.hit(ray)) {
+                (*aabbTestCountNegative)++;
                 continue;
             }
-
+            (*aabbTestCountPositive)++;
             if (node->children.empty()) {
                 for (int i = 0; i < static_cast<int>(node->end - node->begin); ++i) {
+                    (*triTestCountPositive)++;
                     if (const Primitive* primitive = *(node->begin + i); primitive->intersect(ray)) {
+                        (*triTestCountPositive)++;
                         auto hitRay = primitive->getIntersectionNormalAndDirection(ray);
                         if (const double dist = (hitRay->getOrigin() - ray.getOrigin()).length(); dist < closestDist) {
                             closestDist = dist;
                             closest = std::move(hitRay);
                         }
+                    }else {
+                        (*triTestCountNegative)++;
                     }
                 }
             }
