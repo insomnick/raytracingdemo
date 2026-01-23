@@ -1,0 +1,42 @@
+\begin{longtable}{llrllll}
+\caption{Statistical Analysis Results (k=16)} \label{tab:statistical_k16} \\
+\toprule
+Model & Algorithm & k & Type & Speedup $\mu$ & Speedup CI & p \\
+\midrule
+\endfirsthead
+\caption[]{Statistical Analysis Results (k=16)} \\
+\toprule
+Model & Algorithm & k & Type & Speedup $\mu$ & Speedup CI & p \\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+armadillo & bsah & 16 & k-way & 0.098 & [0.098, 0.099] & 6.08e-38*** \\
+stanford-bunny & bsah & 16 & k-way & 0.123 & [0.123, 0.124] & 4.96e-47*** \\
+suzanne & bsah & 16 & k-way & 0.166 & [0.165, 0.167] & 2.04e-43*** \\
+teapot & bsah & 16 & k-way & 0.158 & [0.157, 0.159] & 7.07e-44*** \\
+armadillo & median & 16 & k-way & 0.097 & [0.096, 0.097] & 3.42e-45*** \\
+stanford-bunny & median & 16 & k-way & 0.138 & [0.138, 0.139] & 2.99e-45*** \\
+suzanne & median & 16 & k-way & 0.169 & [0.168, 0.170] & 2.88e-36*** \\
+teapot & median & 16 & k-way & 0.185 & [0.184, 0.187] & 3.51e-42*** \\
+armadillo & sah & 16 & k-way & 0.097 & [0.097, 0.097] & 5.02e-27*** \\
+stanford-bunny & sah & 16 & k-way & 0.120 & [0.119, 0.120] & 1.70e-27*** \\
+suzanne & sah & 16 & k-way & 0.162 & [0.162, 0.163] & 7.05e-31*** \\
+teapot & sah & 16 & k-way & 0.154 & [0.154, 0.154] & 1.03e-28*** \\
+armadillo & bsah & 16 & collapsed & 0.099 & [0.098, 0.099] & 1.59e-34*** \\
+stanford-bunny & bsah & 16 & collapsed & 0.123 & [0.122, 0.124] & 2.09e-30*** \\
+suzanne & bsah & 16 & collapsed & 0.166 & [0.166, 0.168] & 1.21e-37*** \\
+teapot & bsah & 16 & collapsed & 0.158 & [0.157, 0.159] & 2.76e-42*** \\
+armadillo & median & 16 & collapsed & 0.097 & [0.096, 0.097] & 9.59e-43*** \\
+stanford-bunny & median & 16 & collapsed & 0.138 & [0.137, 0.139] & 1.86e-40*** \\
+suzanne & median & 16 & collapsed & 0.169 & [0.168, 0.170] & 1.91e-38*** \\
+teapot & median & 16 & collapsed & 0.185 & [0.184, 0.187] & 2.17e-32*** \\
+armadillo & sah & 16 & collapsed & 0.097 & [0.097, 0.098] & 9.06e-26*** \\
+stanford-bunny & sah & 16 & collapsed & 0.119 & [0.119, 0.120] & 1.06e-31*** \\
+suzanne & sah & 16 & collapsed & 0.162 & [0.162, 0.163] & 1.52e-36*** \\
+teapot & sah & 16 & collapsed & 0.154 & [0.154, 0.154] & 6.23e-28*** \\
+\end{longtable}

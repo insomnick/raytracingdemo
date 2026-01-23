@@ -1,0 +1,42 @@
+\begin{longtable}{llrllll}
+\caption{Statistical Analysis Results (k=4)} \label{tab:statistical_k4} \\
+\toprule
+Model & Algorithm & k & Type & Speedup $\mu$ & Speedup CI & p \\
+\midrule
+\endfirsthead
+\caption[]{Statistical Analysis Results (k=4)} \\
+\toprule
+Model & Algorithm & k & Type & Speedup $\mu$ & Speedup CI & p \\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+armadillo & bsah & 4 & k-way & 1.032 & [1.023, 1.041] & 3.40e-06*** \\
+stanford-bunny & bsah & 4 & k-way & 1.043 & [1.038, 1.052] & 1.65e-07*** \\
+suzanne & bsah & 4 & k-way & 1.082 & [1.077, 1.090] & 3.37e-09*** \\
+teapot & bsah & 4 & k-way & 1.043 & [1.039, 1.051] & 4.93e-07*** \\
+armadillo & median & 4 & k-way & 1.050 & [1.045, 1.058] & 3.11e-07*** \\
+stanford-bunny & median & 4 & k-way & 1.061 & [1.056, 1.069] & 8.86e-08*** \\
+suzanne & median & 4 & k-way & 1.069 & [1.064, 1.078] & 3.92e-08*** \\
+teapot & median & 4 & k-way & 1.069 & [1.063, 1.078] & 2.01e-08*** \\
+armadillo & sah & 4 & k-way & 1.033 & [1.030, 1.035] & 1.74e-14*** \\
+stanford-bunny & sah & 4 & k-way & 1.038 & [1.036, 1.040] & 1.38e-18*** \\
+suzanne & sah & 4 & k-way & 1.074 & [1.073, 1.076] & 2.92e-20*** \\
+teapot & sah & 4 & k-way & 1.036 & [1.035, 1.037] & 1.73e-21*** \\
+armadillo & bsah & 4 & collapsed & 1.036 & [1.031, 1.043] & 1.09e-06*** \\
+stanford-bunny & bsah & 4 & collapsed & 1.045 & [1.040, 1.053] & 3.23e-07*** \\
+suzanne & bsah & 4 & collapsed & 1.082 & [1.077, 1.090] & 3.73e-09*** \\
+teapot & bsah & 4 & collapsed & 1.042 & [1.037, 1.049] & 5.79e-07*** \\
+armadillo & median & 4 & collapsed & 1.050 & [1.045, 1.058] & 2.88e-07*** \\
+stanford-bunny & median & 4 & collapsed & 1.057 & [1.046, 1.068] & 5.24e-09*** \\
+suzanne & median & 4 & collapsed & 1.070 & [1.065, 1.078] & 3.65e-08*** \\
+teapot & median & 4 & collapsed & 1.069 & [1.064, 1.078] & 3.25e-08*** \\
+armadillo & sah & 4 & collapsed & 1.032 & [1.030, 1.034] & 1.13e-14*** \\
+stanford-bunny & sah & 4 & collapsed & 1.038 & [1.036, 1.040] & 5.44e-17*** \\
+suzanne & sah & 4 & collapsed & 1.074 & [1.072, 1.075] & 9.59e-19*** \\
+teapot & sah & 4 & collapsed & 1.036 & [1.035, 1.037] & 1.66e-19*** \\
+\end{longtable}

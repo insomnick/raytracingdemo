@@ -1,0 +1,42 @@
+\begin{longtable}{llrllll}
+\caption{Statistical Analysis Results (k=8)} \label{tab:statistical_k8} \\
+\toprule
+Model & Algorithm & k & Type & Speedup $\mu$ & Speedup CI & p \\
+\midrule
+\endfirsthead
+\caption[]{Statistical Analysis Results (k=8)} \\
+\toprule
+Model & Algorithm & k & Type & Speedup $\mu$ & Speedup CI & p \\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+armadillo & bsah & 8 & k-way & 0.862 & [0.858, 0.867] & 7.72e-13*** \\
+stanford-bunny & bsah & 8 & k-way & 0.845 & [0.841, 0.851] & 7.65e-13*** \\
+suzanne & bsah & 8 & k-way & 0.772 & [0.768, 0.778] & 4.45e-15*** \\
+teapot & bsah & 8 & k-way & 0.738 & [0.735, 0.743] & 4.31e-16*** \\
+armadillo & median & 8 & k-way & 0.737 & [0.734, 0.743] & 2.12e-15*** \\
+stanford-bunny & median & 8 & k-way & 0.779 & [0.776, 0.785] & 4.09e-14*** \\
+suzanne & median & 8 & k-way & 0.757 & [0.754, 0.764] & 6.49e-15*** \\
+teapot & median & 8 & k-way & 0.712 & [0.708, 0.717] & 2.49e-16*** \\
+armadillo & sah & 8 & k-way & 0.865 & [0.864, 0.866] & 1.18e-32*** \\
+stanford-bunny & sah & 8 & k-way & 0.842 & [0.840, 0.844] & 7.80e-28*** \\
+suzanne & sah & 8 & k-way & 0.753 & [0.752, 0.755] & 1.22e-34*** \\
+teapot & sah & 8 & k-way & 0.732 & [0.731, 0.733] & 6.94e-38*** \\
+armadillo & bsah & 8 & collapsed & 0.862 & [0.858, 0.868] & 2.03e-12*** \\
+stanford-bunny & bsah & 8 & collapsed & 0.844 & [0.839, 0.851] & 3.52e-14*** \\
+suzanne & bsah & 8 & collapsed & 0.771 & [0.766, 0.777] & 3.93e-20*** \\
+teapot & bsah & 8 & collapsed & 0.737 & [0.734, 0.743] & 9.24e-16*** \\
+armadillo & median & 8 & collapsed & 0.737 & [0.733, 0.742] & 2.54e-15*** \\
+stanford-bunny & median & 8 & collapsed & 0.778 & [0.775, 0.785] & 7.53e-15*** \\
+suzanne & median & 8 & collapsed & 0.758 & [0.754, 0.764] & 7.94e-15*** \\
+teapot & median & 8 & collapsed & 0.712 & [0.708, 0.717] & 6.87e-16*** \\
+armadillo & sah & 8 & collapsed & 0.865 & [0.864, 0.866] & 3.66e-32*** \\
+stanford-bunny & sah & 8 & collapsed & 0.842 & [0.840, 0.844] & 1.08e-28*** \\
+suzanne & sah & 8 & collapsed & 0.754 & [0.753, 0.755] & 7.40e-25*** \\
+teapot & sah & 8 & collapsed & 0.733 & [0.732, 0.734] & 4.23e-35*** \\
+\end{longtable}
