@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  27 JAN 2026 10:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  27 JAN 2026 13:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1020,24 +1020,24 @@ File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 chapter 2.
 [7
 
-] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}] [9]
+] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}] [9] [10]
 chapter 3.
-<images/suzanne.png, id=136, 501.875pt x 501.875pt>
+<images/suzanne.png, id=147, 501.875pt x 501.875pt>
 File: images/suzanne.png Graphic file (type png)
 <use images/suzanne.png>
 Package pdftex.def Info: images/suzanne.png  used on input line 287.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/teapot.png, id=137, 501.875pt x 501.875pt>
+<images/teapot.png, id=148, 501.875pt x 501.875pt>
 File: images/teapot.png Graphic file (type png)
 <use images/teapot.png>
 Package pdftex.def Info: images/teapot.png  used on input line 288.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/bunny.png, id=138, 501.875pt x 501.875pt>
+<images/bunny.png, id=149, 501.875pt x 501.875pt>
 File: images/bunny.png Graphic file (type png)
 <use images/bunny.png>
 Package pdftex.def Info: images/bunny.png  used on input line 289.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/armadillo.png, id=139, 501.875pt x 501.875pt>
+<images/armadillo.png, id=150, 501.875pt x 501.875pt>
 File: images/armadillo.png Graphic file (type png)
 <use images/armadillo.png>
 Package pdftex.def Info: images/armadillo.png  used on input line 290.
@@ -1045,19 +1045,19 @@ Package pdftex.def Info: images/armadillo.png  used on input line 290.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[10
+[11
 
 ]
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 303.
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 303.
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [11 <./images/suzanne.png> <./images/teapot.png> <./images/bunny.png> <./images/armadillo.png>] [12]
+) [12 <./images/suzanne.png> <./images/teapot.png> <./images/bunny.png> <./images/armadillo.png>] [13]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <8> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 361.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 365.
- [13] [14] [15] [16]
+ [14] [15] [16] [17]
 chapter 4.
 (./results/static_statistical_results_table.tex
 Overfull \hbox (1.9171pt too wide) in alignment at lines 1--6
@@ -1084,19 +1084,21 @@ Overfull \hbox (1.9171pt too wide) in alignment at lines 17--90
  [] [] [] [] [] [] [] 
  []
 
-[17
+[18
 
-] [18]) [19]
+] [19]) [20]
 chapter 5.
-[20
-
-]
-chapter 6.
 [21
 
 ]
-chapter 7.
+chapter 6.
 [22
+
+]
+chapter 7.
+[23
+
+] [24
 
 ] (./main.aux)
  ***********
@@ -1110,27 +1112,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29230 strings out of 474222
- 545991 string characters out of 5748733
+ 29258 strings out of 474222
+ 547032 string characters out of 5748733
  2301975 words of memory out of 5000000
- 50866 multiletter control sequences out of 15000+600000
- 637976 words of font info for 99 fonts, out of 8000000 for 9000
+ 50887 multiletter control sequences out of 15000+600000
+ 640771 words of font info for 100 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
  108i,21n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-pdfTeX warning (dest): name{cite.0@VahlGordonClevenger+2021} has been referenced but does not exist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{cite.0@M\303\266ller01011997} has been referenced but does not exist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{cite.0@ericson2004real} has been referenced but does not exist, replaced by a fixed one
-
-</usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (22 pages, 654671 bytes).
+</usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
+Output written on main.pdf (24 pages, 705165 bytes).
 PDF statistics:
- 622 PDF objects out of 1000 (max. 8388607)
- 550 compressed objects within 6 object streams
- 254 named destinations out of 1000 (max. 500000)
+ 653 PDF objects out of 1000 (max. 8388607)
+ 575 compressed objects within 6 object streams
+ 260 named destinations out of 1000 (max. 500000)
  274 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -151,7 +151,7 @@ Wie verändern sich Construction- und Traversal-Time als kombinierte Qualitätsm
 \section{Abgrenzung zu vorherigen Arbeiten}
 In der zugrundeliegenden Arbeit werden lediglich statische dreidimensionale Szenen untersucht. Vefahren die darauf abzielen die BVH dynamisch anzupassen (Refitting etc.) werden nicht untersucht.
 
-Zudem werden ausschließlich Top-Down-Konstruktionsmethoden verwendet, da dies der Industriestandard ist [?].
+Zudem werden ausschließlich Top-Down-Konstruktionsmethoden verwendet, da diese in Forschung und Lehre weit verbreitet und einfacher zu implementieren sind~\cite{https://doi.org/10.1111/cgf.142662}.
 
 Die Verglichenen Datenstrukturen sind lediglich BVH bzw Wide BVH, es werden keine anderen Beschleunigungsstrukturen, wie k-d-Trees beachtet. Wide BVHs werden im Vergleich zu ihrer binären Referenzimplementation untersucht. 
 
@@ -173,7 +173,7 @@ Die Qualität einer BVH wird rein durch die Traversal-Time definiert. Andere Asp
 
 Für das weitere vorgehen werden unter Primitives immer Polygone, also Dreiecke, verstanden. Polygone werden durch ihre drei Eckpunkte definiert, die jeweils durch dreidimensionale Vektoren beschrieben werden. zudem wird für die Vereinfachung von Berechnungen der Mittelpunkt des Polygons bestimmt, \emph{Centroid} genannt. Eine zusammenhängende Struktur aus Polygonen wird als \emph{Mesh} verstanden. 
 
-Wenn sich im Traversal-Schritt die Frage stellt, ob ein Ray ein Primitive schneidet, stellt sich eigentlich die Frage, ob ein bestimmtes Primitive das erste ist, was der untersuchte Ray schneidet. Man spricht hier von \emph{first hit traversal}[?].
+Wenn sich im Traversal-Schritt die Frage stellt, ob ein Ray ein Primitive schneidet, stellt sich eigentlich die Frage, ob ein bestimmtes Primitive das erste ist, was der untersuchte Ray schneidet. Man spricht hier von \emph{first-hit traversal}~\cite{https://doi.org/10.1111/cgf.142662}.
 
 \section{Axis Aligned Bounding Box}
 
@@ -185,18 +185,18 @@ Um Konstruktion und Traversal von Nodes einer BVH möglichst einfach zu gestalte
 \end{itemize}
 Die am häufigsten verwendete Datenstruktur, die diese Punkte miteinander vereint ist die Axis Aligned Bounding Box. Man kann sie sich vorstellen wie ein an den Koordinatenachsen ausgerichteter Quader, der die darin enthaltenen Primitives möglichst Eng einschließt. Die räumlichen Grenzen lassen sich durch zwei Vektoren, die die oberen und unteren Schranken der Box definieren leicht definieren und durch eine lineare Suche in den enthaltenen Primitives relativ effizient berechnen.
 
-Die Kollision mit Rays ist durch die \emph{SLAB-Methode} sehr performant [?]. Hierbei ...
+Die Kollision mit Rays ist durch die \emph{SLAB-Methode} sehr performant~\cite{10.1145/15922.15916}. Hierbei ...yxc
 
 \section{Bounding Volume Hierarchy}
 
 Eine BVH ist im Kern eine Baumstruktur, die eine sinnvolle Partiotionierung der Primitive in der Szene erwirkt. Um einen inneren Knoten zu definieren benötigt man eine AABB, Referenzen zu den eingeschlossenen Primitives und Referenzen zu ihren Child-Nodes. Die AABBs von Child-Nodes befinden sich immer innerhalb der grenzen der AABB ihres Parent-Nodes. Es ist allerdings möglich, dass die AABBS der Child-Nodes sich überschneiden. Die Wurzel ist gleich definiert. Die Blätter der Datenstruktur sind konzeptionel Nodes, deren Menge an Primitives kleiner gleich dem festgelegten Verzweigungsgrad sind. 
-Qualitätsmerkmale einer BVH sind in etwa wenig Überschneidungen von AABBs oder AABBs mit möglichst kleinen Flächeninhalten [?]. 
+Qualitätsmerkmale einer BVH sind in etwa wenig Überschneidungen von AABBs, AABBs mit möglichst kleinen Flächeninhalten und möglichst wenig Kollisionsüberprüfungen mit Primitives~\cite{10.1145/2492045.2492056}. 
 
 Dabei hängt die Qualität einer BVH von der verwendeten Konstruktionsmethode ab, welche wiederum variierende Komplexität haben. Häufig existiert eine Abwägung zwischen Construction und Traversal Time. 
 
 \subsection{Wide Bounding Volume Hierarchy}
 
-Wide BVH werden für das Arbeiten mit Grafikkarten immer interessanter, da sich durch die erweiterte Breite der BVH noch mehr Möglichkeiten für parallelisiertes Arbeiten ergeben. Dabei existiert für die in dieser Arbeit untersuchten Algorithmen immer eine Referenzmethode zur Erstellung von Binärbäumen. Die untersuchten Verzweigungsgrade sind, wie auch in Referenzarbeiten [?], vielfache von Zwei. Zudem wird so die Vergleichbarkeit zwischen den verschiedenen Konstruktionsmethoden gewährleistet, da das Collapse-Verfahren in dieser Implementation auf Binärbäumen basiert.
+Wide BVH werden für das Arbeiten mit Grafikkarten immer interessanter, da sich durch die erweiterte Breite der BVH noch mehr Möglichkeiten für parallelisiertes Arbeiten ergeben. Dabei existiert für die in dieser Arbeit untersuchten Algorithmen immer eine Referenzmethode zur Erstellung von Binärbäumen. Die untersuchten Verzweigungsgrade sind vielfache von Zwei. Dadurch wird die Vergleichbarkeit zwischen den verschiedenen Konstruktionsmethoden gewährleistet, da das Collapse-Verfahren in dieser Implementation auf Binärbäumen basiert.
 Die direkte Konsequenzen von Wide BVH sind eine geringere Tiefe und mehr Kollisionschecks mit Child-Nodes pro Knoten. Vor- und Nachteile bezogen auf Construction und Traversal werden innerhalb dieser Arbeit untersucht.
 
 \subsection{Traversal}
@@ -578,5 +578,7 @@ fwefe
 \newpage
 
 \chapter{Appendix}
+
+\printbibliography
 
 \end{document}

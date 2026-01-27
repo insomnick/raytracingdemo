@@ -2364,6 +2364,10 @@
     <bcf:citekey order="1" intorder="1">ericson2004real</bcf:citekey>
     <bcf:citekey order="2" intorder="1">Möller01011997</bcf:citekey>
     <bcf:citekey order="3" intorder="1">VahlGordonClevenger+2021</bcf:citekey>
+    <bcf:citekey order="4" intorder="1">https://doi.org/10.1111/cgf.142662</bcf:citekey>
+    <bcf:citekey order="5" intorder="1">https://doi.org/10.1111/cgf.142662</bcf:citekey>
+    <bcf:citekey order="6" intorder="1">10.1145/15922.15916</bcf:citekey>
+    <bcf:citekey order="7" intorder="1">10.1145/2492045.2492056</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="anyt">
@@ -2398,4 +2402,13 @@
     </bcf:sort>
   </bcf:sortingtemplate>
   <!-- DATALISTS -->
+  <bcf:datalist section="0"
+                name="anyt/global//global/global"
+                type="entry"
+                sortingtemplatename="anyt"
+                sortingnamekeytemplatename="global"
+                labelprefix=""
+                uniquenametemplatename="global"
+                labelalphanametemplatename="global">
+  </bcf:datalist>
 </bcf:controlfile>

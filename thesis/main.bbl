@@ -19,6 +19,55 @@
 
 \refsection{0}
   \datalist[entry]{anyt/global//global/global}
+    \entry{10.1145/2492045.2492056}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=70c1210f7c167faac22c68d1db1d9175}{%
+           family={Aila},
+           familyi={A\bibinitperiod},
+           given={Timo},
+           giveni={T\bibinitperiod}}}%
+        {{hash=9c6cb97b8c2c22b41d64c2c4f4520c11}{%
+           family={Karras},
+           familyi={K\bibinitperiod},
+           given={Tero},
+           giveni={T\bibinitperiod}}}%
+        {{hash=e83c74e19bcc032813595328513ebd5c}{%
+           family={Laine},
+           familyi={L\bibinitperiod},
+           given={Samuli},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Anaheim, California}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computing Machinery}%
+      }
+      \strng{namehash}{382f5aed7873ff8fdf441f5a8a17b650}
+      \strng{fullhash}{382f5aed7873ff8fdf441f5a8a17b650}
+      \strng{bibnamehash}{382f5aed7873ff8fdf441f5a8a17b650}
+      \strng{authorbibnamehash}{382f5aed7873ff8fdf441f5a8a17b650}
+      \strng{authornamehash}{382f5aed7873ff8fdf441f5a8a17b650}
+      \strng{authorfullhash}{382f5aed7873ff8fdf441f5a8a17b650}
+      \field{labelalpha}{AKLase2}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 5th High-Performance Graphics Conference}
+      \field{isbn}{9781450321358}
+      \field{series}{HPG '13}
+      \field{title}{On quality metrics of bounding volume hierarchies}
+      \field{year}{2013}
+      \field{pages}{101\bibrangedash 107}
+      \range{pages}{7}
+      \verb{urlraw}
+      \verb https://doi.org/10.1145/2492045.2492056
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1145/2492045.2492056
+      \endverb
+    \endentry
     \entry{ericson2004real}{book}{}
       \name{author}{1}{}{%
         {{hash=41b203af3fc79061c842b891c9c477a6}{%
@@ -78,6 +127,102 @@
       \field{year}{2021}
       \field{pages}{483}
       \range{pages}{1}
+    \endentry
+    \entry{10.1145/15922.15916}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=dbc796b04ed993daa44367ba6e1d360b}{%
+           family={Kay},
+           familyi={K\bibinitperiod},
+           given={Timothy\bibnamedelima L.},
+           giveni={T\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=d6809030fb64a95f48cc716603631fb7}{%
+           family={Kajiya},
+           familyi={K\bibinitperiod},
+           given={James\bibnamedelima T.},
+           giveni={J\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {New York, NY, USA}%
+      }
+      \list{publisher}{1}{%
+        {Association for Computing Machinery}%
+      }
+      \strng{namehash}{016de0262d5239d19edd6c55bafb65ed}
+      \strng{fullhash}{016de0262d5239d19edd6c55bafb65ed}
+      \strng{bibnamehash}{016de0262d5239d19edd6c55bafb65ed}
+      \strng{authorbibnamehash}{016de0262d5239d19edd6c55bafb65ed}
+      \strng{authornamehash}{016de0262d5239d19edd6c55bafb65ed}
+      \strng{authorfullhash}{016de0262d5239d19edd6c55bafb65ed}
+      \field{labelalpha}{KKya1}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 13th Annual Conference on Computer Graphics and Interactive Techniques}
+      \field{isbn}{0897911962}
+      \field{series}{SIGGRAPH '86}
+      \field{title}{Ray tracing complex scenes}
+      \field{year}{1986}
+      \field{pages}{269\bibrangedash 278}
+      \range{pages}{10}
+      \verb{urlraw}
+      \verb https://doi.org/10.1145/15922.15916
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1145/15922.15916
+      \endverb
+    \endentry
+    \entry{https://doi.org/10.1111/cgf.142662}{article}{}
+      \name{author}{6}{}{%
+        {{hash=90a742996362ce6175b28d8985ee1ffd}{%
+           family={Meister},
+           familyi={M\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod}}}%
+        {{hash=d0441dc0cf781de64d35aba6a0fa158e}{%
+           family={Ogaki},
+           familyi={O\bibinitperiod},
+           given={Shinji},
+           giveni={S\bibinitperiod}}}%
+        {{hash=d5206160888a861e1bbc5fbe55b318ef}{%
+           family={Benthin},
+           familyi={B\bibinitperiod},
+           given={Carsten},
+           giveni={C\bibinitperiod}}}%
+        {{hash=9756354e3daf16833b3ad9faf14cea41}{%
+           family={Doyle},
+           familyi={D\bibinitperiod},
+           given={Michael\bibnamedelima J.},
+           giveni={M\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=135381d0b9ac574915f6b20dc57ef5bd}{%
+           family={Guthe},
+           familyi={G\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod}}}%
+        {{hash=942445f5c64adc6791c896d6ce92f797}{%
+           family={Bittner},
+           familyi={B\bibinitperiod},
+           given={Jiří},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{8f81309391b83b6633bfec98f986848d}
+      \strng{fullhash}{38f6a92c2a6d510e785bf611b313411c}
+      \strng{bibnamehash}{8f81309391b83b6633bfec98f986848d}
+      \strng{authorbibnamehash}{8f81309391b83b6633bfec98f986848d}
+      \strng{authornamehash}{8f81309391b83b6633bfec98f986848d}
+      \strng{authorfullhash}{38f6a92c2a6d510e785bf611b313411c}
+      \field{labelalpha}{Mr2}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computer Graphics Forum}
+      \field{number}{2}
+      \field{title}{A Survey on Bounding Volume Hierarchies for Ray Tracing}
+      \field{volume}{40}
+      \field{year}{2021}
+      \field{pages}{683\bibrangedash 712}
+      \range{pages}{30}
     \endentry
     \entry{Möller01011997}{article}{}
       \name{author}{2}{}{%
