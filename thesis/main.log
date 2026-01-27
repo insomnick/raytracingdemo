@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  27 JAN 2026 15:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  27 JAN 2026 16:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1002,7 +1002,7 @@ Class scrreprt Warning: \float@addtolists detected!
 (scrreprt)              a package that still implements the
 (scrreprt)              deprecated \float@addtolist interface.
 
-<images/bunny_boxes.png, id=92, 642.4pt x 642.4pt>
+<images/bunny_boxes.png, id=94, 642.4pt x 642.4pt>
 File: images/bunny_boxes.png Graphic file (type png)
 <use images/bunny_boxes.png>
 Package pdftex.def Info: images/bunny_boxes.png  used on input line 132.
@@ -1022,22 +1022,22 @@ chapter 2.
 
 ] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}] [9]
 chapter 3.
-<images/suzanne.png, id=147, 501.875pt x 501.875pt>
+<images/suzanne.png, id=149, 501.875pt x 501.875pt>
 File: images/suzanne.png Graphic file (type png)
 <use images/suzanne.png>
 Package pdftex.def Info: images/suzanne.png  used on input line 290.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/teapot.png, id=148, 501.875pt x 501.875pt>
+<images/teapot.png, id=150, 501.875pt x 501.875pt>
 File: images/teapot.png Graphic file (type png)
 <use images/teapot.png>
 Package pdftex.def Info: images/teapot.png  used on input line 291.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/bunny.png, id=149, 501.875pt x 501.875pt>
+<images/bunny.png, id=151, 501.875pt x 501.875pt>
 File: images/bunny.png Graphic file (type png)
 <use images/bunny.png>
 Package pdftex.def Info: images/bunny.png  used on input line 292.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/armadillo.png, id=150, 501.875pt x 501.875pt>
+<images/armadillo.png, id=152, 501.875pt x 501.875pt>
 File: images/armadillo.png Graphic file (type png)
 <use images/armadillo.png>
 Package pdftex.def Info: images/armadillo.png  used on input line 293.
@@ -1059,15 +1059,20 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 368.
  [13] [14] [15] [16]
 chapter 4.
+<results/static_combined_speedup_k4.png, id=377, 859.0494pt x 569.2467pt>
+File: results/static_combined_speedup_k4.png Graphic file (type png)
+<use results/static_combined_speedup_k4.png>
+Package pdftex.def Info: results/static_combined_speedup_k4.png  used on input line 557.
+(pdftex.def)             Requested size: 343.61366pt x 227.69464pt.
 [17
 
-]
+ <./results/static_combined_speedup_k4.png>] [18]
 chapter 5.
-[18
+[19
 
 ]
 chapter 6.
-[19
+[20
 
 ]
 chapter 7.
@@ -1096,9 +1101,9 @@ Overfull \hbox (1.9171pt too wide) in alignment at lines 17--90
  [] [] [] [] [] [] [] 
  []
 
-[20
+[21
 
-]) [21] [22
+]) [22] [23
 
 ] (./main.aux)
  ***********
@@ -1112,18 +1117,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29260 strings out of 474222
- 547211 string characters out of 5748733
+ 29271 strings out of 474222
+ 547571 string characters out of 5748733
  2301975 words of memory out of 5000000
- 50890 multiletter control sequences out of 15000+600000
+ 50898 multiletter control sequences out of 15000+600000
  640771 words of font info for 100 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
  108i,21n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (22 pages, 705110 bytes).
+Output written on main.pdf (23 pages, 873044 bytes).
 PDF statistics:
- 649 PDF objects out of 1000 (max. 8388607)
- 573 compressed objects within 6 object streams
- 259 named destinations out of 1000 (max. 500000)
- 274 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 661 PDF objects out of 1000 (max. 8388607)
+ 582 compressed objects within 6 object streams
+ 262 named destinations out of 1000 (max. 500000)
+ 287 words of extra memory for PDF output out of 10000 (max. 10000000)
 
