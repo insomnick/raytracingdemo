@@ -64,6 +64,13 @@ if ! python -c "import pandas, matplotlib, seaborn, numpy, scipy" 2>/dev/null; t
 fi
 echo "============================================"
 
+# Validate test data
+echo "Running data validation..."
+if ! python validate_data.py testruns; then
+    echo "ERROR: Data validation failed!"
+    exit 1
+fi
+
 # Run the analysis
 echo "Running performance analysis..."
 if ! python bvh_analysis.py "$@"; then
