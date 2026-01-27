@@ -551,12 +551,18 @@ Die erste Forschungsfrage beschäftigt sich damit, wie sich die Traversal-Time b
 
 Dabei wird die Traversal-Time der Wide BVH mit der Traversal-Time einer binären BVH für gleiche Modelle und Splitting-Algorithmen verglichen. Der Vergleichswert wird als \emph{Speedup} beschrieben, wobei ein Wert größer 1 als Verbesserung zu werten ist.
 
-
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.4]{results/static_combined_speedup_k4.png}
-    \caption{Stanford Bunny mit sichtbaren Bounding Boxes}
-    \end{figure}
+    \includegraphics[scale=0.2]{results/static_combined_speedup_k4.png}
+    \includegraphics[scale=0.2]{results/static_combined_speedup_k8.png}
+    \includegraphics[scale=0.2]{results/static_combined_speedup_k16.png}
+    \caption{Ergebnisgrafik Traversal-Speedup für statische Szenen}  
+    \label{fig:static}
+
+\end{figure}
+Wie der Grafik~\ref{fig:static} und der dazugehörigen Tabelle~\ref{tab:statistical} zu entnehmen gibt es eine konsistente signifikante Verbesserung der Traversal-Time für $k = 4$ gegenüber der binären Referenz. Der Speedup-Faktor befindet sich in diesem Fall im Mittel zwischen 1,03 und 1,08. Die dazugehörigen Konfidenzintervalle (CI) lassen sich zusätzlich der Tabelle entnehmen.
+Für $k = 8$ und $k = 16$ verschlechtert sich die Traversal-Time deutlich. Hier sind Speedup-Werte im Mittel schlechter als 0,77 und sinken sogar im Mittel bis unter 0,10.
+
 \subsection{Zusammenfassung}
 
 \section{Wide BVH Konstruktionsmethode}

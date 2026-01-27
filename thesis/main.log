@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  27 JAN 2026 16:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  27 JAN 2026 19:33
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1062,11 +1062,21 @@ chapter 4.
 <results/static_combined_speedup_k4.png, id=377, 859.0494pt x 569.2467pt>
 File: results/static_combined_speedup_k4.png Graphic file (type png)
 <use results/static_combined_speedup_k4.png>
-Package pdftex.def Info: results/static_combined_speedup_k4.png  used on input line 557.
-(pdftex.def)             Requested size: 343.61366pt x 227.69464pt.
+Package pdftex.def Info: results/static_combined_speedup_k4.png  used on input line 556.
+(pdftex.def)             Requested size: 171.80682pt x 113.84732pt.
+<results/static_combined_speedup_k8.png, id=378, 859.5312pt x 569.2467pt>
+File: results/static_combined_speedup_k8.png Graphic file (type png)
+<use results/static_combined_speedup_k8.png>
+Package pdftex.def Info: results/static_combined_speedup_k8.png  used on input line 557.
+(pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
+<results/static_combined_speedup_k16.png, id=379, 859.5312pt x 569.2467pt>
+File: results/static_combined_speedup_k16.png Graphic file (type png)
+<use results/static_combined_speedup_k16.png>
+Package pdftex.def Info: results/static_combined_speedup_k16.png  used on input line 558.
+(pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
 [17
 
- <./results/static_combined_speedup_k4.png>] [18]
+ <./results/static_combined_speedup_k4.png> <./results/static_combined_speedup_k8.png> <./results/static_combined_speedup_k16.png>] [18]
 chapter 5.
 [19
 
@@ -1117,18 +1127,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29271 strings out of 474222
- 547571 string characters out of 5748733
+ 29286 strings out of 474222
+ 548218 string characters out of 5748733
  2301975 words of memory out of 5000000
- 50898 multiletter control sequences out of 15000+600000
+ 50913 multiletter control sequences out of 15000+600000
  640771 words of font info for 100 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
  108i,21n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (23 pages, 873044 bytes).
+Output written on main.pdf (23 pages, 1194130 bytes).
 PDF statistics:
- 661 PDF objects out of 1000 (max. 8388607)
- 582 compressed objects within 6 object streams
+ 667 PDF objects out of 1000 (max. 8388607)
+ 584 compressed objects within 6 object streams
  262 named destinations out of 1000 (max. 500000)
- 287 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 297 words of extra memory for PDF output out of 10000 (max. 10000000)
 
