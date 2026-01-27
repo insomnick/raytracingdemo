@@ -15,25 +15,25 @@
 \contentsline {subsubsection}{\nonumberline Median Split}{9}{subsubsection*.5}%
 \contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{9}{subsubsection*.7}%
 \contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic}{9}{subsubsection*.9}%
-\contentsline {chapter}{\numberline {3}Methoden}{11}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Aufbau}{11}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Überblick}{11}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}Datenmodell}{11}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Algorithmenanalyse}{14}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Traversal}{14}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Construction}{14}{subsection.3.2.2}%
-\contentsline {subsubsection}{\nonumberline Median Split}{16}{subsubsection*.13}%
-\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{16}{subsubsection*.15}%
-\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{17}{subsubsection*.17}%
-\contentsline {subsection}{\numberline {3.2.3}Collapse Funktion}{17}{subsection.3.2.3}%
-\contentsline {chapter}{\numberline {4}Ergebnisse}{18}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Versuchssetup}{18}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Korrektheit}{18}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Traversal}{18}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Zusammenfassung}{20}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Dynamisches Modell}{20}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Zusammenfassung}{20}{subsection.4.4.1}%
-\contentsline {chapter}{\numberline {5}Diskussion}{21}{chapter.5}%
-\contentsline {chapter}{\numberline {6}Fazit}{22}{chapter.6}%
-\contentsline {chapter}{\numberline {7}Appendix}{23}{chapter.7}%
+\contentsline {chapter}{\numberline {3}Methoden}{10}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Aufbau}{10}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Überblick}{10}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Datenmodell}{10}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Algorithmenanalyse}{13}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Traversal}{13}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Construction}{13}{subsection.3.2.2}%
+\contentsline {subsubsection}{\nonumberline Median Split}{15}{subsubsection*.13}%
+\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{15}{subsubsection*.15}%
+\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{16}{subsubsection*.17}%
+\contentsline {subsection}{\numberline {3.2.3}Collapse Funktion}{16}{subsection.3.2.3}%
+\contentsline {chapter}{\numberline {4}Ergebnisse}{17}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Versuchssetup}{17}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Korrektheit}{17}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Traversal}{17}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Zusammenfassung}{17}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Dynamisches Modell}{17}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Zusammenfassung}{17}{subsection.4.4.1}%
+\contentsline {chapter}{\numberline {5}Diskussion}{18}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Fazit}{19}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendix}{20}{chapter.7}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

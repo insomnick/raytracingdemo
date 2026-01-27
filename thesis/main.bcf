@@ -2368,6 +2368,9 @@
     <bcf:citekey order="5" intorder="1">https://doi.org/10.1111/cgf.142662</bcf:citekey>
     <bcf:citekey order="6" intorder="1">10.1145/15922.15916</bcf:citekey>
     <bcf:citekey order="7" intorder="1">10.1145/2492045.2492056</bcf:citekey>
+    <bcf:citekey order="8" intorder="1">meister2022performance</bcf:citekey>
+    <bcf:citekey order="9" intorder="1">https://doi.org/10.1111/cgf.142662</bcf:citekey>
+    <bcf:citekey order="10" intorder="1">meister2022performance</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="anyt">

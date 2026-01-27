@@ -122,7 +122,7 @@ Effiziente Kollisionserkennung hat grundlegenden Nutzen in diversen Feldern, üb
 \section{Thema und fachliche Einordnung}
 
 Um den Vorgang zu beschleunigen, kommen zwei Datenstrukturen ins Spiel: Die Axis Aligned Bounding Box (AABB) und darauf aufbauend die Bounding Volume Hierarchy (BVH)~\cite{VahlGordonClevenger+2021}. Eine AABB definiert achsenorientierte obere und untere Schranken für Teilmengen von Primitives in Form eines Quaders, der diese im Raum einschließt. Durch die Einführung von AABB lassen sich die nötigen Ray-Object-Intersection-Tests verringern, indem man für jeden Ray erst die Kollision mit den AABBs überprüft. Wenn es bereits keine Kollision mit der umschließenden Bounding Box gibt, kann von vornherein ausgeschlossen werden, dass es eine Kollision mit den innenliegenden Primitiven gibt. 
-Um den Vorteil dieses Verfahrens effektiv zu nutzen, kann man nun rekursiv die eingeschlossenen Teilmengen wieder aufteilen und mit AABBs umschließen. Dadurch lassen sich die Bounding Boxes in eine hierarchische Reihenfolge bringen, die eine Baumstruktur aufweist. Diese Struktur ist eine Bounding Volume Hierarchy. Durch eine BVH wird die Laufzeit auf ein Niveau gesenkt, das logarithmisch von der Anzahl an Primitives in der Szene abhängt, was die Zeit für ein fertig gerendertes Bild drastisch sinken lassen kann.
+Um den Vorteil dieses Verfahrens effektiv zu nutzen, kann man nun rekursiv die eingeschlossenen Teilmengen wieder aufteilen und mit AABBs umschließen. Dadurch lassen sich die Bounding Boxes in eine hierarchische Reihenfolge bringen, die eine Baumstruktur aufweist. Diese Struktur ist eine Bounding Volume Hierarchy. Durch eine BVH wird die Laufzeit auf ein Niveau gesenkt, das logarithmisch von der Anzahl an Primitives in der Szene abhängt, was die Zeit für ein fertig gerendertes Bild drastisch sinken lassen kann. Diesen Vorteil erkauft man sich durch das Einführen des zusätzlichen Konstruktionsschrittes, der in Abwägung dazu steht. 
 Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit. 
 
 
@@ -137,7 +137,7 @@ Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit.
 
 Es existieren Konstruktionsverfahren verschiedener Komplexitätsklassen, deren Endprodukt sich auf die Traversal Time (Renderzeit) auswirkt. Von der Construction Time (Konstruktionszeit) lässt sich die Nutzbarkeit einer BVH in dynamischen Szenen, also Szenen mit bewegten Objekten, ableiten. Die Traversal Time ist das Hauptqualitätsmerkmal für eine BVH, da sich durch niedrigere Zeiten höhere Auflösungen und Bildwiederholraten, sowohl in statischen wie auch dynamischen Szenen, realisieren lassen.
 Ein genutzter Vorteil der Baumstruktur ist, dass sich sowohl Construction (Konstruktion) als auch Traversal (Durchsuchung) auf GPUs parallelisieren lassen. Dabei spielt auch die konstruktion mit höheren Verzweigungsgraden eine Rolle, wobei man auch dies durch unterschiedliche Konstruktionsverfahren erreichen kann, wie dem \emph{k-way splitting} oder durch \emph{collapse} (Kollabierung) der Hierarchie. Diese Art von BVH wird Wide BVH (Weite BVH) oder auch BVHk genannt. 
-Ziel der Arbeit ist die Analyse verschiedener Konstruktionsverfahren von Wide BVHs mit Hinblick auf Einsparung in Traversal- aber auch Construction-Zeit in statischen Szenen. Dabei sollen die Ergebnisse abhängig von dem verwendeten konstruktionsalgorithmus, dem Verzweigungsgrad der Hierarchie und der Primitive-Anzahl der Szene beleuchtete werden. 
+Ziel der Arbeit ist die Analyse verschiedener Konstruktionsverfahren von Wide BVHs mit Hinblick auf Einsparung in Traversal- aber auch Construction-Zeit in statischen Szenen. Diese Art von BVH ist bereits in der parallelisierten Berechnung mit GPUs weiter verbreitet, hier wird allerdings eine serielle Berechnung auf der CPU untersucht und damit die algorithmischen Vor-und Nachteile von Wide BVH. Dabei sollen die Ergebnisse abhängig von dem verwendeten konstruktionsalgorithmus, dem Verzweigungsgrad der Hierarchie und der Primitive-Anzahl der Szene beleuchtete werden. 
 Dabei haben sich drei Problemfragen ergeben, die den Scope dieser Arbeit definieren:
 \begin{itemize} 
 \item
@@ -147,6 +147,8 @@ Unterscheidet sich die Traversal-Time der BVHs zwischen direktem k-way splitting
 \item
 Wie verändern sich Construction- und Traversal-Time als kombinierte Qualitätsmetrik für die modellierung dynamischer Szenen mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$?
 \end{itemize}
+
+Die Analyse soll dabei auf einer selbstimplmentierten Testbench stattfinden und anschließend mit unabhängigen T-Tests ausgewertet werden. Mittelwerte, sowie Konfidenzintervalle dienen zur späteren Diskussion der Ergebnisse.
 
 \section{Abgrenzung zu vorherigen Arbeiten}
 In der zugrundeliegenden Arbeit werden lediglich statische dreidimensionale Szenen untersucht. Vefahren die darauf abzielen die BVH dynamisch anzupassen (Refitting etc.) werden nicht untersucht.
@@ -165,6 +167,8 @@ Die bei der Traversal-Zeit verwendeten Rays sind lediglich \emph{Primärstrahlen
 
 Die Qualität einer BVH wird rein durch die Traversal-Time definiert. Andere Aspekte wie zum Beispiel Bildqualität durch Verwendung verschiedener Shader sind nicht Teil der Untersuchung.
 
+Die Besonderheit dieser Arbeit ist, dass Wide BVH komplett außerhalb des Kontext der Paralellisierabrkeit analysiert werden und alle Berechnungen seriell auf der CPU ausgeführt werden. Es wird explizit die die gesamte serielle Zeit der Algorithmen untersucht, um Veränderungen durch Struktur der BVHs zu ermitteln. 
+
 \newpage
 
 \chapter{Grundlagen}
@@ -173,7 +177,7 @@ Die Qualität einer BVH wird rein durch die Traversal-Time definiert. Andere Asp
 
 Für das weitere vorgehen werden unter Primitives immer Polygone, also Dreiecke, verstanden. Polygone werden durch ihre drei Eckpunkte definiert, die jeweils durch dreidimensionale Vektoren beschrieben werden. zudem wird für die Vereinfachung von Berechnungen der Mittelpunkt des Polygons bestimmt, \emph{Centroid} genannt. Eine zusammenhängende Struktur aus Polygonen wird als \emph{Mesh} verstanden. 
 
-Wenn sich im Traversal-Schritt die Frage stellt, ob ein Ray ein Primitive schneidet, stellt sich eigentlich die Frage, ob ein bestimmtes Primitive das erste ist, was der untersuchte Ray schneidet. Man spricht hier von \emph{first-hit traversal}~\cite{https://doi.org/10.1111/cgf.142662}.
+Wenn sich im Traversal-Schritt die Frage stellt, ob ein Ray ein Primitive schneidet, stellt sich eigentlich die Frage, ob ein bestimmtes Primitive das erste ist, was der untersuchte Ray schneidet. Man spricht hier von \emph{closest hit test}~\cite{https://doi.org/10.1111/cgf.142662}.
 
 \section{Axis Aligned Bounding Box}
 
@@ -204,21 +208,20 @@ Der Traversal-Schritt ist der Kerngrund für die Verwendung einer BVH. Die Trave
 Die Zeit für einen AABB-Test und einen Primitive-Test unterscheiden sich, wodurch sich ein weiteres Abbruchkriterium ergeben kann. Dies geschieht indem man die Zeit für Ray-Primitive-Kollision, die Dauer des durchsuchens eines Teilbaums und die Menge an Primitiven im Teilbaum in eine Kostengleichung einträgt. Es existieren auch Vereinfachungen dieser Gleichung, diese werden im folgenden Erklärt.
 
 \subsection{Kostenmodelle}
-Es gibt eine Reihe von sogenannten \emph{Traversal-Cost-Models} [?]. Hierbei gibt es eine \emph{Cost- bzw. Loss-Function} die bei der Konstruktion des Baumes verwendet wird um den, für die Funktion, optimalen Split zu finden.
+Es gibt eine Reihe von sogenannten \emph{Traversal-Cost-Models}~\cite{meister2022performance}. Hierbei gibt es eine \emph{Cost- bzw. Loss-Function} die bei der Konstruktion des Baumes verwendet wird um den, für die Funktion, optimalen Split zu finden.
 
 Das Grundgerüst der Kostenfunktion sieht in den meisten Fällen ähnlich aus und unterscheidet sich je nach Heuristik in der bemessenen Wahrscheinlichkeit, mit der der Teilbaum eines gegebene Nodes besucht wird.  
 Dabei entsprechen die Kosten eines inneren Nodes $N$:
 \[
 c(N) = c_T + \sum_{N_{child}} P(N_{child} \mid N)\ c(N_{child})
-\][?]
+\]
 
 Dabei entspricht $c_T$ der durchschnittlichen Zeit für einen Schritt während der Traversal und $N_{child}$ wird als Iterator über alle Kinder des Knoten $N$ verstanden.
 
 Falls es sich nicht um einen inneren Node handelt ist die Kostenfunktion $c(N) = c_I \lvert N \rvert$ mit Ray-Primitive-Intersection-Time $c_I$ und Anzahl an Primitiven in Node $\lvert N \rvert$.
 
-Das bekannteste Kostenmodell zur Konstruktion einer BVH ist die \emph{Surface Area Heuristic}, welche die in dieser Arbeit untersuchte Heuristik darstellt. Es existieren allerdings eine ganze Reihe an Modellen wie zum Beispiel die \emph{Ray Distribution Heuristic (RDH)}[?], \emph{Occlusion Heuristic (OH)} [?] oder \emph{End-point Overlap Heuristic (EPO)} [?], um eine Auswahl zu nennen.
+Das bekannteste Kostenmodell zur Konstruktion einer BVH ist die \emph{Surface Area Heuristic}, welche die in dieser Arbeit untersuchte Heuristik darstellt. Es existieren allerdings eine ganze Reihe an Modellen wie zum Beispiel die \emph{Ray Distribution Heuristic (RDH)}, \emph{Occlusion Heuristic (OH)} oder \emph{End-point Overlap Heuristic (EPO)}~\cite{https://doi.org/10.1111/cgf.142662}, um eine Auswahl zu nennen, deren Untersuchung nicht Teil dieser Arbeit ist.
 
-Die Untersuchung dieser Modelle ist nicht Teil dieser Arbeit.
 \subsection{Construction}
 
 Die Konstruktion von BVH wird klassischerweise entweder Top-Down oder Bottom-Up durchgeführt. Der Großteil der verwendeten Algorithmen sind Top-Down-Construction Algorithmen, welche exklusiv in dieser Arbeit besprochen werden.
@@ -226,13 +229,13 @@ Die Konstruktion von BVH wird klassischerweise entweder Top-Down oder Bottom-Up 
 
 \subsubsection{Median Split}
 
-Die naivste Partitionsstrategie ist der Median Split. Dabei wird die entlang einer Achse sortierte Menge an Primitiven am Median geteilt. Das wird rekursiv für die neu entstandenen Teilmengen wiederholt, bis ein festgelegtes Abbruchkriterium erreicht wird. Sie basiert damit nicht auf einm Kostenmodell und eignet sich vor allem für im Raum gleichverteilte Primitive [?]. Sie besitzt de facto den kleinsten Overhead für die Konstruktion, da keine Abwägung der Teilmengen nötig ist. 
+Die naivste Partitionsstrategie ist der Median Split. Dabei wird die entlang einer Achse sortierte Menge an Primitiven am Median geteilt. Das wird rekursiv für die neu entstandenen Teilmengen wiederholt, bis ein festgelegtes Abbruchkriterium erreicht wird. Sie basiert damit nicht auf einm Kostenmodell und eignet sich vor allem wegen ihrer einfachheit für den Vergleich. Sie besitzt de facto den kleinsten Overhead für die Konstruktion, da keine Abwägung der Teilmengen nötig ist. Die Idee ist, dass dadurch strukturelle Änderungen der BVH klarer herausstechen.
 
 \subsubsection{Surface Area Heuristic Split}
 
-Dagegen stehen Kostenmodelle wie die Surface Area Heuristic (SAH). Von ihr leiten sich einige spezialisierte Partitionierungsstrategien ab, wovon eine auch näher in dieser Arbeit besprochen wird.
+Dagegen stehen Traversal-Kostenmodelle wie die Surface Area Heuristic (SAH). Von ihr leiten sich einige spezialisierte Partitionierungsstrategien ab, wovon eine auch näher in dieser Arbeit besprochen wird.
 
-Die Grundidee ist es, die Wahrscheinlichkeit, dass ein Ray auf die AABB eines Nodes trifft, als geometrische Wahrscheinlichkeit zu sehen. Das bedeutet, dass der Flächeninhalt der AABB einer Node mit den potenziellen Flächeninhalten ihrer Child-Nodes ins Verhältnis gesetzt werden [?]. Daraus ergibt sich, dass kleinere Flächeninhalte die Kostenfunktion minimieren, also als besser gesehen werden. Die SAH geht davon aus, dass die Ausrichtung von Rays gleichverteilt ist [?].
+Die Grundidee ist es, die Wahrscheinlichkeit, dass ein Ray auf die AABB eines Nodes trifft, als geometrische Wahrscheinlichkeit zu sehen. Das bedeutet, dass der Flächeninhalt der AABB einer Node mit den potenziellen Flächeninhalten ihrer Child-Nodes ins Verhältnis gesetzt werden~\cite{meister2022performance}. Daraus ergibt sich, dass kleinere Flächeninhalte die Kostenfunktion minimieren, also als besser gesehen werden. Die SAH berücksichtigt dabei nicht die tatsächliche Ausrichtung und verteilung von Rays.
 
 \[
 P(N_{child} \mid  N)_{SAH} = \frac{Area(N_{child})}{ Area(N)} 
@@ -555,10 +558,6 @@ Die visuelle Ausgabe der Testruns ist für die jeweiligen Testszenen über alle 
 - H0 keine Änderung
 Die Darstellung der Ergebnisse orientiert sich an den Problemfragen.    
 
-\begin{center}
-    \input{results/static_statistical_results_table.tex}
-\end{center}
-
 \subsection{Zusammenfassung}
 
 \section{Dynamisches Modell}
@@ -578,6 +577,10 @@ fwefe
 \newpage
 
 \chapter{Appendix}
+
+\begin{center}
+    \input{results/static_statistical_results_table.tex}
+\end{center}
 
 \printbibliography
 

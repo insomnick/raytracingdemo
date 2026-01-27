@@ -172,6 +172,38 @@
       \verb https://doi.org/10.1145/15922.15916
       \endverb
     \endentry
+    \entry{meister2022performance}{article}{}
+      \name{author}{2}{}{%
+        {{hash=90a742996362ce6175b28d8985ee1ffd}{%
+           family={Meister},
+           familyi={M\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod}}}%
+        {{hash=942445f5c64adc6791c896d6ce92f797}{%
+           family={Bittner},
+           familyi={B\bibinitperiod},
+           given={Jiří},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{06ed3f216ad07b5dd3f06320e4a59d02}
+      \strng{fullhash}{06ed3f216ad07b5dd3f06320e4a59d02}
+      \strng{bibnamehash}{06ed3f216ad07b5dd3f06320e4a59d02}
+      \strng{authorbibnamehash}{06ed3f216ad07b5dd3f06320e4a59d02}
+      \strng{authornamehash}{06ed3f216ad07b5dd3f06320e4a59d02}
+      \strng{authorfullhash}{06ed3f216ad07b5dd3f06320e4a59d02}
+      \field{labelalpha}{MBrr2}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Computer Graphics Techniques (JCGT)}
+      \field{number}{4}
+      \field{title}{Performance comparison of bounding volume hierarchies for GPU ray tracing}
+      \field{volume}{11}
+      \field{year}{2022}
+      \field{pages}{1\bibrangedash 19}
+      \range{pages}{19}
+    \endentry
     \entry{https://doi.org/10.1111/cgf.142662}{article}{}
       \name{author}{6}{}{%
         {{hash=90a742996362ce6175b28d8985ee1ffd}{%
