@@ -16,5 +16,105 @@
   {}
 \endgroup
 
+
+\refsection{0}
+  \datalist[entry]{anyt/global//global/global}
+    \entry{ericson2004real}{book}{}
+      \name{author}{1}{}{%
+        {{hash=41b203af3fc79061c842b891c9c477a6}{%
+           family={Ericson},
+           familyi={E\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor \& Francis}%
+      }
+      \strng{namehash}{41b203af3fc79061c842b891c9c477a6}
+      \strng{fullhash}{41b203af3fc79061c842b891c9c477a6}
+      \strng{bibnamehash}{41b203af3fc79061c842b891c9c477a6}
+      \strng{authorbibnamehash}{41b203af3fc79061c842b891c9c477a6}
+      \strng{authornamehash}{41b203af3fc79061c842b891c9c477a6}
+      \strng{authorfullhash}{41b203af3fc79061c842b891c9c477a6}
+      \field{labelalpha}{En2}
+      \field{sortinit}{E}
+      \field{sortinithash}{8da8a182d344d5b9047633dfc0cc9131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9781558607323}
+      \field{title}{Real-Time Collision Detection}
+      \field{year}{2004}
+    \endentry
+    \entry{VahlGordonClevenger+2021}{book}{}
+      \name{author}{2}{}{%
+        {{hash=b49322e05e91a0e86fec4dbd3495ada8}{%
+           family={Gordon},
+           familyi={G\bibinitperiod},
+           given={Scott\bibnamedelima Vahl},
+           giveni={S\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=cfad90a718a37cd15a0329e61dd4e370}{%
+           family={Clevenger},
+           familyi={C\bibinitperiod},
+           given={John\bibnamedelima L.},
+           giveni={J\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+      }
+      \list{publisher}{2}{%
+        {Mercury Learning}%
+        {Information}%
+      }
+      \strng{namehash}{c0cccd045d4858a29fa8e2a0746b38dd}
+      \strng{fullhash}{c0cccd045d4858a29fa8e2a0746b38dd}
+      \strng{bibnamehash}{c0cccd045d4858a29fa8e2a0746b38dd}
+      \strng{authorbibnamehash}{c0cccd045d4858a29fa8e2a0746b38dd}
+      \strng{authornamehash}{c0cccd045d4858a29fa8e2a0746b38dd}
+      \strng{authorfullhash}{c0cccd045d4858a29fa8e2a0746b38dd}
+      \field{labelalpha}{GCnr2}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9781683926719}
+      \field{title}{Computer Graphics Programming in OpenGL with C++}
+      \field{year}{2021}
+      \field{pages}{483}
+      \range{pages}{1}
+    \endentry
+    \entry{Möller01011997}{article}{}
+      \name{author}{2}{}{%
+        {{hash=94e27db04e86f2b4ec0d38fac3669e6b}{%
+           family={Möller},
+           familyi={M\bibinitperiod},
+           given={Tomas},
+           giveni={T\bibinitperiod}}}%
+        {{hash=338726ecdd858a4b49e5cb7ca1325d4d}{%
+           family={Trumbore},
+           familyi={T\bibinitperiod},
+           given={Ben},
+           giveni={B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor \& Francis}%
+      }
+      \strng{namehash}{d0eeec1f9de25a0ee8052444e5b8c1e2}
+      \strng{fullhash}{d0eeec1f9de25a0ee8052444e5b8c1e2}
+      \strng{bibnamehash}{d0eeec1f9de25a0ee8052444e5b8c1e2}
+      \strng{authorbibnamehash}{d0eeec1f9de25a0ee8052444e5b8c1e2}
+      \strng{authornamehash}{d0eeec1f9de25a0ee8052444e5b8c1e2}
+      \strng{authorfullhash}{d0eeec1f9de25a0ee8052444e5b8c1e2}
+      \field{labelalpha}{MTre1}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Graphics Tools}
+      \field{number}{1}
+      \field{title}{Fast, Minimum Storage Ray-Triangle Intersection}
+      \field{volume}{2}
+      \field{year}{1997}
+      \field{pages}{21\bibrangedash 28}
+      \range{pages}{8}
+    \endentry
+  \enddatalist
+\endrefsection
 \endinput
 

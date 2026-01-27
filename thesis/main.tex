@@ -99,8 +99,15 @@ Zweitgutachter:in:& Dr. Markus Brenneis\\ % Namen eintragen
 \maketitle
 
 \chapter*{Zusammenfassung}
+Bounding Volume Hierarchies (BVHs) gehören zu den wichtigsten Beschleunigungsdatenstrukturen zur effizienten Berechnung von Ray-Szenen-Schnittpunkten in der Bildprojektion. Während Wide BVHs (Verzweigungsgrad $k > 2$) bereits im Zusammenhang mit Optimierung durch GPU-Berechnung untersucht werden, ist es weniger klar, ob sie auch bei serieller berechnung auf der CPU einen praktischen Vorteil durch ihre Struktur bieten können.
 
-tbc
+Diese Arbeit untersucht Top-Down konstruierte BVH in statischen dreidimensionalen Szenen für Verzweigungsgrade $k \in {2, 4 ,8 ,16}$. Dies geschieht unter Berücksichtigung von drei Splitting-Verfahren (Median, Surface Area Heuristic und Binned Surface Area Heuristic), sowie zwei Methoden zur Erzeugung von Wide BVHs (k-way splitting und binary BVH collapse). Dabei steht die Traversal-Time als primäres und die Construction-Time als sekundäres Qualitätsmerkmal im Fokus. Zudem wird durch eine Kombinationder beiden Qualitätsmetriken ein Szenario mit dynamischer Szene modelliert.
+
+Für alle untersuchten statischen Szenen zeigt $k = 4$ eine statistisch signifikante Verbesserung gegenüber der vergleichbaren binären Variante. Dabei liegt der Traversal-Speedup-Faktor im Mittel zwischen 1,03 und 1,08, wobei der Effekt für größere Szenen abzuflachen scheint. Für höhere Verzweigungsgrade ($k = 8$ und $k = 16$) liegt der Speedup-faktor deutlich und statistisch signifinant unter 1. 
+Es konnte zwischen k-way splitting und der collapse Methode keine signifikanten Unterschiede in der Traversal-Time gefunden werden.
+Auch im dynamischen Modell schein der durch $k = 4$ entstehende Vorteil mit steigender Szenengröße abzunehmen und kann bei den größeren untersuchten Szenen, unabhängig vom Konstruktionsverfahren, sogar ausbleiben bzw. zum Nachteil werden. 
+Insgesamt deuten die Ergebisse darauf hin, dass bei serieller Berechnung auf der CPU ein Verzweigungsgrad von $k = 4$ einen kleinen aber klaren Gewinn liefert. größere Verzweigungsgrade sind nicht zu Empfehlen. Das Verhalten in größeren Szenen bietet Raum für zukünftige Forschung.
+
 
 \tableofcontents
 
@@ -110,11 +117,11 @@ tbc
 
 \section{Motivation}
 
-Effiziente Kollisionserkennung hat grundlegenden Nutzen in diversen Feldern, über physikbasierte Simulation und Robotik, bis hin zu Darstellungen in Animation und Videospielen [1]. Im Fall von Animation und Bildgebung im Allgemeinen handelt es sich vor allem um Kollisionen einfacher geometrischer Formen, häufig Geraden oder Strahle, Dreiecke und Quader. Unter Zuhilfenahme dieser einfachen Werkzeuge lassen sich komplexe dreidimensionale Szenen mit einfachen Mitteln berechnen und darstellen. Für jeden Bildpunkt werden Strahlen, genannt Rays, auf die digitale Szene geworfen. Diese besteht in gängiger Praxis aus einer Ansammlung von Dreiecken, genannt Polygone, oder anderen fundamentalen Formen, die allgemein als Primitive bezeichnet werden. Um herauszufinden, ob und wo es eine Kollision zwischen einem Ray und einem bestimmten Polygon gibt, kann man Beispielsweise den weitverbreiteten Algorithmus von Möller und Trumbore [2] verwenden. Wenn es einen Treffer gibt, lässt sich aufbauend auf Position und Abstand des Schnittpunktes der korrekte Farbwert für den Pixel berechnen. Diese Rechnung müsste man naiv gesehen für jede Kombination aus Rays und Primitive wiederholen, um ein vollständiges Bild zu generieren. 
+Effiziente Kollisionserkennung hat grundlegenden Nutzen in diversen Feldern, über physikbasierte Simulation und Robotik, bis hin zu Darstellungen in Animation und Videospielen~\cite{ericson2004real}. Im Fall von Animation und Bildgebung im Allgemeinen handelt es sich vor allem um Kollisionen einfacher geometrischer Formen, häufig Geraden oder Strahle, Dreiecke und Quader. Unter Zuhilfenahme dieser einfachen Werkzeuge lassen sich komplexe dreidimensionale Szenen mit einfachen Mitteln berechnen und darstellen. Für jeden Bildpunkt werden Strahlen, genannt Rays, auf die digitale Szene geworfen. Diese besteht in gängiger Praxis aus einer Ansammlung von Dreiecken, genannt Polygone, oder anderen fundamentalen Formen, die allgemein als Primitive bezeichnet werden. Um herauszufinden, ob und wo es eine Kollision zwischen einem Ray und einem bestimmten Polygon gibt, kann man Beispielsweise den weitverbreiteten Algorithmus von Möller und Trumbore~\cite{Möller01011997} verwenden. Wenn es einen Treffer gibt, lässt sich aufbauend auf Position und Abstand des Schnittpunktes der korrekte Farbwert für den Pixel berechnen. Diese Rechnung müsste man naiv gesehen für jede Kombination aus Rays und Primitive wiederholen, um ein vollständiges Bild zu generieren. 
 
 \section{Thema und fachliche Einordnung}
 
-Um den Vorgang zu beschleunigen, kommen zwei Datenstrukturen ins Spiel: Die Axis Aligned Bounding Box (AABB) und darauf aufbauend die Bounding Volume Hierarchy (BVH) [3]. Eine AABB definiert achsenorientierte obere und untere Schranken für Teilmengen von Primitives in Form eines Quaders, der diese im Raum einschließt. Durch die Einführung von AABB lassen sich die nötigen Ray-Object-Intersection-Tests verringern, indem man für jeden Ray erst die Kollision mit den AABBs überprüft. Wenn es bereits keine Kollision mit der umschließenden Bounding Box gibt, kann von vornherein ausgeschlossen werden, dass es eine Kollision mit den innenliegenden Primitiven gibt. 
+Um den Vorgang zu beschleunigen, kommen zwei Datenstrukturen ins Spiel: Die Axis Aligned Bounding Box (AABB) und darauf aufbauend die Bounding Volume Hierarchy (BVH)~\cite{VahlGordonClevenger+2021}. Eine AABB definiert achsenorientierte obere und untere Schranken für Teilmengen von Primitives in Form eines Quaders, der diese im Raum einschließt. Durch die Einführung von AABB lassen sich die nötigen Ray-Object-Intersection-Tests verringern, indem man für jeden Ray erst die Kollision mit den AABBs überprüft. Wenn es bereits keine Kollision mit der umschließenden Bounding Box gibt, kann von vornherein ausgeschlossen werden, dass es eine Kollision mit den innenliegenden Primitiven gibt. 
 Um den Vorteil dieses Verfahrens effektiv zu nutzen, kann man nun rekursiv die eingeschlossenen Teilmengen wieder aufteilen und mit AABBs umschließen. Dadurch lassen sich die Bounding Boxes in eine hierarchische Reihenfolge bringen, die eine Baumstruktur aufweist. Diese Struktur ist eine Bounding Volume Hierarchy. Durch eine BVH wird die Laufzeit auf ein Niveau gesenkt, das logarithmisch von der Anzahl an Primitives in der Szene abhängt, was die Zeit für ein fertig gerendertes Bild drastisch sinken lassen kann.
 Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit. 
 
@@ -549,9 +556,7 @@ Die visuelle Ausgabe der Testruns ist für die jeweiligen Testszenen über alle 
 Die Darstellung der Ergebnisse orientiert sich an den Problemfragen.    
 
 \begin{center}
-    \input{results/static_statistical_results_table_k4.tex}
-    \input{results/static_statistical_results_table_k8.tex}
-    \input{results/static_statistical_results_table_k16.tex}
+    \input{results/static_statistical_results_table.tex}
 \end{center}
 
 \subsection{Zusammenfassung}

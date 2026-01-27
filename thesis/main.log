@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  12 JAN 2026 21:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  27 JAN 2026 10:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -976,10 +976,10 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 105.
+(Font)              <10.95> on input line 102.
  [2
 
-] (./main.toc)
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}] (./main.toc)
 \tf@toc=\write5
 \openout5 = `main.toc'.
 
@@ -1002,10 +1002,10 @@ Class scrreprt Warning: \float@addtolists detected!
 (scrreprt)              a package that still implements the
 (scrreprt)              deprecated \float@addtolist interface.
 
-<images/bunny_boxes.png, id=86, 642.4pt x 642.4pt>
+<images/bunny_boxes.png, id=92, 642.4pt x 642.4pt>
 File: images/bunny_boxes.png Graphic file (type png)
 <use images/bunny_boxes.png>
-Package pdftex.def Info: images/bunny_boxes.png  used on input line 125.
+Package pdftex.def Info: images/bunny_boxes.png  used on input line 132.
 (pdftex.def)             Requested size: 192.72148pt x 192.72148pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1013,34 +1013,34 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [4
 
 ]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 137.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 144.
  (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [5{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc} <./images/bunny_boxes.png>] [6]
+) [5{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc} <./images/bunny_boxes.png>] [6]
 chapter 2.
 [7
 
 ] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}] [9]
 chapter 3.
-<images/suzanne.png, id=130, 501.875pt x 501.875pt>
+<images/suzanne.png, id=136, 501.875pt x 501.875pt>
 File: images/suzanne.png Graphic file (type png)
 <use images/suzanne.png>
-Package pdftex.def Info: images/suzanne.png  used on input line 280.
+Package pdftex.def Info: images/suzanne.png  used on input line 287.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/teapot.png, id=131, 501.875pt x 501.875pt>
+<images/teapot.png, id=137, 501.875pt x 501.875pt>
 File: images/teapot.png Graphic file (type png)
 <use images/teapot.png>
-Package pdftex.def Info: images/teapot.png  used on input line 281.
+Package pdftex.def Info: images/teapot.png  used on input line 288.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/bunny.png, id=132, 501.875pt x 501.875pt>
+<images/bunny.png, id=138, 501.875pt x 501.875pt>
 File: images/bunny.png Graphic file (type png)
 <use images/bunny.png>
-Package pdftex.def Info: images/bunny.png  used on input line 282.
+Package pdftex.def Info: images/bunny.png  used on input line 289.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
-<images/armadillo.png, id=133, 501.875pt x 501.875pt>
+<images/armadillo.png, id=139, 501.875pt x 501.875pt>
 File: images/armadillo.png Graphic file (type png)
 <use images/armadillo.png>
-Package pdftex.def Info: images/armadillo.png  used on input line 283.
+Package pdftex.def Info: images/armadillo.png  used on input line 290.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1048,20 +1048,18 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [10
 
 ]
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 296.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 296.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 303.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 303.
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [11 <./images/suzanne.png> <./images/teapot.png> <./images/bunny.png> <./images/armadillo.png>] [12]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <8> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 354.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 361.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 358.
+(Font)              <5> on input line 365.
  [13] [14] [15] [16]
 chapter 4.
-(./results/static_statistical_results_table_k4.tex [17
-
-]) (./results/static_statistical_results_table_k8.tex) (./results/static_statistical_results_table_k16.tex
+(./results/static_statistical_results_table.tex
 Overfull \hbox (1.9171pt too wide) in alignment at lines 1--6
  [] [] [] [] [] [] [] 
  []
@@ -1082,11 +1080,13 @@ Overfull \hbox (1.9171pt too wide) in alignment at lines 15--17
  []
 
 
-Overfull \hbox (1.9171pt too wide) in alignment at lines 17--42
+Overfull \hbox (1.9171pt too wide) in alignment at lines 17--90
  [] [] [] [] [] [] [] 
  []
 
-[18]) [19]
+[17
+
+] [18]) [19]
 chapter 5.
 [20
 
@@ -1110,18 +1110,27 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29032 strings out of 474222
- 542205 string characters out of 5748733
+ 29230 strings out of 474222
+ 545991 string characters out of 5748733
  2301975 words of memory out of 5000000
- 50663 multiletter control sequences out of 15000+600000
+ 50866 multiletter control sequences out of 15000+600000
  637976 words of font info for 99 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
  108i,21n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{cite.0@VahlGordonClevenger+2021} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{cite.0@M\303\266ller01011997} has been referenced but does not exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{cite.0@ericson2004real} has been referenced but does not exist, replaced by a fixed one
+
 </usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (22 pages, 652452 bytes).
+Output written on main.pdf (22 pages, 654671 bytes).
 PDF statistics:
- 618 PDF objects out of 1000 (max. 8388607)
- 546 compressed objects within 6 object streams
- 253 named destinations out of 1000 (max. 500000)
+ 622 PDF objects out of 1000 (max. 8388607)
+ 550 compressed objects within 6 object streams
+ 254 named destinations out of 1000 (max. 500000)
  274 words of extra memory for PDF output out of 10000 (max. 10000000)
 
