@@ -163,7 +163,7 @@ Es werden lediglich Median-Split und SAH-Split, sowie die Optimierungsvariante b
 
 Die gemessenen Metriken beziehen sich auf CPU-Zeit, also lineare Berechnungen. Spezielle Raytracing-Hardware oder parallelisierte Messergebnisse werden nicht untersucht, das der Fokus auf Gewinn durch strukturelle Eigenschaften der Hierarchien liegen soll.
 
-Die bei der Traversal-Zeit verwendeten Rays sind lediglich \emph{Primärstrahlen}, also direkte Strahlen zwischen virtueller Kamera und Objekt. Dadurch fallen Verfahren wie Refelktion, Refraktion o.Ä. aus der Bewertung, was die Vergleichbarkeit vereinfacht und die Komplexität verringert.   
+Die bei der Traversal-Time verwendeten Rays sind lediglich \emph{Primärstrahlen}, also direkte Strahlen zwischen virtueller Kamera und Objekt. Dadurch fallen Verfahren wie Refelktion, Refraktion o.Ä. aus der Bewertung, was die Vergleichbarkeit vereinfacht und die Komplexität verringert.   
 
 Die Qualität einer BVH wird rein durch die Traversal-Time definiert. Andere Aspekte wie zum Beispiel Bildqualität durch Verwendung verschiedener Shader sind nicht Teil der Untersuchung.
 
@@ -547,34 +547,37 @@ end function
 Die visuelle Ausgabe der Testruns ist für die jeweiligen Testszenen über alle möglichen Konstruktionsparameter für alle Szenen pixelidentisch. Somit wird bewiesen immer das gleiche Ergebnis ausgegeben.
 
 \section{Traversal}
-Die erste Forschungsfrage beschäftigt sich damit, wie sich die Traversal-Time bei Top-Down-Konstruierten Wide BVHs für Verzweigungsgrade $k \in \{2, 4, 8, 16\}$ in statischen Szenen verändert. 
+Die erste Forschungsfrage beschäftigt sich damit, wie sich die Traversal-Time Top-Down konstruierter Wide BVHs abhängig vom Verzweigungsgrad $k \in \{2, 4, 8, 16\}$ verändert. 
+Hierfür dient als Referenz für jede Szene und jedes Splitting-Verfahren eine binäre BVH ($k = 2$). Zum Zweck der Vergleichbarkeit wird das Feld \emph{Speedup} definiert: 
 
-Dabei wird die Traversal-Time der Wide BVH mit der Traversal-Time einer binären BVH für gleiche Modelle und Splitting-Algorithmen verglichen. Der Vergleichswert wird als \emph{Speedup} beschrieben, wobei ein Wert größer 1 als Verbesserung zu werten ist.
+\[
+Speedup = \frac{T_{\mathrm{\mu, traversal}(k = 2)}}{T_{\mu, \mathrm{traversal}(k)}}
+\]
+Dabei bezeichnet $T_{\mathrm{\mu, traversal}(k)}$ den Mittelwert der, wie im Kapitel Methoden gezeigt, aggregierten gemessenen Traversal-Times, abhängig vom Verzweigungsgrad $k$. 
+Werte $Speedup > 1$ gelten als Verbesserung, also geringerer Traversal-Time, gegenüber der binären Referenz. 
 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.2]{results/static_combined_speedup_k4.png}
     \includegraphics[scale=0.2]{results/static_combined_speedup_k8.png}
     \includegraphics[scale=0.2]{results/static_combined_speedup_k16.png}
-    \caption{Ergebnisgrafik Traversal-Speedup für statische Szenen}  
+    \caption{Ergebnisgrafik Traversal-Speedup für statische Szenen}
     \label{fig:static}
-
 \end{figure}
-Wie der Grafik~\ref{fig:static} und der dazugehörigen Tabelle~\ref{tab:statistical} zu entnehmen gibt es eine konsistente signifikante Verbesserung der Traversal-Time für $k = 4$ gegenüber der binären Referenz. Der Speedup-Faktor befindet sich in diesem Fall im Mittel zwischen 1,03 und 1,08. Die dazugehörigen Konfidenzintervalle (CI) lassen sich zusätzlich der Tabelle entnehmen.
-Für $k = 8$ und $k = 16$ verschlechtert sich die Traversal-Time deutlich. Hier sind Speedup-Werte im Mittel schlechter als 0,77 und sinken sogar im Mittel bis unter 0,10.
 
-\subsection{Zusammenfassung}
+Die Abbildung~\ref{fig:static} zeigt die Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:statistical} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
+Für $k = 4$ gibt es über alle Kombinationen eine konsistente und statistisch signifikante Verbesserung gegenüber der binären Referenz. Die Mittelwerte der Speedups liegen zwischen ungefähr 1,03 und 1,08.
+Für $k = 4$ verschlechtert sich die Traversal-Time in allen untersuchten Fällen klar mit Speedup-Mittelwerten zwischen ungefähr 0,63 und 0,77.
+Für $k = 8$ fällt die Performance nochmal deutlich ab mit Mittelwerten zwischen \ 0,10 und 0,19, was einer stark höheren Traversal-Time gegenüber $k = 2$ entspricht.
 
 \section{Wide BVH Konstruktionsmethode}
-Die zweiten Forschungsfrage bezieht sich darauf, inwiefern sich die Traversal-Time der BVHs zwischen direktem k-way splitting und collapse einer binären BVH abhängig von der gewählten statischen Szene verändern.
+Die zweiten Forschungsfrage bezieht sich darauf, inwiefern sich die Traversal-Time der BVHs zwischen direktem k-way splitting und collapse einer binären BVH verändern.
 
-\subsection{Zusammenfassung}
 
 \section{Dynamisches Modell}
 Die dritte und letzte Forschungsfrage untersucht, wie sich Construction- und Traversal-Time als kombinierte Qualitätsmetrik für die modellierung dynamischer Szenen mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$ verändern.
 
 
-\subsection{Zusammenfassung}
 
 \newpage
 
