@@ -549,7 +549,6 @@ Die visuelle Ausgabe der Testruns ist für die jeweiligen Testszenen über alle 
 \section{Traversal}
 Die erste Forschungsfrage beschäftigt sich damit, wie sich die Traversal-Time Top-Down konstruierter Wide BVHs abhängig vom Verzweigungsgrad $k \in \{2, 4, 8, 16\}$ verändert. 
 Hierfür dient als Referenz für jede Szene und jedes Splitting-Verfahren eine binäre BVH ($k = 2$). Zum Zweck der Vergleichbarkeit wird das Feld \emph{Speedup} definiert: 
-
 \[
 Speedup = \frac{T_{\mathrm{\mu, traversal}(k = 2)}}{T_{\mu, \mathrm{traversal}(k)}}
 \]
@@ -574,7 +573,7 @@ Für $k = 8$ fällt die Performance nochmal deutlich ab mit Mittelwerten zwische
 Die zweiten Forschungsfrage bezieht sich darauf, inwiefern sich die Traversal-Time zwischen den beiden Untersuchten Verfahren zur Erzeugung einer Wide BVH unterscheidet.
 Zum Einen das direkte k-way-Splitting und zum Anderen das collapsing einer vorher konstruierten binären BVH. Wieder erfolgt der Vergleich über jede szene und jedes Splitting-verfahren. Speedup hat an dieser Stelle nicht $k = 2$, sondern die collapse-Methode als Referenz. Damit definiert sich ein neuer Vergleichswert:
 \[
-Speedup_{comp} = \frac{T_{\mathrm{\mu, traversal}(k, collapse)}}{T_{\mu, \mathrm{traversal}(k, k\text{-}way)}}
+Speedup_{comparison} = \frac{T_{\mathrm{\mu, traversal}(k, collapse)}}{T_{\mu, \mathrm{traversal}(k, k\text{-}way)}}
 \]
 Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapitel Methoden gezeigt, aggregierten gemessenen Traversal-Times, diesmal allerdings abhängig von der gewählten Methode zur Erzeugung der Wide BVH bei gleichem Verzweigungsgrad $k$. Wieder gitd, dass 
 
@@ -587,12 +586,31 @@ Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapit
     \label{fig:comparison}
 \end{figure}
 
-Die Abbildung~\ref{fig:static} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:static} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
-Im Vergleich liegen die Speedup-Werte für alle Kombinationen Szenen und Splitting-Verfahren für alle $k \in {4, 8, 16}$ jeweils sehr nah bei $1$. 
-Dadurch lässt sich für die untersuchten statsischen Szenen kein statistisch signifikanter und damit praktisch Nutzbarer Unterschied in der Traversal-Time zwischen direktem k-way-Splitting und der collapse-methode feststellen.
+Die Abbildung~\ref{fig:comparison} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:comparison} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
+Im Vergleich liegen die Speedup-Werte für alle Kombinationen Szenen und Splitting-Verfahren für alle $k \in {4, 8, 16}$ jeweils sehr nah bei $1$. Die Konfidenzintervalle reichen von $0,996$ bis $1,004$, beinhalten dabei aber immer den Wert $1$.
+Dadurch lässt sich für die untersuchten statsischen Szenen kein statistisch signifikanter und damit praktisch Nutzbarer Unterschied in der Traversal-Time zwischen direktem k-way-Splitting und der collapse-methode feststellen. Dies gilt unabhängig von untersuchter Szene oder gewählten Splitting-Verfahren.
 
 \section{Dynamisches Modell}
-Die dritte und letzte Forschungsfrage untersucht, wie sich Construction- und Traversal-Time als kombinierte Qualitätsmetrik für die modellierung dynamischer Szenen mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$ verändern. Die Konfidenzintervalle reichen von $0,996$ bis $1,004$, beinhalten dabei aber immer den Wert $1$.
+Die dritte und letzte Forschungsfrage untersucht die Modellierung einer dynamischen Szene, bei der die (Re-)Construction der Szene vor jeder Traversal-Phase erforderlich ist. Für die Modellierung wird eine kombinierte Qualitätsmetrik aus Construction- und Traversal-Time verwendet.
+\[
+T_{dynamic}(k) = T_{\mathrm{\mu, construction}(k)} + T_{\mathrm{\mu, traversal}(k)}
+\]
+Dabei ist $T_{\mathrm{\mu, construction}(k)}$ den Mittelwert der Construction-Time und $T_{\mathrm{\mu, traversal}(k)}$ den Mittelwert der Traversal-Time, wie im Kapitel Methoden beschrieben. Speedup wird analog zur ersten Forschungsfrage gegenüber $k = 2$ definiert:
+\[
+Speedup_{dynamic} = \frac{T_{\mathrm{\mu, dynamic}(k = 2)}}{T_{\mu, \mathrm{dynamic}(k)}}
+\]
+Ebenso entspricht $Speedup_{dynamic} > 1$ einer Verbesserung der kombinierten Metrik.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.2]{results/dynamic_combined_speedup_k4.png}
+    \includegraphics[scale=0.2]{results/dynamic_combined_speedup_k8.png}
+    \includegraphics[scale=0.2]{results/dynamic_combined_speedup_k16.png}
+    \caption{Abbildung kombinierter Speedup für Construction- und Traversal-Time}
+    \label{fig:dynamic}
+\end{figure}
+Die Abbildung~\ref{fig:dynamic} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:dynamic} enthält die dazugehörigen Ergebnisse. 
+
 
 
 \newpage
