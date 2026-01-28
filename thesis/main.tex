@@ -561,22 +561,38 @@ Werte $Speedup > 1$ gelten als Verbesserung, also geringerer Traversal-Time, geg
     \includegraphics[scale=0.2]{results/static_combined_speedup_k4.png}
     \includegraphics[scale=0.2]{results/static_combined_speedup_k8.png}
     \includegraphics[scale=0.2]{results/static_combined_speedup_k16.png}
-    \caption{Ergebnisgrafik Traversal-Speedup für statische Szenen}
+    \caption{Abbildung Traversal-Speedup für statische Szenen}
     \label{fig:static}
 \end{figure}
 
-Die Abbildung~\ref{fig:static} zeigt die Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:statistical} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
-Für $k = 4$ gibt es über alle Kombinationen eine konsistente und statistisch signifikante Verbesserung gegenüber der binären Referenz. Die Mittelwerte der Speedups liegen zwischen ungefähr 1,03 und 1,08.
-Für $k = 4$ verschlechtert sich die Traversal-Time in allen untersuchten Fällen klar mit Speedup-Mittelwerten zwischen ungefähr 0,63 und 0,77.
-Für $k = 8$ fällt die Performance nochmal deutlich ab mit Mittelwerten zwischen \ 0,10 und 0,19, was einer stark höheren Traversal-Time gegenüber $k = 2$ entspricht.
+Die Abbildung~\ref{fig:static} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:static} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
+Für $k = 4$ gibt es über alle Kombinationen eine konsistente und statistisch signifikante Verbesserung gegenüber der binären Referenz. Die Mittelwerte der Speedups liegen zwischen ungefähr $1,03$ und $1,08$.
+Für $k = 4$ verschlechtert sich die Traversal-Time in allen untersuchten Fällen klar mit Speedup-Mittelwerten zwischen ungefähr $0,63$ und $0,77$.
+Für $k = 8$ fällt die Performance nochmal deutlich ab mit Mittelwerten zwischen \ $0,10$ und $0,19$, was einer stark höheren Traversal-Time gegenüber $k = 2$ entspricht.
 
 \section{Wide BVH Konstruktionsmethode}
-Die zweiten Forschungsfrage bezieht sich darauf, inwiefern sich die Traversal-Time der BVHs zwischen direktem k-way splitting und collapse einer binären BVH verändern.
+Die zweiten Forschungsfrage bezieht sich darauf, inwiefern sich die Traversal-Time zwischen den beiden Untersuchten Verfahren zur Erzeugung einer Wide BVH unterscheidet.
+Zum Einen das direkte k-way-Splitting und zum Anderen das collapsing einer vorher konstruierten binären BVH. Wieder erfolgt der Vergleich über jede szene und jedes Splitting-verfahren. Speedup hat an dieser Stelle nicht $k = 2$, sondern die collapse-Methode als Referenz. Damit definiert sich ein neuer Vergleichswert:
+\[
+Speedup_{comp} = \frac{T_{\mathrm{\mu, traversal}(k, collapse)}}{T_{\mu, \mathrm{traversal}(k, k\text{-}way)}}
+\]
+Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapitel Methoden gezeigt, aggregierten gemessenen Traversal-Times, diesmal allerdings abhängig von der gewählten Methode zur Erzeugung der Wide BVH bei gleichem Verzweigungsgrad $k$. Wieder gitd, dass 
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.2]{results/comparison_speedup_k4.png}
+    \includegraphics[scale=0.2]{results/comparison_speedup_k8.png}
+    \includegraphics[scale=0.2]{results/comparison_speedup_k16.png}
+    \caption{Abbildung Traversal-Speedup collapse- gegen k-way- Verfahren}
+    \label{fig:comparison}
+\end{figure}
+
+Die Abbildung~\ref{fig:static} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:static} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
+Im Vergleich liegen die Speedup-Werte für alle Kombinationen Szenen und Splitting-Verfahren für alle $k \in {4, 8, 16}$ jeweils sehr nah bei $1$. 
+Dadurch lässt sich für die untersuchten statsischen Szenen kein statistisch signifikanter und damit praktisch Nutzbarer Unterschied in der Traversal-Time zwischen direktem k-way-Splitting und der collapse-methode feststellen.
 
 \section{Dynamisches Modell}
-Die dritte und letzte Forschungsfrage untersucht, wie sich Construction- und Traversal-Time als kombinierte Qualitätsmetrik für die modellierung dynamischer Szenen mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$ verändern.
-
+Die dritte und letzte Forschungsfrage untersucht, wie sich Construction- und Traversal-Time als kombinierte Qualitätsmetrik für die modellierung dynamischer Szenen mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$ verändern. Die Konfidenzintervalle reichen von $0,996$ bis $1,004$, beinhalten dabei aber immer den Wert $1$.
 
 
 \newpage
@@ -594,6 +610,7 @@ fwefe
 
 \begin{center}
     \input{results/static_statistical_results_table.tex}
+    \input{results/comparison_statistical_results_table.tex}
 \end{center}
 
 \printbibliography
