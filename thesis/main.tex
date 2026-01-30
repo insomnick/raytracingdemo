@@ -610,8 +610,10 @@ Ebenso entspricht $Speedup_{dynamic} > 1$ einer Verbesserung der kombinierten Me
     \label{fig:dynamic}
 \end{figure}
 Die Abbildung~\ref{fig:dynamic} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:dynamic} enthält die dazugehörigen Ergebnisse. 
-
-
+Für $k = 4$ gibt es in kleineren Szenen einen Vorteil gegenüber $k = 2$, der sich durch Speedup-Mittelwerten zwischen $1,03$ und $1,08$ ausdrückt. Für größere Szenen nimmt dieser Vorteil ab, womit der Speedup nahe an $1$ liegen, oder sogar teilweise leicht darunter fallen. 
+Für $k = 8$ ist der Speedup für das dynamische Modell wieder deutlich unter $1$ mit Mittelwerten, die sich typischerweise im Bereich von $0,71$ bis $0,86$ aufhalten.
+Für $k = 16$ gibt es weitere Geschwindigkeitseinbußen mit Mittelwerten für den Speedup zwischen $0,16$ und $0,30$.
+Zusammengefasst zeigt das dynamische Modell ähnliche Ergebnistrends, wie im Rahmen der ersten Forschungsfrage gezeigt. Insgesamt bleibt die BVH mit $k = 4$ die Performanteste Datenstruktur für die Untersuchten Szenen, auch wenn ein Abfall für größere Szenen erkennbar ist.
 
 \newpage
 
