@@ -643,13 +643,16 @@ Die naheliegenste erklärung ist, dass die räumliche Partiotionierung für beid
 Eine Konsequenz dieser Ergbnisse ist, dass die Wahl des Wide BVH Konstruktionsverfahren nach Implementierungsaufwand oder Construction-Time entschieden werden sollte, da es keine signifikanten einbußen durch die Wahl der untersuchten Verfahren gibt. 
 
 \section{Interpretation: Dynamisches Modell}
+Für das dynamische Modell wurde gezeigt, dass auch hier $k = 4$ überwiegend bessere Ergebnisse gegenüber der binären Referenz aufzeigt, der Effekt allerdings mit steigender Szenengröße zu sinken bzw. sich sogar leicht umzukehren scheint. Für $k = 8$ und $k = 16$ wurden klar schlechtere Ergebisse gezeigt.
 
+Der Unterschied gegenüber der Ergebnisse der ersten Forschungsfrage ist dadurch erklärbar, dass die die Construction-Time über die verschiedenen Verzweigungsgrade hinweg für jeden Splitting-Algorithmus nahezu konstant zu sein scheint, wie man auch in Abbildung~\ref{fig:dynamic-c-vs-t} ablesen kann. Die Vorteile in der Traversal-Time werden damit durch einen konstanten offset verschlechtert, was zur Folge hat, dass der Speedup für größere Szenen gegen $1$ geht.  
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{results/dynamic-construction-vs-traversal.png}
     \caption{Vergleich Construction- gegen Traversal-Time}
     \label{fig:dynamic-c-vs-t}
 \end{figure}
+Vorsichtig kann man beurteilen, dass der Effekt für größere Szenen zu einem immer größer werden Problem wird, sodass der Vorteil von $k = 4$ immer weiter schwindet oder möglicherweise sogar zum Nachteil wird. Allerdings ist die untersuchte Stichprobengröße an Szenen nicht ausreichend um hierfür finale Aussagen liefern zu können, weshalb man hier von Indizien sprechn muss. 
 
 \section{Literaturkontext}
 In der Literatur werden Wide BVH eher im Kontext mit der Nutzung von SIMD oder GPUs erwähnt, da höhere Verzweigungsgrade Chancen für die bessere Parallelisierbarkeit bieten \cite{4634620}. 
