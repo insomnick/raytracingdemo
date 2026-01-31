@@ -291,6 +291,41 @@
       \field{pages}{21\bibrangedash 28}
       \range{pages}{8}
     \endentry
+    \entry{4634620}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=d429aca2a7aebc42bbf44da929124fbb}{%
+           family={Wald},
+           familyi={W\bibinitperiod},
+           given={Ingo},
+           giveni={I\bibinitperiod}}}%
+        {{hash=d5206160888a861e1bbc5fbe55b318ef}{%
+           family={Benthin},
+           familyi={B\bibinitperiod},
+           given={Carsten},
+           giveni={C\bibinitperiod}}}%
+        {{hash=51b739e477e108e21434f1bae3a7ee2d}{%
+           family={Boulos},
+           familyi={B\bibinitperiod},
+           given={Solomon},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{53a2aaba31719de4b0adaa3e49cfc720}
+      \strng{fullhash}{53a2aaba31719de4b0adaa3e49cfc720}
+      \strng{bibnamehash}{53a2aaba31719de4b0adaa3e49cfc720}
+      \strng{authorbibnamehash}{53a2aaba31719de4b0adaa3e49cfc720}
+      \strng{authornamehash}{53a2aaba31719de4b0adaa3e49cfc720}
+      \strng{authorfullhash}{53a2aaba31719de4b0adaa3e49cfc720}
+      \field{labelalpha}{WBBdns2}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{2008 IEEE Symposium on Interactive Ray Tracing}
+      \field{title}{Getting rid of packets - Efficient SIMD single-ray traversal using multi-branching BVHs -}
+      \field{year}{2008}
+      \field{pages}{49\bibrangedash 57}
+      \range{pages}{9}
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

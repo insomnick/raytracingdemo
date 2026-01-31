@@ -345,9 +345,6 @@ class BVH
 
 Das festgelegte Leaf-Kriterium ist wie folgt: Es existieren gleich oder weniger Primitive in der zu teilenden Menge, als vom Verzweigungsgrad verlangte splits nötig sind. 
 
-
-\newpage
-
 \section{Algorithmenanalyse}
 
 \subsection{Traversal}
@@ -620,14 +617,60 @@ Zusammengefasst zeigt das dynamische Modell ähnliche Ergebnistrends, wie im Rah
 \newpage
 
 \chapter{Diskussion}
-tbc
-\newpage
 
+\section{Interpretation: Einfluss des Verzweigungsgrades auf die Traversal}
+Vorher wurde gezeigt, dass es Einsparung in der Traversal-Time für $k = 4$ gegenüber der binären Referenz gab, während es für $k \in {8, 16}$ starke Einbußen in der Performance gab.
+
+Eine plausible Erklärung für die beobachteten Ergebisse ist ein Trade-off zwischen der Menge an inneren Knoten und der Anzahl an auszuführenden AABB-Tests bzw. Kollisionsüberprüfungen zwischen Primärstrahl und Bounding Boxen. Bei höheren Verzweigungsgraden müssen nämlich pro Node mehr Kinder überprüft werden, während es insgesamt aber auch weniger innere Nodes gibt, die überhaupt überprüft werden können. Es lässt sich interpretieren, dass für $k = 4$ die Menge an weniger besuchten Nodes die größere menge an AABB-Tests noch überkompensiert, während dies ab $k = 8$ nicht mehr der Fall ist. Zur Veranschaulichung dient Abbildung~\ref{fig:aabb-example} in der man Beispielhaft die Menge an AABB-Tests und Triangle-Tests, bzw. Primärstrahl und Polygon Kollisionen, ablesen kann. 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{results/aabb-test-example.png}
+    \caption{AABB- und Triangle-Tests, Stanford Bunny, SAH}
+    \label{fig:aabb-example}
+\end{figure}
+ZUdem ist wichtig, dass der für $k = 4$ beobachtete Effekt zwar statistisch signifikant ist, aber trotzdem nur einen Vorteil im einstelligen Prozenbreich liefert. Das heißt, dass Wide BVH in diesem linearen Zusammenhang eher als Optimierung mit kleinem Effekt zu sehen ist.
+
+\section{Interpretation: K-way splitting gegen collapsing}
+Im Rahmen der Ergebissvorstellung wurde gezeigt, dass die Messergebnisse unabhängig von der gewählten Methode zur Erstellung der Wide BVH ähnliche Messsungen ergaben. Die untersuchten Messergebnisse zeigten keinen signifikanten Unetrschied zwischen den Traversal-Times für die beiden Methoden.
+
+Die naheliegenste erklärung ist, dass die räumliche Partiotionierung für beide verfahren sehr ähnlich ist. Vor allem deshalb, da beiden Methoden die gleichen Splitting-Algorithmen zu grunde liegen. Das zusammenfassen der binären BVH durch collapsing verändert zwar die Tiefe des Baumes, allerding scheint es, dass sich die Wahrscheinlichkeit für die Kollision zwischen Ray und AABB nicht sonderlich zu der durch k-way splitting erzeugten BVH unterscheidet. In Abbildung~\ref{fig:aabb-comparison} lässt sich anhand eines Beispiels ablesen, dass die Menge an AABB-Tests, positiv wie negativ, unabhängig vom gewählten Verfahren in der gleichen Größenordnung liegen. Für das Beispiel wurden wieder Stanford Bunny und SAH gewählt.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{results/aabb-test-comparison.png}
+    \caption{AABB- und Triangle-Tests k-way vs. collapse, Stanford Bunny, SAH}
+    \label{fig:aabb-comparison}
+\end{figure}
+Eine Konsequenz dieser Ergbnisse ist, dass die Wahl des Wide BVH Konstruktionsverfahren nach Implementierungsaufwand oder Construction-Time entschieden werden sollte, da es keine signifikanten einbußen durch die Wahl der untersuchten Verfahren gibt. 
+
+\section{Interpretation: Dynamisches Modell}
+
+\section{Literaturkontext}
+In der Literatur werden Wide BVH eher im Kontext mit der Nutzung von SIMD oder GPUs erwähnt, da höhere Verzweigungsgrade Chancen für die bessere Parallelisierbarkeit bieten \cite{4634620}. 
+Der beobachtete Einbruch des Speedups für größere $k$ ist daher mit der Literatur konsistent, da in diesem Falle der erhöhte Aufwand durch mehr AABB-Tests nicht durch parallele Berechnung armortisiert werden kann. Dadurch erscheint es so, dass ein kleinerer Verzweigungsgrad wie $ k = 4$ als Optimum für die untersuchten Szenen glaubhaft wirkt.
+
+\section{Limitationen}
+Alle besprochenen Ergebnisse gelten innerhalb der folgenden Annahmen:
+\begin{itemize}
+    \item Statische 3D Szenen
+    \item Kamera außerhalb der Szenen
+    \item Ausschließlich Untersuchung von Primärstrahlen
+    \item Serielle Berechnung auf der CPU ohne spezielle Raytracing-Hardware
+    \item Ausschließlich Top-Down-Konstruktion von BVH
+    \item Keine echten dynamischen Verfahren, wie z.B. Refitting oder Rebuilding
+\end{itemize}
+Darüber hinaus sorgt die Menge an lediglich vier untersuchten Szenen, sowie ihre ähnliche Beschaffenheit für eine begrenzte Aussagekraft. Die Verteilung der untersuchten Rays ergibt sich aus der vorgegebenen Kamerafahrt um den Ursprung der Szene und nicht aus der Untersuchung von Sekundärstrahlen durch z.B. die Berechnung von Schatten. Metriken wie AABB- und Triangle-Tests wurde nur für ausgewählte Beispiele erhoben und bieten keine Grundlage für eine ausgiebige Analyse.
+
+\section{Ausblick}
+Fortlaufend bietetet es sich an die Stichprobe an Szenen zu erweitern. Mehr und vor allem größere Szenen, sowie komplexere Szenen mit Kameraursprung innerhalb der Szene biten Forschungsspielraum. Zudem wäre eine Untersuchung, die nicht nur Primärstrahlen überprüft, sondern auch Shadingeffekte, durch z.B. \emph{Ambient Occlusion}, denkbar. Auch wäre eine quantitative Untersuchung der AABB- und Triangle-Tests sinnvoll, um die hier genannten Erklärungen zu untermauern.
+
+
+\newpage
 \chapter{Fazit}
-tbc Brueqidowk
-fwefe
-\newpage
+Es gibt klare Ergebisse für CPU-basiertes Raycasting in statischen Szenen. 
 
+
+
+\newpage
 \chapter{Appendix}
 
 \begin{center}
