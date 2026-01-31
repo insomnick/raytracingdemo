@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  31 JAN 2026 19:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  31 JAN 2026 19:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -851,6 +851,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
 Package hyperref Info: Link coloring ON on input line 97.
+ (./main.out) (./main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
 
@@ -951,4 +952,101 @@ File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <14.4> on input line 100.
-LaTeX Font Info:    External font
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 100.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 100.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 100.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 100.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <12> on input line 100.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 100.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 100.
+ [1
+
+
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10.95> on input line 102.
+ [2
+
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}] (./main.toc)
+\tf@toc=\write5
+\openout5 = `main.toc'.
+
+ [3
+
+]
+chapter 1.
+
+Class scrreprt Warning: \float@addtolists detected!
+(scrreprt)              Implementation of \float@addtolist became
+(scrreprt)              deprecated in KOMA-Script v3.01 2008/11/14 and
+(scrreprt)              has been replaced by several more flexible
+(scrreprt)              features of package `tocbasic`.
+(scrreprt)              Since Version 3.12 support for deprecated
+(scrreprt)              \float@addtolist interface has been
+(scrreprt)              restricted to only some of the KOMA-Script
+(scrreprt)              features and been removed from others.
+(scrreprt)              Loading of package `scrhack' may help to
+(scrreprt)              avoid this warning, if you are using a
+(scrreprt)              a package that still implements the
+(scrreprt)              deprecated \float@addtolist interface.
+
+<images/bunny_boxes.png, id=100, 642.4pt x 642.4pt>
+File: images/bunny_boxes.png Graphic file (type png)
+<use images/bunny_boxes.png>
+Package pdftex.def Info: images/bunny_boxes.png  used on input line 132.
+(pdftex.def)             Requested size: 192.72148pt x 192.72148pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[4
+
+]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 144.
+ (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [5{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc} <./images/bunny_boxes.png>] [6]
+chapter 2.
+[7
+
+] [8{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}] [9]
+chapter 3.
+<images/suzanne.png, id=155, 501.875pt x 501.875pt>
+File: images/suzanne.png Graphic file (type png)
+<use images/suzanne.png>
+Package pdftex.def Info: images/suzanne.png  used on input line 290.
+(pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
+<images/teapot.png, id=156, 501.875pt x 501.875pt>
+File: images/teapot.png Graphic file (type png)
+<use images/teapot.png>
+Package pdftex.def Info: images/teapot.png  used on input line 291.
+(pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
+<images/bunny.png, id=157, 501.875pt x 501.875pt>
+File: images/bunny.png Graphic file (type png)
+<use images/bunny.png>
+Package pdftex.def Info: images/bunny.png  used on input line 292.
+(pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
+<images/armadillo.png, id=158, 501.875pt x 501.875pt>
+File: images/armadillo.png Graphic file (type png)
+<use images/armadillo.png>
+Package pdftex.def Info: images/armadillo.png  used on input line 293.
+(pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[10
+
+]
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 306.
+LaTeX Font Info:    Trying to load font information for T1

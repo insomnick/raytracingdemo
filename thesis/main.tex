@@ -644,6 +644,13 @@ Eine Konsequenz dieser Ergbnisse ist, dass die Wahl des Wide BVH Konstruktionsve
 
 \section{Interpretation: Dynamisches Modell}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{results/dynamic-construction-vs-traversal.png}
+    \caption{Vergleich Construction- gegen Traversal-Time}
+    \label{fig:dynamic-c-vs-t}
+\end{figure}
+
 \section{Literaturkontext}
 In der Literatur werden Wide BVH eher im Kontext mit der Nutzung von SIMD oder GPUs erwähnt, da höhere Verzweigungsgrade Chancen für die bessere Parallelisierbarkeit bieten \cite{4634620}. 
 Der beobachtete Einbruch des Speedups für größere $k$ ist daher mit der Literatur konsistent, da in diesem Falle der erhöhte Aufwand durch mehr AABB-Tests nicht durch parallele Berechnung armortisiert werden kann. Dadurch erscheint es so, dass ein kleinerer Verzweigungsgrad wie $ k = 4$ als Optimum für die untersuchten Szenen glaubhaft wirkt.
