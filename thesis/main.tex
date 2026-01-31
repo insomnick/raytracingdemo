@@ -544,7 +544,9 @@ end function
 \chapter{Ergebnisse}
 
 \section{Korrektheit}
-Die visuelle Ausgabe der Testruns ist für die jeweiligen Testszenen über alle möglichen Konstruktionsparameter für alle Szenen pixelidentisch. Somit wird bewiesen immer das gleiche Ergebnis ausgegeben.
+Um zu sichern, dass der BVH-Vergleich nicht durch falsche bzw. ungleiche Ausgaben verfälscht wird, wurde über alle Konfigurationen hinweg ein aus Primärstrahlen berechnetes Bild erzeugt. Die dabei entstandene Bilder sind identisch. Für jede Szene und Kameraposition wurden die generierten Bilder mit denen der anderen Konfigurationen Bitweise verglichen, um eine gleiche Ausgabe zu garantieren. 
+
+Außerdem wurde die Anzahl an \emph{Hitrays} pro Frame erfasst. Ein Hitray beschreibt dabei einen Primärstrahl, der minimum ein Primitiv in der Szene geschnitten hat. Auch die Anzahl an Hitrays ist über alle Konfigurationen pro Szene und Frame identisch, womit sichergestellt werden kann, dass über alle Konfigurationen auch die gleiche Menge an Traversalschritten erfolgreich war.  
 
 \section{Traversal}
 Die erste Forschungsfrage beschäftigt sich damit, wie sich die Traversal-Time Top-Down konstruierter Wide BVHs abhängig vom Verzweigungsgrad $k \in \{2, 4, 8, 16\}$ verändert. 
