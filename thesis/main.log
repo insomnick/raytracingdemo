@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  31 JAN 2026 19:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  1 FEB 2026 15:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1111,13 +1111,9 @@ File: results/dynamic_combined_speedup_k16.png Graphic file (type png)
 <use results/dynamic_combined_speedup_k16.png>
 Package pdftex.def Info: results/dynamic_combined_speedup_k16.png  used on input line 607.
 (pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
-
-
-LaTeX Warning: Reference `tab:dynamic' on page 18 undefined on input line 611.
-
-[18 <./results/dynamic_combined_speedup_k4.png> <./results/dynamic_combined_speedup_k8.png> <./results/dynamic_combined_speedup_k16.png>] [19]
+ [18 <./results/dynamic_combined_speedup_k4.png> <./results/dynamic_combined_speedup_k8.png> <./results/dynamic_combined_speedup_k16.png>] [19]
 chapter 5.
-<results/aabb-test-example.png, id=428, 2055.68pt x 1166.3575pt>
+<results/aabb-test-example.png, id=429, 2055.68pt x 1166.3575pt>
 File: results/aabb-test-example.png Graphic file (type png)
 <use results/aabb-test-example.png>
 Package pdftex.def Info: results/aabb-test-example.png  used on input line 627.
@@ -1125,12 +1121,12 @@ Package pdftex.def Info: results/aabb-test-example.png  used on input line 627.
 [20
 
  <./results/aabb-test-example.png>]
-<results/aabb-test-comparison.png, id=436, 2055.68pt x 1166.3575pt>
+<results/aabb-test-comparison.png, id=437, 2055.68pt x 1166.3575pt>
 File: results/aabb-test-comparison.png Graphic file (type png)
 <use results/aabb-test-comparison.png>
 Package pdftex.def Info: results/aabb-test-comparison.png  used on input line 639.
 (pdftex.def)             Requested size: 426.79135pt x 242.14815pt.
-<results/dynamic-construction-vs-traversal.png, id=438, 1923.185pt x 2055.68pt>
+<results/dynamic-construction-vs-traversal.png, id=439, 1923.185pt x 2055.68pt>
 File: results/dynamic-construction-vs-traversal.png Graphic file (type png)
 <use results/dynamic-construction-vs-traversal.png>
 Package pdftex.def Info: results/dynamic-construction-vs-traversal.png  used on input line 651.
@@ -1172,17 +1168,38 @@ Overfull \hbox (1.9171pt too wide) in alignment at lines 17--90
 
 [25
 
-]) (./results/comparison_statistical_results_table.tex [26]) [27] [28
+]) (./results/comparison_statistical_results_table.tex [26]) (./results/dynamic_statistical_results_table.tex
+Overfull \hbox (1.9171pt too wide) in alignment at lines 1--6
+ [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (1.9171pt too wide) in alignment at lines 6--11
+ [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (1.9171pt too wide) in alignment at lines 11--15
+ [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (1.9171pt too wide) in alignment at lines 15--17
+ [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (1.9171pt too wide) in alignment at lines 17--90
+ [] [] [] [] [] [] [] 
+ []
+
+[27] [28]) [29] [30
 
 ] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2020/03/25>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
 Package logreq Info: Writing requests to 'main.run.xml'.
@@ -1190,18 +1207,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29384 strings out of 474222
- 551636 string characters out of 5748733
+ 29394 strings out of 474222
+ 551950 string characters out of 5748733
  2295975 words of memory out of 5000000
- 50993 multiletter control sequences out of 15000+600000
+ 50997 multiletter control sequences out of 15000+600000
  640771 words of font info for 100 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
  108i,20n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (28 pages, 2714640 bytes).
+</usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
+Output written on main.pdf (30 pages, 2699103 bytes).
 PDF statistics:
- 752 PDF objects out of 1000 (max. 8388607)
- 640 compressed objects within 7 object streams
- 277 named destinations out of 1000 (max. 500000)
+ 757 PDF objects out of 1000 (max. 8388607)
+ 645 compressed objects within 7 object streams
+ 280 named destinations out of 1000 (max. 500000)
  366 words of extra memory for PDF output out of 10000 (max. 10000000)
 
