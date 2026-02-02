@@ -85,7 +85,7 @@ int main() {
         for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
             for (const auto &[object_file, object_scale]: object_files) {
                 constexpr int camera_path_resolution = 36;
-                constexpr bool no_window = false;
+                constexpr bool no_window = true;
                 const auto config = TestrunConfiguration{
                     .object_file = object_file,
                     .object_scale = object_scale,
