@@ -101,7 +101,7 @@ Zweitgutachter:in:& Dr. Markus Brenneis\\ % Namen eintragen
 \chapter*{Zusammenfassung}
 Bounding Volume Hierarchies (BVHs) gehören zu den wichtigsten Beschleunigungsdatenstrukturen zur effizienten Berechnung von Ray-Szenen-Schnittpunkten in der Bildprojektion. Während Wide BVHs (Verzweigungsgrad $k > 2$) bereits im Zusammenhang mit Optimierung durch GPU-Berechnung untersucht werden. Es ist weniger klar, ob sie auch einen praktischen Vorteil durch ihre Struktur bieten, die über die Parallelisierbarkeit hinausgeht. Falls auch eine Verbesserung bei serieller Berechnung auf der CPU gesehen werden kann, ergibt das neue Einblicke in die Optimierungsmöglichkeiten durch Wide BVH.
 
-Diese Arbeit untersucht Top-Down konstruierte BVH in statischen dreidimensionalen Szenen für Verzweigungsgrade $k \in {2, 4 ,8 ,16}$. Dies geschieht unter Berücksichtigung von drei Splitting-Verfahren (Median, Surface Area Heuristic und Binned Surface Area Heuristic), sowie zwei Methoden zur Erzeugung von Wide BVHs (k-way splitting und binary BVH collapse). Dabei steht die Traversal-Time als primäres und die Construction-Time als sekundäres Qualitätsmerkmal im Fokus. Zudem wird durch eine Kombination der beiden Qualitätsmetriken ein Szenario mit dynamischer Szene modelliert.
+Diese Arbeit untersucht Top-Down konstruierte BVH in statischen dreidimensionalen Szenen für Verzweigungsgrade $k \in \{2, 4 ,8 ,16\}$. Dies geschieht unter Berücksichtigung von drei Splitting-Verfahren (Median, Surface Area Heuristic und Binned Surface Area Heuristic), sowie zwei Methoden zur Erzeugung von Wide BVHs (k-way splitting und binary BVH collapse). Dabei steht die Traversal-Time als primäres und die Construction-Time als sekundäres Qualitätsmerkmal im Fokus. Zudem wird durch eine Kombination der beiden Qualitätsmetriken ein Szenario mit dynamischer Szene modelliert.
 
 Für alle untersuchten statischen Szenen zeigt $k = 4$ eine statistisch signifikante Verbesserung gegenüber der vergleichbaren binären Variante. Dabei liegt der Traversal-Speedup-Faktor im Mittel zwischen 1,03 und 1,08, wobei der Effekt für größere Szenen abzuflachen scheint. Für höhere Verzweigungsgrade ($k = 8$ und $k = 16$) liegt der Speedup-faktor deutlich und statistisch signifikant unter 1. 
 Es konnte zwischen k-way splitting und der collapse Methode keine signifikanten Unterschiede in der Traversal-Time gefunden werden.
@@ -262,7 +262,7 @@ Die Binned Surface Area Heuristic ist eine Abwandlung, der SAH. Sie verwendet da
 
 \subsection{Überblick}
 
-Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heurustic Split} und \emph{Binned Surface Are Heuristic Split}. Als Baseline wird in jedem Fall ein Binärer Testdurchlauf mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht. Dabei existiert jeweils eine Variante in der die binäre BVH collapsed wird um die höheren Grade zu erreichen und eine Variante mit direktem k-way-split. 
+Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heurustic Split} und \emph{Binned Surface Are Heuristic Split}. Als Baseline wird in jedem Fall ein Binärer Testdurchlauf mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht. Dabei existiert jeweils eine Variante in der die binäre BVH collapsed wird um die höheren Grade zu erreichen und eine Variante mit direktem k-way-split. Jeder erzeugt Frame hat eine Auflösung von 500 x 500 Pixeln, was einer Menge von 250.000 Primärstrahlen pro berechneten Bild bzw. Traversalschritt entspricht.
 Innerhalb der Szenen wird eine einfache Kamerafahrt in 36 Frames unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stehts im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. Die Frames unterscheiden sich damit lediglich in Kameraposition und -Ausrichtung. 
 Dabei werden als Hauptmetriken die Construction-Time und die Traversal-Time erfasst. 
 Insgesamt werden pro Testdurchlauf 10 Datenpunkte für die Construction-Time und dann pro Frame jeweils die Traversal-Time gesammelt. 
@@ -300,6 +300,18 @@ Die Szenengröße kann man folgender Tabelle entnehmen:
 \end{figure}
 
 Zu jedem Frame wird wie oben dargestellt ein Bild erzeugt, welches dazu dient die Korrektheit der Traversal zu untersuchen. Damit kann zudem sicehrgestellt werden, dass die untersuchte BVH eine gültige Form besitzt. Unabhängig von von Testrun sollen die erzeugten Bilder pro Testszene immer gleich sein. 
+
+\subsection{Reproduzierbarkeit}
+
+Die verwendete Testbench hat folgendene Systemeigenschaften:
+\begin{itemize}
+    \item CPU: AMD Ryzen 7 7800X3D
+    \item RAM: 32 GB DDR5 6000 MHz
+    \item OS: Ubuntu 22 (WSL)
+    \item Compiler: GCC 
+    \item Timer: C++ Standard Library (std::chrono)
+\end{itemize}
+Das System war während der Expiremente nach besten Möglichkeiten von äußeren Störfaktoren getrennt und lief offline.
 
 \subsection{Datenmodell}
 
@@ -490,6 +502,14 @@ end function
 
 \subsubsection{Surface Area Heuristic Split}
 
+Beim SAH-Split wird zunächst die Menge an behandelten Primitives entlang der längsten Achse nach position der Centroids sortiert. Vorweg werden für jeden möglichen Split-Index $i$ die Bounding Boxes der linken und rechten Teilmenge berechnet. Für eine vereinfachte Kostenfunktion $c(i)$ ergibt sich daraus:
+\[
+c(i) = Area(\mathrm{AABB}(P_L)) \cdot |P_L| + Area(\mathrm{AABB}(P_R)) \cdot |P_R|
+\]
+Dabei beschreibt $Area(\cdot)$ den Oberflächeninhalt der AABB der Teilmenge. Gewählt wird Split-Index $i$ für den $c(i)$ minimal ist. Das errechnen der kosten geschieht in $O(n)$
+
+Für Wide BVHs wird dieser Vorgang greedily mehrfach wiederholt, bis der gewünschte verzweigungsgrad erreicht ist. Dafür wird das Segment, bzw. die Teilmenge an Primitiven für den Algorithmus berücksichtig, welches die aktuell höchsten SAH-Kosten entstehen lässt. Insgesamt entehen dadurch $k - 1$ Split-Indizes, die $k$ Teilmengen definieren. 
+
 \begin{lstlisting}[style=codestyle,caption={Surface Area Heuristic Partition},mathescape]
 function sahSplit(primitives, axis, degree):   //O(n * log(n))
 
@@ -538,7 +558,12 @@ end function
 \end{lstlisting}
 
 \subsubsection{Binned Surface Area Heuristic Split}
-
+Der Binned-SAH-Split ist eine approximation des vorher beschriebenen SAH-Splits. Die Idee ist es statt jeden Punkt zwischen Primitives als Split-Index in betracht zu ziehen, zuerst die Primitives in $b= 16$ Bins entlang der Achse einzuteilen und dann Splits nur zwischen den Bins zuzulassen. Jeder Bin speichert die Anzahl an enthaltener Primitives und die zusammengefassten Bounds. 
+Wieder werden die die Oberflächeninhalte und Menge an Primitives für jeden der möglichen der $b$ Splits vorweg berrechnet. Damit sind die Kosten:
+\[
+c(j) = Area(\mathrm{AABB}(Bins_{\le j})) \cdot |P_{\le j}| + Area(\mathrm{AABB}(Bins_{> j})) \cdot |Bins_{> j}|
+\]
+Die Kosten für alle möglichen Splits können in diesem Fall in $O(b)$ statt $O(n)$ ausgewertet werden. Analog zum SAH-Split wird dieser Vorgang greedily wiederholt und das teuerste Segment gesplittet. Zuletzt werden die errechneten Split-Indizes für die Bins in absolute Indizes umgerechnet und zurückgegeben.
 
 \begin{lstlisting}[style=codestyle,caption={Binned Surface Area Heuristic Partition},mathescape]
     function binnedSahSplit(primitives, axis, degree):   //O(n * log(n))
@@ -596,7 +621,10 @@ end function
     end function
     \end{lstlisting}
 
-\subsection{Collapse Funktion}
+\subsection{Collapse}
+
+Für das collapse Verfahren wird eine bereits generierte BVH verwendet. Es wird mit einer binären BVH gestartet. Mit jeder Ausführung der Funktio wird der Verzweigungsgrad verdoppelt. Das bedeutet einmalige Ausführung für $k = 4$, zweimalige für $k = 8$ und dreimalige für $k = 16$.  
+Es wird wieder mit einem Stack gearbeitet, angefangen bei der Root-Node. Für jedes Element auf dem Stack gilt: Falls der behandelte Node über Child-nodes verfügt, wird für jeden Child-Node überprüft, ob diese selbst Child-Nodes besitzen. Falls ja werden die Grandchild-Nodes zu den neuen Child-Nodes des behandelten Nodes. Diese werden zuletzt auf den Stack gelegt um in einem spätern Iterationsschritt behandelt zu werden.   
 
 \begin{lstlisting}[style=codestyle,caption={BVH-Collapsing}]
     function collapse(bvh):
@@ -680,8 +708,8 @@ Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapit
     \label{fig:comparison}
 \end{figure}
 
-Die Abbildung~\ref{fig:comparison} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:comparison} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
-Im Vergleich liegen die Speedup-Werte für alle Kombinationen Szenen und Splitting-Verfahren für alle $k \in {4, 8, 16}$ jeweils sehr nah bei $1$. Die Konfidenzintervalle reichen von $0,996$ bis $1,004$, beinhalten dabei aber immer den Wert $1$.
+Die Abbildung~\ref{fig:comparison} zeigt den Traversal-Speedup für $k \in \{4, 8, 16\}$ und Tabelle~\ref{tab:comparison} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
+Im Vergleich liegen die Speedup-Werte für alle Kombinationen Szenen und Splitting-Verfahren für alle $k \in \{4, 8, 16\}$ jeweils sehr nah bei $1$. Die Konfidenzintervalle reichen von $0,996$ bis $1,004$, beinhalten dabei aber immer den Wert $1$.
 Dadurch lässt sich für die untersuchten statsischen Szenen kein statistisch signifikanter und damit praktisch Nutzbarer Unterschied in der Traversal-Time zwischen direktem k-way-Splitting und der collapse-methode feststellen. Dies gilt unabhängig von untersuchter Szene oder gewählten Splitting-Verfahren.
 
 \section{Dynamisches Modell}
@@ -703,7 +731,7 @@ Ebenso entspricht $Speedup_{dynamic} > 1$ einer Verbesserung der kombinierten Me
     \caption{Abbildung kombinierter Speedup für Construction- und Traversal-Time}
     \label{fig:dynamic}
 \end{figure}
-Die Abbildung~\ref{fig:dynamic} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:dynamic} enthält die dazugehörigen Ergebnisse. 
+Die Abbildung~\ref{fig:dynamic} zeigt den Traversal-Speedup für $k \in \{4, 8, 16\}$ und Tabelle~\ref{tab:dynamic} enthält die dazugehörigen Ergebnisse. 
 Für $k = 4$ gibt es in kleineren Szenen einen Vorteil gegenüber $k = 2$, der sich durch Speedup-Mittelwerten zwischen $1,03$ und $1,08$ ausdrückt. Für größere Szenen nimmt dieser Vorteil ab, womit der Speedup nahe an $1$ liegen, oder sogar teilweise leicht darunter fallen. 
 Für $k = 8$ ist der Speedup für das dynamische Modell wieder deutlich unter $1$ mit Mittelwerten, die sich typischerweise im Bereich von $0,71$ bis $0,86$ aufhalten.
 Für $k = 16$ gibt es weitere Geschwindigkeitseinbußen mit Mittelwerten für den Speedup zwischen $0,16$ und $0,30$.
@@ -714,7 +742,7 @@ Zusammengefasst zeigt das dynamische Modell ähnliche Ergebnistrends, wie im Rah
 \chapter{Diskussion}
 
 \section{Interpretation: Einfluss des Verzweigungsgrades auf die Traversal}
-Vorher wurde gezeigt, dass es Einsparung in der Traversal-Time für $k = 4$ gegenüber der binären Referenz gab, während es für $k \in {8, 16}$ starke Einbußen in der Performance gab.
+Vorher wurde gezeigt, dass es Einsparung in der Traversal-Time für $k = 4$ gegenüber der binären Referenz gab, während es für $k \in \{8, 16\}$ starke Einbußen in der Performance gab.
 
 Eine plausible Erklärung für die beobachteten Ergebisse ist ein Trade-off zwischen der Menge an inneren Knoten und der Anzahl an auszuführenden AABB-Tests bzw. Kollisionsüberprüfungen zwischen Primärstrahl und Bounding Boxen. Bei höheren Verzweigungsgraden müssen nämlich pro Node mehr Kinder überprüft werden, während es insgesamt aber auch weniger innere Nodes gibt, die überhaupt überprüft werden können. Es lässt sich interpretieren, dass für $k = 4$ die Menge an weniger besuchten Nodes die größere menge an AABB-Tests noch überkompensiert, während dies ab $k = 8$ nicht mehr der Fall ist. Zur Veranschaulichung dient Abbildung~\ref{fig:aabb-example} in der man Beispielhaft die Menge an AABB-Tests und Triangle-Tests, bzw. Primärstrahl und Polygon Kollisionen, ablesen kann. 
 \begin{figure}[h]
@@ -750,7 +778,7 @@ Der Unterschied gegenüber der Ergebnisse der ersten Forschungsfrage ist dadurch
 Vorsichtig kann man beurteilen, dass der Effekt für größere Szenen zu einem immer größer werden Problem wird, sodass der Vorteil von $k = 4$ immer weiter schwindet oder möglicherweise sogar zum Nachteil wird. Allerdings ist die untersuchte Stichprobengröße an Szenen nicht ausreichend um hierfür finale Aussagen liefern zu können, weshalb man hier von Indizien sprechn muss. 
 
 \section{Literaturkontext}
-In der Literatur werden Wide BVH eher im Kontext mit der Nutzung von SIMD oder GPUs erwähnt, da höhere Verzweigungsgrade Chancen für die bessere Parallelisierbarkeit bieten \cite{4634620}. 
+In der Literatur werden Wide BVH eher im Kontext mit der Nutzung von SIMD oder GPUs erwähnt, da höhere Verzweigungsgrade Chancen für die bessere Parallelisierbarkeit bieten~\cite{4634620}. 
 Der beobachtete Einbruch des Speedups für größere $k$ ist daher mit der Literatur konsistent, da in diesem Falle der erhöhte Aufwand durch mehr AABB-Tests nicht durch parallele Berechnung armortisiert werden kann. Dadurch erscheint es so, dass ein kleinerer Verzweigungsgrad wie $ k = 4$ als Optimum für die untersuchten Szenen glaubhaft wirkt.
 
 \section{Limitationen}
