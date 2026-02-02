@@ -510,7 +510,7 @@ function sahSplit(primitives, axis, degree):   //O(n * log(n))
         suffixBoundingBoxes := calculateSuffix(seg) // O(n)
 
         segCount := seg.count() 
-        split   := segCount / 2
+        split   := segCount / 2 // default
         minCost := +$\infty$
         for i from 1 to segCount - 2 do
             leftArea  := surfaceArea(prefixBoundingBoxes[i - 1])
@@ -556,17 +556,35 @@ end function
 
         splitIndices := empty list
         segments := empty list
-        push(segments, bins)
+        push(segments, bins) // [0, BIN_SIZE)
         while segments.size() < degree do
     
-        seg := findSegmentToSplitGreedily(segments)   //highest cost segment has to be split
-        // bounds of primitives from segment from begin to index
-        prefixBoundingBoxes := calculatePrefix(seg)  //O(b)
-        // bounds of primitives from segment from index to end (included)
-        suffixBoundingBoxes := calculateSuffix(seg) // O(b)
+            seg := findSegmentToSplitGreedily(segments)   //highest cost segment has to be split
+            // bounds of primitives from segment from begin to index
+            prefixBoundingBoxes := calculatePrefix(seg)  //O(b)
+            // bounds of primitives from segment from index to end (included)
+            suffixBoundingBoxes := calculateSuffix(seg) // O(b)
 
-            seg := findSegmentToSplitGreedily(segments)   //highest cost segment has to be split   
+            
             segCount := seg.count() 
+            split   := segCount / 2 // default
+            minCost := +$\infty$
+            for i from 1 to segCount - 2 do
+                leftArea  := surfaceArea(prefixBoundingBoxes[i - 1])
+                rightArea := surfaceArea(suffixBoundingBoxes[i])
+                cost      := leftArea * i + rightArea * (segCount - i) //simplified cost function
+                if cost < minCost then
+                    minCost := cost
+                    split   := i
+                end if
+            end for
+            
+            absoluteSplit := calculateAbsoluteSplit(bins, split)
+            push(splitIndices, absoluteSplit)
+            erase(segments, seg)
+            //push subsets
+            push(segments, seg[seg.begin, split])
+            push(segments, seg[split, seg.end])
 
         end do
         return splitIndices
