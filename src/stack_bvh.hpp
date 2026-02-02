@@ -423,8 +423,8 @@ private:
 
             // Convert bin split to primitive count split
             size_t primitiveSplit = 0;
-            for (size_t k = 0; k < bestSplit; ++k) {
-                primitiveSplit += bins[seg.begin + k].count;
+            for (size_t k = 0; k < seg.begin + bestSplit; ++k) {
+                primitiveSplit += bins[k].count;
             }
             size_t absoluteSplitIndex = primitiveSplit;
             splits.emplace_back(absoluteSplitIndex);
@@ -435,7 +435,14 @@ private:
             segments.push_back(right);
         }
 
-        // No need for nth_element here - array is already sorted
+        // Remove duplicate splits (can occur when bins are empty/sparse)
+        // Sort first to prepare for deduplication
+        std::sort(splits.begin(), splits.end());
+
+        // Remove consecutive duplicates
+        auto last = std::unique(splits.begin(), splits.end());
+        splits.erase(last, splits.end());
+
         return splits;
     }
 
