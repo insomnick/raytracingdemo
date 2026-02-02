@@ -264,14 +264,25 @@ private:
             return 2.0 * (ex * ey + ey * ez + ez * ex);
         };
 
+        // Find the range of center values for binning
+        double minCenter = std::numeric_limits<double>::max();
+        double maxCenter = std::numeric_limits<double>::lowest();
+        for (auto it = begin; it != end; ++it) {
+            double center = (*it)->getCenter().getAxis(axis);
+            minCenter = std::min(minCenter, center);
+            maxCenter = std::max(maxCenter, center);
+        }
+
+        double binRange = maxCenter - minCenter;
+        if (binRange < 1e-10) binRange = 1.0; // Avoid division by zero
+
         std::vector<Bin> bins(BIN_SIZE);
         // Assign primitives to bins
         for (auto it = begin; it != end; ++it) {
             const Primitive* primitive = *it;
             const double centerValue = primitive->getCenter().getAxis(axis);
             // Determine bin index
-            int binIndex = static_cast<int>(((centerValue - (*begin)->getMin().getAxis(axis)) /
-                                            ((*(end-1))->getMax().getAxis(axis) - (*begin)->getMin().getAxis(axis))) * BIN_SIZE);
+            int binIndex = static_cast<int>(((centerValue - minCenter) / binRange) * BIN_SIZE);
             binIndex = std::clamp(binIndex, 0, BIN_SIZE - 1);
 
             auto &[count, min, max] = bins[binIndex];
@@ -317,7 +328,12 @@ private:
             Vector3 minP, maxP;
             accumulateBounds(s, minP, maxP);
             double area = computeArea(minP, maxP);
-            return area * static_cast<double>(s.end - s.begin);
+            // Count primitives in this segment of bins
+            int primitiveCount = 0;
+            for (size_t i = s.begin; i < s.end; ++i) {
+                primitiveCount += bins[i].count;
+            }
+            return area * static_cast<double>(primitiveCount);
         };
 
 
@@ -338,15 +354,13 @@ private:
             if (indexOfSegmentToSplit == SIZE_MAX) break; // no splittable segment
 
             Segment seg = segments[indexOfSegmentToSplit];
-
-            segments.pop_back();
             size_t count = seg.end - seg.begin;
 
             // calculate prefix and suffix
             // Prefix (left) and suffix (right) cumulative bounds inside this segment
             std::vector<Vector3> prefixMin(count), prefixMax(count);
             for (size_t k = 0; k < count; ++k) {
-                const Bin &bin = bins[k];
+                const Bin &bin = bins[seg.begin + k];
                 if (k == 0) {
                     prefixMin[k] = bin.min;
                     prefixMax[k] = bin.max;
@@ -364,7 +378,7 @@ private:
 
             std::vector<Vector3> suffixMin(count), suffixMax(count);
             for (size_t k = count; k-- > 0;) {
-                const Bin &bin = bins[k];
+                const Bin &bin = bins[seg.begin + k];
                 if (k == count - 1) {
                     suffixMin[k] = bin.min;
                     suffixMax[k] = bin.max;
@@ -381,13 +395,18 @@ private:
             }
 
             //calculate best splits
-            size_t bestSplit = 1; // position inside segment
+            size_t bestSplit = 1; // position inside segment (bin index)
             int leftCount = 0;
-            int rightCount = static_cast<int>(range);
+            int rightCount = 0;
+            // Calculate total primitives in this segment
+            for (size_t k = 0; k < count; ++k) {
+                rightCount += bins[seg.begin + k].count;
+            }
+
             double bestLocalCost = std::numeric_limits<double>::max();
             for (size_t split = 1; split < count; ++split) {
-                leftCount += bins[split - 1].count;
-                rightCount -= bins[split - 1].count;
+                leftCount += bins[seg.begin + split - 1].count;
+                rightCount -= bins[seg.begin + split - 1].count;
 
                 const Vector3 &leftMin = prefixMin[split - 1];
                 const Vector3 &leftMax = prefixMax[split - 1];
@@ -398,25 +417,25 @@ private:
                 double cost = leftArea * leftCount + rightArea * rightCount;
                 if (cost < bestLocalCost) {
                     bestLocalCost = cost;
-                    bestSplit = leftCount;
-
+                    bestSplit = split;
                 }
             }
 
-            size_t absoluteSplitIndex = seg.begin + bestSplit;
+            // Convert bin split to primitive count split
+            size_t primitiveSplit = 0;
+            for (size_t k = 0; k < bestSplit; ++k) {
+                primitiveSplit += bins[seg.begin + k].count;
+            }
+            size_t absoluteSplitIndex = primitiveSplit;
             splits.emplace_back(absoluteSplitIndex);
-            Segment left{seg.begin, absoluteSplitIndex};
-            Segment right{absoluteSplitIndex, seg.end};
+            Segment left{seg.begin, seg.begin + bestSplit};
+            Segment right{seg.begin + bestSplit, seg.end};
+            segments.erase(segments.begin() + indexOfSegmentToSplit);
             segments.push_back(left);
             segments.push_back(right);
         }
 
-        for (const unsigned long splitIndex : splits) {
-            std::nth_element(begin, begin + static_cast<std::ptrdiff_t>(splitIndex), end,
-                [axis](const Primitive* a, const Primitive* b) {
-                    return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
-                });
-        }
+        // No need for nth_element here - array is already sorted
         return splits;
     }
 
