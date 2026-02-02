@@ -98,6 +98,14 @@ Zweitgutachter:in:& Dr. Markus Brenneis\\ % Namen eintragen
 
 \maketitle
 
+\chapter*{Selbstständigkeitserklärung}
+Hiermit erkläre ich, die vorliegende Bachelorarbeit selbstständig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel verwendet zu haben. Alle stellen, die aus Quellen entnommen wurden, sind als solche kenntlich gemacht worden. Diese Arbeit hat in gleicher oder ähnlicher Form noch keiner anderne Prüfungsbehörde vorgelegen. 
+
+\vspace{2cm}
+\noindent Ort, Datum \hfill Unterschrift
+
+\newpage
+
 \chapter*{Zusammenfassung}
 Bounding Volume Hierarchies (BVHs) gehören zu den wichtigsten Beschleunigungsdatenstrukturen zur effizienten Berechnung von Ray-Szenen-Schnittpunkten in der Bildprojektion. Während Wide BVHs (Verzweigungsgrad $k > 2$) bereits im Zusammenhang mit Optimierung durch GPU-Berechnung untersucht werden. Es ist weniger klar, ob sie auch einen praktischen Vorteil durch ihre Struktur bieten, die über die Parallelisierbarkeit hinausgeht. Falls auch eine Verbesserung bei serieller Berechnung auf der CPU gesehen werden kann, ergibt das neue Einblicke in die Optimierungsmöglichkeiten durch Wide BVH.
 
@@ -689,15 +697,15 @@ Werte $Speedup > 1$ gelten als Verbesserung, also geringerer Traversal-Time, geg
 Die Abbildung~\ref{fig:static} zeigt den Traversal-Speedup für $k \in {4, 8, 16}$ und Tabelle~\ref{tab:static} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede kombination von Szene, Splittingverfahren und Wide BVH Methode.
 Für $k = 4$ gibt es über alle Kombinationen eine konsistente und statistisch signifikante Verbesserung gegenüber der binären Referenz. Die Mittelwerte der Speedups liegen zwischen ungefähr $1,03$ und $1,08$.
 Für $k = 8$ verschlechtert sich die Traversal-Time in allen untersuchten Fällen klar mit Speedup-Mittelwerten zwischen ungefähr $0,63$ und $0,77$.
-Für $k = 8$ fällt die Performance nochmal deutlich ab mit Mittelwerten zwischen \ $0,10$ und $0,19$, was einer stark höheren Traversal-Time gegenüber $k = 2$ entspricht.
+Für $k = 16$ fällt die Performance nochmal deutlich ab mit Mittelwerten zwischen \ $0,10$ und $0,19$, was einer stark höheren Traversal-Time gegenüber $k = 2$ entspricht.
 
 \section{Wide BVH Konstruktionsmethode}
 Die zweiten Forschungsfrage bezieht sich darauf, inwiefern sich die Traversal-Time zwischen den beiden Untersuchten Verfahren zur Erzeugung einer Wide BVH unterscheidet.
 Zum Einen das direkte k-way-Splitting und zum Anderen das collapsing einer vorher konstruierten binären BVH. Wieder erfolgt der Vergleich über jede szene und jedes Splitting-verfahren. Speedup hat an dieser Stelle nicht $k = 2$, sondern die collapse-Methode als Referenz. Damit definiert sich ein neuer Vergleichswert:
 \[
-Speedup_{comparison} = \frac{T_{\mathrm{\mu, traversal}(k, collapse)}}{T_{\mu, \mathrm{traversal}(k, k\text{-}way)}}
+Speedup_{\text{comparison}} = \frac{T_{\mathrm{\mu, traversal}(k, collapse)}}{T_{\mu, \mathrm{traversal}(k, k\text{-}way)}}
 \]
-Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapitel Methoden gezeigt, aggregierten gemessenen Traversal-Times, diesmal allerdings abhängig von der gewählten Methode zur Erzeugung der Wide BVH bei gleichem Verzweigungsgrad $k$. Wieder gitd, dass 
+Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapitel Methoden gezeigt, aggregierten gemessenen Traversal-Times, diesmal allerdings abhängig von der gewählten Methode zur Erzeugung der Wide BVH bei gleichem Verzweigungsgrad $k$. Es gilt, dass $Speedup_{\text{comparison}} > 1$ bedeutet, dass k-way splitting eine schnellere Traversal-Time besitzt als collapsing, während $Speedup_{\text{comparison}} < 1$ auf einen vorteil für collasing hinweist.
 
 \begin{figure}[h]
     \centering
@@ -801,11 +809,14 @@ Fortlaufend bietetet es sich an die Stichprobe an Szenen zu erweitern. Mehr und 
 \chapter{Fazit}
 Der Fokus dieser Arbeit war die anaylstische Bewertung der Qualität von Top-Down konstruiierten Wide BVHs in statischen 3D Szenen aufbauend auf serieller Berechnungen. Dabei gab es das Ziel herauszufinden, ob Wide BVH alleinig auf struktureller bzw. algorithmischer Ebene einen Vorteil gegenüber binärer BVHs innehaben, auch wenn der Vorteil der parallelisierten Berechnung wegfällt.
 
-Im Rahmen der ersten Forschungsfrage zeigten die Messungen einen statistisch signifikanten, wenn auch kleinen Vorteil durch verwendung einer BVH mit Verzweigungsgrad $k = 4$, gegenüber $k = 2$, in statischen Szenen. Für alle untersuchten Szenen und Algorithmen liegt der Speedup zwischen $1,03$ und $1,08$ für Mittelwerte. Die Qualität der BVH nimmt für $k \ge 8$ deutlich ab mit Speedup-Mittelwerten von $0,63$ bi $0,77$ für $k = 8$ und fällt für $k = 16$ sogar auf Werte zwischen $0,10$ und $0,19$. Damit lässt sich für das gewählte Szenario unter gleichen Voraussetzungn eine Empfehlung für die Nutzung von Wide BVH mit $k = 4$ aussprechen.
+Im Rahmen der ersten Forschungsfrage zeigten die Messungen einen statistisch signifikanten, wenn auch kleinen Vorteil durch verwendung einer BVH mit Verzweigungsgrad $k = 4$, gegenüber $k = 2$, in statischen Szenen. Für alle untersuchten Szenen und Algorithmen liegt der Speedup zwischen $1,03$ und $1,08$ für Mittelwerte. Die Qualität der BVH nimmt für $k \ge 8$ deutlich ab mit Speedup-Mittelwerten von $0,63$ bi $0,77$ für $k = 8$ und fällt für $k = 16$ sogar auf Werte zwischen $0,10$ und $0,19$. 
+Damit lässt sich für das gewählte Szenario unter gleichen Voraussetzungn eine Empfehlung für die Nutzung von Wide BVH mit $k = 4$ aussprechen.
 
-Die Untersuchung der zweiten Forschungsfrage hat ergeben, dass es keinen praktischen Unterschied zwischen der Nutzung der untersuchten Arten der Erzeugung von Wide BVHs in den untersuchten Szenen gibt. Über alle Konfigurationen hinweg ist der Speedup zwischen k-way splitting und collapsing ohne signifikante Abweichung nahe $1$. Damit ist die Empfehlung die gewählte Methode nach Implementierungsaufwand und Construction-Time zu wählen.
+Die Untersuchung der zweiten Forschungsfrage hat ergeben, dass es keinen praktischen Unterschied zwischen der Nutzung der untersuchten Arten der Erzeugung von Wide BVHs in den untersuchten Szenen gibt. Über alle Konfigurationen hinweg ist der Speedup zwischen k-way splitting und collapsing ohne signifikante Abweichung nahe $1$. 
+Damit ist die Empfehlung die gewählte Methode nach Implementierungsaufwand und Construction-Time zu wählen.
 
-Für die Modellierung einer dynamischen Szene durch eine kombinierte Metrik aus \linebreak Construction- und Traversal-Time im Rahmen der letzten Forschungsfrage, bleiben die Ergebnisse ähnlich zur ersten Frage. Verzweigungsgrad $k = 4$ liefert insgesamt die besten Ergebnisse, während $k \ge 8$ auch in diesem Fall schlechtere Metriken liefern. Zudem lassen sich Indizien dinden, dass der Vorsprung von $k = 4$ mit setigender Szenengröße abzunehmen scheint bzw. sogar komplett ausbleiben oder sich umkehren kann. Damit kann man sagen, dass auch in diesem Zusammenhang zumindest für die kleineren Untersuchten Szenen ein Vorteil für BVHs mit Verzweigungsgrad $k = 4$ existiert.
+Für die Modellierung einer dynamischen Szene durch eine kombinierte Metrik aus \linebreak Construction- und Traversal-Time im Rahmen der letzten Forschungsfrage, bleiben die Ergebnisse ähnlich zur ersten Frage. Verzweigungsgrad $k = 4$ liefert insgesamt die besten Ergebnisse, während $k \ge 8$ auch in diesem Fall schlechtere Metriken liefern. Zudem lassen sich Indizien dinden, dass der Vorsprung von $k = 4$ mit setigender Szenengröße abzunehmen scheint bzw. sogar komplett ausbleiben oder sich umkehren kann. 
+Damit kann man sagen, dass auch in diesem Zusammenhang zumindest für die kleineren Untersuchten Szenen ein Vorteil für BVHs mit Verzweigungsgrad $k = 4$ existiert.
 
 Zusammengefasst lässt sich sagen, dass falls Wide BVHs in der seriellen Berechnung auf der CPU eingesetzt werden, man sich für einen Verzweigungsgrad von $k = 4$ entscheiden sollte, während Verzweigungsgrade $k \ge 8$ vermieden werden sollten.
 Ein wichtiger nächster Schritt wäre die Messungen mit einer größeren Menge an Szenen mit höherer Polygonanzahl durchuzuführen, um die Indizien eines abnehmenden Vorteils zu untersuchen und belegbare Aussagen treffen zu können. Zudem wäre es interessant das Verhalten der BVHs unter der Nutzung von anderen Ray-Verteilungen durch beispielsweise Shader-Berechnung mit Hilfe von Sekundärestrahlen oder Ähnlichem zu beleuchten.

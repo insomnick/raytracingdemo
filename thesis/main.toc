@@ -1,45 +1,45 @@
 \babel@toc {ngerman}{}\relax 
-\contentsline {chapter}{\numberline {1}Einleitung}{4}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Motivation}{4}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Thema und fachliche Einordnung}{4}{section.1.2}%
-\contentsline {section}{\numberline {1.3}Zielsetzung}{4}{section.1.3}%
-\contentsline {section}{\numberline {1.4}Abgrenzung zu vorherigen Arbeiten}{5}{section.1.4}%
-\contentsline {section}{\numberline {1.5}Aufbau}{6}{section.1.5}%
-\contentsline {chapter}{\numberline {2}Grundlagen}{7}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Modell}{7}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Axis Aligned Bounding Box}{7}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Bounding Volume Hierarchy}{7}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Wide Bounding Volume Hierarchy}{8}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Traversal}{8}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Kostenmodelle}{8}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}Construction}{9}{subsection.2.3.4}%
-\contentsline {subsubsection}{\nonumberline Median Split}{9}{subsubsection*.5}%
-\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{9}{subsubsection*.7}%
-\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic}{9}{subsubsection*.9}%
-\contentsline {chapter}{\numberline {3}Methoden}{11}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Aufbau}{11}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Überblick}{11}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}Reproduzierbarkeit}{12}{subsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.1.3}Datenmodell}{12}{subsection.3.1.3}%
-\contentsline {section}{\numberline {3.2}Algorithmenanalyse}{13}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Traversal}{13}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Construction}{14}{subsection.3.2.2}%
-\contentsline {subsubsection}{\nonumberline Median Split}{15}{subsubsection*.13}%
-\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{16}{subsubsection*.15}%
-\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{17}{subsubsection*.17}%
-\contentsline {subsection}{\numberline {3.2.3}Collapse}{18}{subsection.3.2.3}%
-\contentsline {chapter}{\numberline {4}Ergebnisse}{19}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Korrektheit}{19}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Traversal}{19}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Wide BVH Konstruktionsmethode}{19}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Dynamisches Modell}{21}{section.4.4}%
-\contentsline {chapter}{\numberline {5}Diskussion}{23}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Interpretation: Einfluss des Verzweigungsgrades auf die Traversal}{23}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Interpretation: K-way splitting gegen collapsing}{23}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Interpretation: Dynamisches Modell}{24}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Literaturkontext}{25}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Limitationen}{25}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Ausblick}{25}{section.5.6}%
-\contentsline {chapter}{\numberline {6}Fazit}{27}{chapter.6}%
-\contentsline {chapter}{\numberline {7}Appendix}{28}{chapter.7}%
+\contentsline {chapter}{\numberline {1}Einleitung}{5}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Motivation}{5}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Thema und fachliche Einordnung}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Zielsetzung}{5}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Abgrenzung zu vorherigen Arbeiten}{6}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Aufbau}{7}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Grundlagen}{8}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Modell}{8}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Axis Aligned Bounding Box}{8}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Bounding Volume Hierarchy}{8}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Wide Bounding Volume Hierarchy}{9}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Traversal}{9}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Kostenmodelle}{9}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Construction}{10}{subsection.2.3.4}%
+\contentsline {subsubsection}{\nonumberline Median Split}{10}{subsubsection*.6}%
+\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{10}{subsubsection*.8}%
+\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic}{10}{subsubsection*.10}%
+\contentsline {chapter}{\numberline {3}Methoden}{12}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Aufbau}{12}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Überblick}{12}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Reproduzierbarkeit}{13}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Datenmodell}{13}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Algorithmenanalyse}{14}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Traversal}{14}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Construction}{15}{subsection.3.2.2}%
+\contentsline {subsubsection}{\nonumberline Median Split}{16}{subsubsection*.14}%
+\contentsline {subsubsection}{\nonumberline Surface Area Heuristic Split}{17}{subsubsection*.16}%
+\contentsline {subsubsection}{\nonumberline Binned Surface Area Heuristic Split}{18}{subsubsection*.18}%
+\contentsline {subsection}{\numberline {3.2.3}Collapse}{19}{subsection.3.2.3}%
+\contentsline {chapter}{\numberline {4}Ergebnisse}{20}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Korrektheit}{20}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Traversal}{20}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Wide BVH Konstruktionsmethode}{20}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Dynamisches Modell}{22}{section.4.4}%
+\contentsline {chapter}{\numberline {5}Diskussion}{24}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Interpretation: Einfluss des Verzweigungsgrades auf die Traversal}{24}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Interpretation: K-way splitting gegen collapsing}{24}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Interpretation: Dynamisches Modell}{25}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Literaturkontext}{26}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Limitationen}{26}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Ausblick}{26}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Fazit}{28}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Appendix}{29}{chapter.7}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
