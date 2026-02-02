@@ -593,6 +593,39 @@ end function
 
 \subsection{Collapse Funktion}
 
+\begin{lstlisting}[style=codestyle,caption={BVH-Collapsing}]
+    function collapse(bvh):
+
+        // stack of nodes to process
+        nodes := empty list
+        push(nodes, bvh.root)
+
+        while nodes is not empty do
+            node := pop(nodes)
+
+            if node.children is empty do
+                continue
+            end if
+
+            new_children := empty list
+
+            for each child in node.children do
+                if child.children is empty do
+                    push(new_children, child)
+                    continue
+                end if
+                push(new_children, child.children)
+            end do
+
+            node.children := new_children
+            push(nodes, node.children)
+        end while
+        
+        return bvh
+    end function
+    \end{lstlisting}
+
+
 \newpage
 
 \chapter{Ergebnisse}

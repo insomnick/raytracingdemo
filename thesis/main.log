@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  2 FEB 2026 20:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  2 FEB 2026 20:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1059,20 +1059,20 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 365.
  [12] [13] [14] [15] [16]
 chapter 4.
-<results/static_combined_speedup_k4.png, id=438, 859.0494pt x 569.2467pt>
+<results/static_combined_speedup_k4.png, id=469, 859.0494pt x 569.2467pt>
 File: results/static_combined_speedup_k4.png Graphic file (type png)
 <use results/static_combined_speedup_k4.png>
-Package pdftex.def Info: results/static_combined_speedup_k4.png  used on input line 616.
+Package pdftex.def Info: results/static_combined_speedup_k4.png  used on input line 649.
 (pdftex.def)             Requested size: 171.80682pt x 113.84732pt.
-<results/static_combined_speedup_k8.png, id=439, 859.5312pt x 569.2467pt>
+<results/static_combined_speedup_k8.png, id=470, 859.5312pt x 569.2467pt>
 File: results/static_combined_speedup_k8.png Graphic file (type png)
 <use results/static_combined_speedup_k8.png>
-Package pdftex.def Info: results/static_combined_speedup_k8.png  used on input line 617.
+Package pdftex.def Info: results/static_combined_speedup_k8.png  used on input line 650.
 (pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
-<results/static_combined_speedup_k16.png, id=440, 859.5312pt x 569.2467pt>
+<results/static_combined_speedup_k16.png, id=471, 859.5312pt x 569.2467pt>
 File: results/static_combined_speedup_k16.png Graphic file (type png)
 <use results/static_combined_speedup_k16.png>
-Package pdftex.def Info: results/static_combined_speedup_k16.png  used on input line 618.
+Package pdftex.def Info: results/static_combined_speedup_k16.png  used on input line 651.
 (pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1080,56 +1080,56 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [17
 
 ]
-<results/comparison_speedup_k4.png, id=450, 858.8085pt x 569.2467pt>
+<results/comparison_speedup_k4.png, id=482, 858.8085pt x 569.2467pt>
 File: results/comparison_speedup_k4.png Graphic file (type png)
 <use results/comparison_speedup_k4.png>
-Package pdftex.def Info: results/comparison_speedup_k4.png  used on input line 638.
+Package pdftex.def Info: results/comparison_speedup_k4.png  used on input line 671.
 (pdftex.def)             Requested size: 171.75865pt x 113.84732pt.
-<results/comparison_speedup_k8.png, id=451, 858.8085pt x 569.2467pt>
+<results/comparison_speedup_k8.png, id=483, 858.8085pt x 569.2467pt>
 File: results/comparison_speedup_k8.png Graphic file (type png)
 <use results/comparison_speedup_k8.png>
-Package pdftex.def Info: results/comparison_speedup_k8.png  used on input line 639.
+Package pdftex.def Info: results/comparison_speedup_k8.png  used on input line 672.
 (pdftex.def)             Requested size: 171.75865pt x 113.84732pt.
-<results/comparison_speedup_k16.png, id=452, 858.8085pt x 569.2467pt>
+<results/comparison_speedup_k16.png, id=484, 858.8085pt x 569.2467pt>
 File: results/comparison_speedup_k16.png Graphic file (type png)
 <use results/comparison_speedup_k16.png>
-Package pdftex.def Info: results/comparison_speedup_k16.png  used on input line 640.
+Package pdftex.def Info: results/comparison_speedup_k16.png  used on input line 673.
 (pdftex.def)             Requested size: 171.75865pt x 113.84732pt.
  [18 <./results/static_combined_speedup_k4.png> <./results/static_combined_speedup_k8.png> <./results/static_combined_speedup_k16.png> <./results/comparison_speedup_k4.png> <./results/comparison_speedup_k8.png> <./results/comparison_speedup_k16.png>]
-<results/dynamic_combined_speedup_k4.png, id=468, 859.0494pt x 569.2467pt>
+<results/dynamic_combined_speedup_k4.png, id=500, 859.0494pt x 569.2467pt>
 File: results/dynamic_combined_speedup_k4.png Graphic file (type png)
 <use results/dynamic_combined_speedup_k4.png>
-Package pdftex.def Info: results/dynamic_combined_speedup_k4.png  used on input line 662.
+Package pdftex.def Info: results/dynamic_combined_speedup_k4.png  used on input line 695.
 (pdftex.def)             Requested size: 171.80682pt x 113.84732pt.
-<results/dynamic_combined_speedup_k8.png, id=469, 859.2903pt x 569.2467pt>
+<results/dynamic_combined_speedup_k8.png, id=501, 859.2903pt x 569.2467pt>
 File: results/dynamic_combined_speedup_k8.png Graphic file (type png)
 <use results/dynamic_combined_speedup_k8.png>
-Package pdftex.def Info: results/dynamic_combined_speedup_k8.png  used on input line 663.
+Package pdftex.def Info: results/dynamic_combined_speedup_k8.png  used on input line 696.
 (pdftex.def)             Requested size: 171.85501pt x 113.84732pt.
-<results/dynamic_combined_speedup_k16.png, id=470, 859.5312pt x 569.2467pt>
+<results/dynamic_combined_speedup_k16.png, id=502, 859.5312pt x 569.2467pt>
 File: results/dynamic_combined_speedup_k16.png Graphic file (type png)
 <use results/dynamic_combined_speedup_k16.png>
-Package pdftex.def Info: results/dynamic_combined_speedup_k16.png  used on input line 664.
+Package pdftex.def Info: results/dynamic_combined_speedup_k16.png  used on input line 697.
 (pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
  [19 <./results/dynamic_combined_speedup_k4.png> <./results/dynamic_combined_speedup_k8.png> <./results/dynamic_combined_speedup_k16.png>] [20]
 chapter 5.
-<results/aabb-test-example.png, id=488, 2055.68pt x 1166.3575pt>
+<results/aabb-test-example.png, id=520, 2055.68pt x 1166.3575pt>
 File: results/aabb-test-example.png Graphic file (type png)
 <use results/aabb-test-example.png>
-Package pdftex.def Info: results/aabb-test-example.png  used on input line 684.
+Package pdftex.def Info: results/aabb-test-example.png  used on input line 717.
 (pdftex.def)             Requested size: 426.79135pt x 242.14815pt.
 [21
 
  <./results/aabb-test-example.png>]
-<results/aabb-test-comparison.png, id=497, 2055.68pt x 1166.3575pt>
+<results/aabb-test-comparison.png, id=528, 2055.68pt x 1166.3575pt>
 File: results/aabb-test-comparison.png Graphic file (type png)
 <use results/aabb-test-comparison.png>
-Package pdftex.def Info: results/aabb-test-comparison.png  used on input line 696.
+Package pdftex.def Info: results/aabb-test-comparison.png  used on input line 729.
 (pdftex.def)             Requested size: 426.79135pt x 242.14815pt.
-<results/dynamic-construction-vs-traversal.png, id=499, 1923.185pt x 2055.68pt>
+<results/dynamic-construction-vs-traversal.png, id=530, 1923.185pt x 2055.68pt>
 File: results/dynamic-construction-vs-traversal.png Graphic file (type png)
 <use results/dynamic-construction-vs-traversal.png>
-Package pdftex.def Info: results/dynamic-construction-vs-traversal.png  used on input line 708.
+Package pdftex.def Info: results/dynamic-construction-vs-traversal.png  used on input line 741.
 (pdftex.def)             Requested size: 426.79135pt x 456.17189pt.
 
 
@@ -1207,18 +1207,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29460 strings out of 474222
- 552982 string characters out of 5748733
+ 29493 strings out of 474222
+ 553497 string characters out of 5748733
  2469975 words of memory out of 5000000
- 51007 multiletter control sequences out of 15000+600000
+ 51009 multiletter control sequences out of 15000+600000
  640771 words of font info for 100 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
  108i,21n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (31 pages, 2705427 bytes).
+Output written on main.pdf (31 pages, 2707631 bytes).
 PDF statistics:
- 829 PDF objects out of 1000 (max. 8388607)
- 715 compressed objects within 8 object streams
- 336 named destinations out of 1000 (max. 500000)
+ 867 PDF objects out of 1000 (max. 8388607)
+ 753 compressed objects within 8 object streams
+ 367 named destinations out of 1000 (max. 500000)
  366 words of extra memory for PDF output out of 10000 (max. 10000000)
 
