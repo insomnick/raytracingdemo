@@ -57,23 +57,23 @@ int main() {
             { "bsah",    4 },
             { "bsah",    8 },
             { "bsah",    16 },
-             { "sah",    2 },
-             { "sah",    4 },
-             { "sah",    8 },
-             { "sah",    16 },
-             { "median", 2 },
-             { "median", 4 },
-             { "median", 8 },
-             { "median", 16 },
-             { "sah-c",    4 },
-             { "sah-c",    8 },
-             { "sah-c",    16 },
-             { "bsah-c",    4 },
-             { "bsah-c",    8 },
-             { "bsah-c",    16 },
-             { "median-c", 4 },
-             { "median-c", 8 },
-             { "median-c", 16 },
+            { "bsah-c",    4 },
+            { "bsah-c",    8 },
+            { "bsah-c",    16 },
+             // { "sah",    2 },
+             // { "sah",    4 },
+             // { "sah",    8 },
+             // { "sah",    16 },
+             // { "median", 2 },
+             // { "median", 4 },
+             // { "median", 8 },
+             // { "median", 16 },
+             // { "sah-c",    4 },
+             // { "sah-c",    8 },
+             // { "sah-c",    16 },
+             // { "median-c", 4 },
+             // { "median-c", 8 },
+             // { "median-c", 16 },
     };
     std::map<std::string, double> object_files= {
               { "stanford-bunny.obj", 30.0}
@@ -85,7 +85,7 @@ int main() {
     for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
         for (const auto &[object_file, object_scale]: object_files) {
             constexpr int camera_path_resolution = 36;
-            constexpr bool no_window = true;
+            constexpr bool no_window = false;
             const auto config = TestrunConfiguration{
                     .object_file = object_file,
                     .object_scale = object_scale,

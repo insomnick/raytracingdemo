@@ -155,7 +155,7 @@ private:
             for (size_t i = 0; i < segments.size(); ++i) {
                 const Segment &seg = segments[i];
                 size_t count = seg.end - seg.begin;
-                if (count < 2) continue; // cannot split further
+                if (count < degree) continue; // cannot split further
                 double cost = segmentCost(seg);
                 if (cost > highestCost) {
                     highestCost = cost;
@@ -264,7 +264,7 @@ private:
             return 2.0 * (ex * ey + ey * ez + ez * ex);
         };
 
-        std::vector<Bin> bins(BIN_SIZE);    //TODO Init Bins?
+        std::vector<Bin> bins(BIN_SIZE);
         // Assign primitives to bins
         for (auto it = begin; it != end; ++it) {
             const Primitive* primitive = *it;
@@ -293,9 +293,52 @@ private:
         segments.push_back(Segment{0, static_cast<size_t>(BIN_SIZE)
         });
 
+        auto accumulateBounds = [&](const Segment &s, Vector3 &minP, Vector3 &maxP) {
+            double minX = std::numeric_limits<double>::max();
+            double minY = std::numeric_limits<double>::max();
+            double minZ = std::numeric_limits<double>::max();
+            double maxX = std::numeric_limits<double>::lowest();
+            double maxY = std::numeric_limits<double>::lowest();
+            double maxZ = std::numeric_limits<double>::lowest();
+            for (size_t i = s.begin; i < s.end; ++i) {
+                auto &[count, min, max] = bins[i];
+                minX = std::min(minX, min.getX());
+                maxX = std::max(maxX, max.getX());
+                minY = std::min(minY, min.getY());
+                maxY = std::max(maxY, max.getY());
+                minZ = std::min(minZ, min.getZ());
+                maxZ = std::max(maxZ, max.getZ());
+            }
+            minP = {minX, minY, minZ};
+            maxP = {maxX, maxY, maxZ};
+        };
+
+        auto segmentCost = [&](const Segment &s) {
+            Vector3 minP, maxP;
+            accumulateBounds(s, minP, maxP);
+            double area = computeArea(minP, maxP);
+            return area * static_cast<double>(s.end - s.begin);
+        };
+
+
         std::vector<size_t> splits;
         while (segments.size() < static_cast<size_t>(degree)) {
-            Segment seg = segments.back();
+            size_t indexOfSegmentToSplit = SIZE_MAX;
+            double highestCost = -1.0;
+            for (size_t i = 0; i < segments.size(); ++i) {
+                const Segment &seg = segments[i];
+                size_t count = seg.end - seg.begin;
+                if (count < degree) continue; // cannot split further
+                double cost = segmentCost(seg);
+                if (cost > highestCost) {
+                    highestCost = cost;
+                    indexOfSegmentToSplit = i;
+                }
+            }
+            if (indexOfSegmentToSplit == SIZE_MAX) break; // no splittable segment
+
+            Segment seg = segments[indexOfSegmentToSplit];
+
             segments.pop_back();
             size_t count = seg.end - seg.begin;
 
@@ -338,7 +381,6 @@ private:
             }
 
             //calculate best splits
-            // TODO allow multiple splits
             size_t bestSplit = 1; // position inside segment
             int leftCount = 0;
             int rightCount = static_cast<int>(range);
