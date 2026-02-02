@@ -53,27 +53,27 @@ void runTest(const TestrunConfiguration& config);
 int main() {
 
     std::multimap<std::string, int> bvh_algorithms = {
-             { "bsah",    2 },
-            { "bsah",    4 },
-            { "bsah",    8 },
-            { "bsah",    16 },
-            { "bsah-c",    4 },
-            { "bsah-c",    8 },
-            { "bsah-c",    16 },
-             // { "sah",    2 },
-             // { "sah",    4 },
-             // { "sah",    8 },
-             // { "sah",    16 },
-             // { "median", 2 },
-             // { "median", 4 },
-             // { "median", 8 },
-             // { "median", 16 },
-             // { "sah-c",    4 },
-             // { "sah-c",    8 },
-             // { "sah-c",    16 },
-             // { "median-c", 4 },
-             // { "median-c", 8 },
-             // { "median-c", 16 },
+              { "bsah",    2 },
+             { "bsah",    4 },
+             { "bsah",    8 },
+             { "bsah",    16 },
+             { "bsah-c",    4 },
+             { "bsah-c",    8 },
+             { "bsah-c",    16 },
+              { "sah",    2 },
+              { "sah",    4 },
+              { "sah",    8 },
+              { "sah",    16 },
+              { "median", 2 },
+              { "median", 4 },
+              { "median", 8 },
+              { "median", 16 },
+              { "sah-c",    4 },
+              { "sah-c",    8 },
+              { "sah-c",    16 },
+              { "median-c", 4 },
+              { "median-c", 8 },
+              { "median-c", 16 },
     };
     std::map<std::string, double> object_files= {
               { "stanford-bunny.obj", 30.0}
@@ -81,12 +81,12 @@ int main() {
             , { "suzanne.obj",       3.0 }
             , { "armadillo.obj",         0.035 }
     };
-
-    for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
-        for (const auto &[object_file, object_scale]: object_files) {
-            constexpr int camera_path_resolution = 36;
-            constexpr bool no_window = false;
-            const auto config = TestrunConfiguration{
+    for (int i = 0; i < 10; i++) {  // 10 repetitions
+        for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
+            for (const auto &[object_file, object_scale]: object_files) {
+                constexpr int camera_path_resolution = 36;
+                constexpr bool no_window = false;
+                const auto config = TestrunConfiguration{
                     .object_file = object_file,
                     .object_scale = object_scale,
                     .bvh_algorithm = bvh_algorithm,
@@ -94,8 +94,9 @@ int main() {
                     .camera_path_resolution = camera_path_resolution,
                     .no_window = no_window
             };
-            runTest(config);
-        };
+                runTest(config);
+            };
+        }
     }
     return 0;
 }
@@ -108,7 +109,7 @@ void runTest(const TestrunConfiguration& config) {
     Benchmark bm;
     std::string object_file = config.object_file;
     int bvh_degree = config.bvh_degree;
-    std::string algorithm_name = config.bvh_algorithm + "-" + std::to_string(bvh_degree); // "sah", "median", "stupid"
+    std::string algorithm_name = config.bvh_algorithm;
     std::vector<Primitive*> objects = setupScene(object_file, config.object_scale);
 
     //calculate object center ( center of all centers )
@@ -122,19 +123,19 @@ void runTest(const TestrunConfiguration& config) {
     bool collapse = false;
     std::vector<std::size_t> (*partition_function)(const std::vector<Primitive *>::iterator &begin,
                                       const std::vector<Primitive *>::iterator &end, const int axis);
-    if (algorithm_name.find_first_of("sah-c") == 0) {
+    if (algorithm_name == "sah-c") {
         printf("Using SAH with collapse...\n");
         partition_function = StackBVH::sah2Split;
         collapse = true;
-    } else if (algorithm_name.find_first_of("bsah-c") == 0) {
-        printf("Using SAH with collapse...\n");
+    } else if (algorithm_name == "bsah-c") {
+        printf("Using BSAH with collapse...\n");
         partition_function = StackBVH::binnedSah2Split;
         collapse = true;
-    } else if (algorithm_name.find_first_of("median-c") == 0) {
+    } else if (algorithm_name == "median-c") {
         printf("Using median with collapse...\n");
         partition_function = StackBVH::median2Split;
         collapse = true;
-    } else if (algorithm_name.find_first_of("bsah") == 0) {
+    } else if (algorithm_name == "bsah") {
         switch (bvh_degree) {
             case 2:
                 printf("Using binnedsah-2...\n");
@@ -149,13 +150,13 @@ void runTest(const TestrunConfiguration& config) {
                 partition_function = StackBVH::binnedSah8Split;
                 break;
             case 16:
-                printf("Using binnedsah-8...\n");
+                printf("Using binnedsah-16...\n");
                 partition_function = StackBVH::binnedSah16Split;
                 break;
             default:
                 throw std::invalid_argument("Unsupported bvh degree");
         }
-    } else if (algorithm_name.find_first_of("sah") == 0) {
+    } else if (algorithm_name == "sah") {
         switch (bvh_degree) {
             case 2:
                 printf("Using sah-2...\n");
@@ -170,13 +171,13 @@ void runTest(const TestrunConfiguration& config) {
                 partition_function = StackBVH::sah8Split;
                 break;
             case 16:
-                printf("Using sah-8...\n");
+                printf("Using sah-16...\n");
                 partition_function = StackBVH::sah16Split;
                 break;
             default:
                 throw std::invalid_argument("Unsupported bvh degree");
         }
-    } else if (algorithm_name.find_first_of("median") == 0) {
+    } else if (algorithm_name == "median") {
         switch (bvh_degree) {
             case 2:
                 printf("Using median-2...\n");
@@ -191,7 +192,7 @@ void runTest(const TestrunConfiguration& config) {
                 partition_function = StackBVH::median8Split;
             break;
             case 16:
-                printf("Using median-8...\n");
+                printf("Using median-16...\n");
                 partition_function = StackBVH::median16Split;
                 break;
             default:
@@ -204,11 +205,12 @@ void runTest(const TestrunConfiguration& config) {
     //Log2 of degree to get number of collapse iterations
     int collapse_iterations = static_cast<int>(std::log2(bvh_degree)) - 1;
 
+    std::string algorithm_full_name = algorithm_name + "-" + std::to_string(bvh_degree);
     std::vector<Primitive*> emp;
     StackBVH bvh = StackBVH::build(emp, partition_function);
     //Build BVH time calculation
     double elapsed = 0.0;
-    printf("Building BVH using %s split...\n", algorithm_name.c_str());
+    printf("Building BVH using %s split...\n", algorithm_full_name.c_str());
     for (int it = 0; it < 10; it++) {
         timer.reset();
         bvh = StackBVH::build(objects, partition_function);
@@ -216,27 +218,9 @@ void runTest(const TestrunConfiguration& config) {
             StackBVH::collapse(bvh);
         }
         elapsed = timer.elapsed();
-        bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
-        printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
+        bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_full_name, camera, elapsed);
+        printf("Time build BVH using %s Split: %f \n", algorithm_full_name.c_str(), elapsed);
     }
-        /*
-    for (int i = 0; i < 1; i++) {
-        timer.reset();
-        if (algorithm_name.starts_with("sah")) {
-            printf("Building BVH using Surface Area Heuristic Construction...\n");
-            bvh = BVH::surfaceAreaHeuristicConstruction(objects, bvh_degree);
-        } else if (algorithm_name.starts_with("median")) {
-            printf("Building BVH using Median Split Construction...\n");
-            bvh = BVH::medianSplitConstruction(objects, bvh_degree);
-        } else {
-            printf("Building BVH using Stupid Construction...\n");
-            bvh = BVH::stupidConstruct(objects);
-        }
-        elapsed = timer.elapsed();
-        printf("Time build BVH using %s Split: %f \n", algorithm_name.c_str(), elapsed);
-        bm.saveDataFrame("bvh_build_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
-    }
-    */
 
     if(!config.no_window) {
         if (setupOpenGL() != 0) {
@@ -267,11 +251,11 @@ void runTest(const TestrunConfiguration& config) {
         calculateScreen(bvh, camera);   //MAGIC: fills ray_hits
         elapsed = timer.elapsed();
         //printf("Time calculate Screen: %f \n", elapsed);
-        bm.saveDataFrame("render_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
+        bm.saveDataFrame("render_times.csv", object_file, config.object_scale, algorithm_full_name, camera, elapsed);
 
         //calculate hit rays
         const int hitrayCount = shadeScreen(camera.getPosition());
-        bm.saveDataFrame("shading_times.csv", object_file, config.object_scale,algorithm_name, camera, static_cast<double>(hitrayCount));
+        bm.saveDataFrame("shading_times.csv", object_file, config.object_scale,algorithm_full_name, camera, static_cast<double>(hitrayCount));
         //Save image of frame as .ppm
         bm.saveScreen<SCREEN_WIDTH, SCREEN_HEIGHT>(screen);
 
@@ -280,7 +264,7 @@ void runTest(const TestrunConfiguration& config) {
             drawScreen();   //just screen drawing (out of scope for now)
             elapsed = timer.elapsed();
             //printf("Time draw Screen: %f \n", elapsed);
-            bm.saveDataFrame("drawing_times.csv", object_file, config.object_scale, algorithm_name, camera, elapsed);
+            bm.saveDataFrame("drawing_times.csv", object_file, config.object_scale, algorithm_full_name, camera, elapsed);
 
             if(glfwWindowShouldClose(window)) {
                 break;
