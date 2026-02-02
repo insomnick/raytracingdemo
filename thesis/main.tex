@@ -534,6 +534,45 @@ end function
 
 \subsubsection{Binned Surface Area Heuristic Split}
 
+
+\begin{lstlisting}[style=codestyle,caption={Binned Surface Area Heuristic Partition},mathescape]
+    function binnedSahSplit(primitives, axis, degree):   //O(n * log(n))
+    
+        Bin_SIZE := 16  // b
+
+        count := primitives.size()
+        if isLeaf(count, degree) then
+            return {}
+        end if
+        
+        //O(n * log(n))
+        sort(set = primitives,
+             compare(primitiveA, primitiveB):
+                 return center(primitiveA).component(axis) < center(primitiveB).component(axis))
+    
+        struct Bin {count; bounds}        
+        
+        bins := sortPrimitivesIntoBins(primitives, BIN_SIZE) //O(n)
+
+        splitIndices := empty list
+        segments := empty list
+        push(segments, bins)
+        while segments.size() < degree do
+    
+        seg := findSegmentToSplitGreedily(segments)   //highest cost segment has to be split
+        // bounds of primitives from segment from begin to index
+        prefixBoundingBoxes := calculatePrefix(seg)  //O(b)
+        // bounds of primitives from segment from index to end (included)
+        suffixBoundingBoxes := calculateSuffix(seg) // O(b)
+
+            seg := findSegmentToSplitGreedily(segments)   //highest cost segment has to be split   
+            segCount := seg.count() 
+
+        end do
+        return splitIndices
+    end function
+    \end{lstlisting}
+
 \subsection{Collapse Funktion}
 
 \newpage
