@@ -99,7 +99,7 @@ Zweitgutachter:in:& Dr. Markus Brenneis\\ % Namen eintragen
 \maketitle
 
 \chapter*{Zusammenfassung}
-Bounding Volume Hierarchies (BVHs) gehören zu den wichtigsten Beschleunigungsdatenstrukturen zur effizienten Berechnung von Ray-Szenen-Schnittpunkten in der Bildprojektion. Während Wide BVHs (Verzweigungsgrad $k > 2$) bereits im Zusammenhang mit Optimierung durch GPU-Berechnung untersucht werden, ist es weniger klar, ob sie auch bei serieller Berechnung auf der CPU einen praktischen Vorteil durch ihre Struktur bieten können.
+Bounding Volume Hierarchies (BVHs) gehören zu den wichtigsten Beschleunigungsdatenstrukturen zur effizienten Berechnung von Ray-Szenen-Schnittpunkten in der Bildprojektion. Während Wide BVHs (Verzweigungsgrad $k > 2$) bereits im Zusammenhang mit Optimierung durch GPU-Berechnung untersucht werden. Es ist weniger klar, ob sie auch einen praktischen Vorteil durch ihre Struktur bieten, die über die Parallelisierbarkeit hinausgeht. Falls auch eine Verbesserung bei serieller Berechnung auf der CPU gesehen werden kann, ergibt das neue Einblicke in die Optimierungsmöglichkeiten durch Wide BVH.
 
 Diese Arbeit untersucht Top-Down konstruierte BVH in statischen dreidimensionalen Szenen für Verzweigungsgrade $k \in {2, 4 ,8 ,16}$. Dies geschieht unter Berücksichtigung von drei Splitting-Verfahren (Median, Surface Area Heuristic und Binned Surface Area Heuristic), sowie zwei Methoden zur Erzeugung von Wide BVHs (k-way splitting und binary BVH collapse). Dabei steht die Traversal-Time als primäres und die Construction-Time als sekundäres Qualitätsmerkmal im Fokus. Zudem wird durch eine Kombination der beiden Qualitätsmetriken ein Szenario mit dynamischer Szene modelliert.
 
@@ -124,7 +124,6 @@ Effiziente Kollisionserkennung hat grundlegenden Nutzen in diversen Feldern, üb
 Um den Vorgang zu beschleunigen, kommen zwei Datenstrukturen ins Spiel: Die Axis Aligned Bounding Box (AABB) und darauf aufbauend die Bounding Volume Hierarchy (BVH)~\cite{VahlGordonClevenger+2021}. Eine AABB definiert achsenorientierte obere und untere Schranken für Teilmengen von Primitives in Form eines Quaders, der diese im Raum einschließt. Durch die Einführung von AABB lassen sich die nötigen Ray-Object-Intersection-Tests verringern, indem man für jeden Ray erst die Kollision mit den AABBs überprüft. Wenn es bereits keine Kollision mit der umschließenden Bounding Box gibt, kann von vornherein ausgeschlossen werden, dass es eine Kollision mit den innenliegenden Primitiven gibt. 
 Um den Vorteil dieses Verfahrens effektiv zu nutzen, kann man nun rekursiv die eingeschlossenen Teilmengen wieder aufteilen und mit AABBs umschließen. Dadurch lassen sich die Bounding Boxes in eine hierarchische Reihenfolge bringen, die eine Baumstruktur aufweist. Diese Struktur ist eine Bounding Volume Hierarchy. Durch eine BVH wird die Laufzeit auf ein Niveau gesenkt, das typischerweise bei geeigneter Ray-Verteilung logarithmisch von der Anzahl an Primitives in der Szene abhängt, was die Zeit für ein fertig gerendertes Bild drastisch sinken lassen kann. Diesen Vorteil erkauft man sich durch das Einführen des zusätzlichen Konstruktionsschrittes, der in Abwägung dazu steht. 
 Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit. 
-
 
 
 \begin{figure}[h]
@@ -169,6 +168,12 @@ Die Qualität einer BVH wird rein durch die Traversal-Time definiert. Andere Asp
 
 Die Besonderheit dieser Arbeit ist, dass Wide BVH komplett außerhalb des Kontext der Parallelisierabrkeit analysiert werden und alle Berechnungen seriell auf der CPU ausgeführt werden. Es wird explizit die die gesamte serielle Zeit der Algorithmen untersucht, um Veränderungen durch Struktur der BVHs zu ermitteln. 
 
+Ziel ist es einzuschätzen, ob die Möglichkeit der parallelisierten Berechnung besser genutzt werden kann, durch z.B. mehr untersuchte Rays oder höhere Auflösungen, statt ineffiziente erhöhung des Verzweigungsgrads. 
+
+\section{Aufbau}
+Zuerst wird in die benötigen Grundlagen und Terminologie des Raytracings eingeführt. Darunter zählen Rays, AABBs und BVH-Konstruktion, sowie Traversal. Im folgenden werden die implementierten Algorithmen und der experimentelle Aufbau, wie auc hdas dazugehörige Datenmodell beschrieben. Nach der Vorstellung der Messergebnisse, werden diese anschließend diskutiert, Limitationen aufgezeigt und in den literaturkontext einfügt. Zuletzt wird ein Fazit ausgeführt, welches die zentralen Erkenntnisse zusammenfassst.
+
+
 \newpage
 
 \chapter{Grundlagen}
@@ -189,7 +194,7 @@ Um Konstruktion und Traversal von Nodes einer BVH möglichst einfach zu gestalte
 \end{itemize}
 Die am häufigsten verwendete Datenstruktur, die diese Punkte miteinander vereint ist die Axis Aligned Bounding Box. Man kann sie sich vorstellen wie ein an den Koordinatenachsen ausgerichteter Quader, der die darin enthaltenen Primitives möglichst Eng einschließt. Die räumlichen Grenzen lassen sich durch zwei Vektoren, die die oberen und unteren Schranken der Box definieren leicht definieren und durch eine lineare Suche in den enthaltenen Primitives relativ effizient berechnen.
 
-Die Kollision mit Rays ist durch die \emph{SLAB-Methode} sehr performant~\cite{10.1145/15922.15916}. Hierbei ...yxc
+Die Kollision mit Rays ist durch die \emph{SLAB-Methode} sehr performant~\cite{10.1145/15922.15916}. Hierbei wird ein Ray achsenweise mit den durch die AABB definierten Begrenzungsebenen getestet. Für jede Raumachse existieren paarweise zwei parallele Ebenen, die eine obere und untere Schranke darstellen. Für jede Achse wird ein Parameterintervall für die Ein- und Austrittsparameter des Rays bestimmt. Eine Kollision liegt nur dann vor, wenn sich die Intervalle über alle Achsen überlappen.
 
 \section{Bounding Volume Hierarchy}
 
@@ -265,7 +270,7 @@ Alle Tests wurden um Messfehler auszuschließen 10 mal wiederholt.
 Damit kommt man für jede Permutation von Algorithmus, Verzweigungsgrad, Wide BVH Variante und Modell auf 84 verschiedene Testruns mit je 46 Datenpunkte und 10 Wiederholungen. Also gesamtheitlich auf \emph{38.640 Datenpunkte}.
 Im ersten Schritt werden Unterschiede in der Traversal-Time untersucht um auf Veränderungen in der BVH-Qualität zurückzuschließen. Im zweiten Schritt wird die Summe von Construction- und Traversal-Time betrachtet, um die Performance in einer dynamischen Szene zu modellieren, da in dynamischen Szenen die BVH theoretisch nach jeder Änderung an der Szene neu berechnet werden muss.  
 
-Die gewählten Szenen sind bekannte Testmodelle mit unterschiedlichen Größenordnungen im Bezug auf Polygonanzahl, die sich in einem ansonsten leeren Raum aufhalten.
+Die gewählten Szenen sind bekannte Testmodelle mit unterschiedlichen Größenordnungen im Bezug auf Polygonanzahl, die sich in einem ansonsten leeren Raum aufhalten. Alle Modelle verwenden Lizenzen zu freien Benutzung~\cite{blender,teapot,stanford}
 Die Szenengröße kann man folgender Tabelle entnehmen:
 
 \begin{table}[h]

@@ -68,6 +68,26 @@
       \verb https://doi.org/10.1145/2492045.2492056
       \endverb
     \endentry
+    \entry{blender}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=7c7cec5ba22a5060ddb343d3980ee278}{%
+           family={blender},
+           familyi={b\bibinitperiod}}}%
+      }
+      \strng{namehash}{7c7cec5ba22a5060ddb343d3980ee278}
+      \strng{fullhash}{7c7cec5ba22a5060ddb343d3980ee278}
+      \strng{bibnamehash}{7c7cec5ba22a5060ddb343d3980ee278}
+      \strng{authorbibnamehash}{7c7cec5ba22a5060ddb343d3980ee278}
+      \strng{authornamehash}{7c7cec5ba22a5060ddb343d3980ee278}
+      \strng{authorfullhash}{7c7cec5ba22a5060ddb343d3980ee278}
+      \field{labelalpha}{br}
+      \field{sortinit}{b}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{URL: \url{https://github.com/blender/cycles/blob/main/examples/objects/suzanne.xml}, Zugriff am: 2. Februar 2026}
+      \field{title}{The Cycles Render Engine}
+    \endentry
     \entry{ericson2004real}{book}{}
       \name{author}{1}{}{%
         {{hash=41b203af3fc79061c842b891c9c477a6}{%
@@ -171,6 +191,28 @@
       \verb{url}
       \verb https://doi.org/10.1145/15922.15916
       \endverb
+    \endentry
+    \entry{stanford}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=fede6e37e3f822f4dc55b4b5dbe8537f}{%
+           family={Laboratory},
+           familyi={L\bibinitperiod},
+           given={Stanford\bibnamedelimb University\bibnamedelimb Computer\bibnamedelima Graphics},
+           giveni={S\bibinitperiod\bibinitdelim U\bibinitperiod\bibinitdelim C\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+      }
+      \strng{namehash}{fede6e37e3f822f4dc55b4b5dbe8537f}
+      \strng{fullhash}{fede6e37e3f822f4dc55b4b5dbe8537f}
+      \strng{bibnamehash}{fede6e37e3f822f4dc55b4b5dbe8537f}
+      \strng{authorbibnamehash}{fede6e37e3f822f4dc55b4b5dbe8537f}
+      \strng{authornamehash}{fede6e37e3f822f4dc55b4b5dbe8537f}
+      \strng{authorfullhash}{fede6e37e3f822f4dc55b4b5dbe8537f}
+      \field{labelalpha}{Ly}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{URL: \url{https://graphics.stanford.edu/data/3Dscanrep/}, Zugriff am: 2. Februar 2026}
+      \field{title}{The Stanford 3D Scanning Repository}
     \endentry
     \entry{meister2022performance}{article}{}
       \name{author}{2}{}{%
@@ -290,6 +332,28 @@
       \field{year}{1997}
       \field{pages}{21\bibrangedash 28}
       \range{pages}{8}
+    \endentry
+    \entry{teapot}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=4f31e3012f1eec77bf06cb72cfb0e68a}{%
+           family={Newel},
+           familyi={N\bibinitperiod},
+           given={Martin},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{4f31e3012f1eec77bf06cb72cfb0e68a}
+      \strng{fullhash}{4f31e3012f1eec77bf06cb72cfb0e68a}
+      \strng{bibnamehash}{4f31e3012f1eec77bf06cb72cfb0e68a}
+      \strng{authorbibnamehash}{4f31e3012f1eec77bf06cb72cfb0e68a}
+      \strng{authornamehash}{4f31e3012f1eec77bf06cb72cfb0e68a}
+      \strng{authorfullhash}{4f31e3012f1eec77bf06cb72cfb0e68a}
+      \field{labelalpha}{Nl}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{URL: \url{https://graphics.cs.utah.edu/teapot/}, Zugriff am: 2. Februar 2026}
+      \field{title}{The Utah Teapot}
     \endentry
     \entry{4634620}{inproceedings}{}
       \name{author}{3}{}{%
