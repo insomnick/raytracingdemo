@@ -68,6 +68,46 @@
       \verb https://doi.org/10.1145/2492045.2492056
       \endverb
     \endentry
+    \entry{alecjacobsen}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=defcad9ab0eb72e35d48903cf76f9134}{%
+           family={alecjacobson},
+           familyi={a\bibinitperiod}}}%
+      }
+      \strng{namehash}{defcad9ab0eb72e35d48903cf76f9134}
+      \strng{fullhash}{defcad9ab0eb72e35d48903cf76f9134}
+      \strng{bibnamehash}{defcad9ab0eb72e35d48903cf76f9134}
+      \strng{authorbibnamehash}{defcad9ab0eb72e35d48903cf76f9134}
+      \strng{authornamehash}{defcad9ab0eb72e35d48903cf76f9134}
+      \strng{authorfullhash}{defcad9ab0eb72e35d48903cf76f9134}
+      \field{labelalpha}{an}
+      \field{sortinit}{a}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{URL: \url{https://github.com/alecjacobson/common-3d-test-models}, Zugriff am: 3. Februar 2026}
+      \field{title}{common-3d-test-models}
+    \endentry
+    \entry{bly7}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=9129f907816b64b2787b177895e0de4a}{%
+           family={Bly7},
+           familyi={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{9129f907816b64b2787b177895e0de4a}
+      \strng{fullhash}{9129f907816b64b2787b177895e0de4a}
+      \strng{bibnamehash}{9129f907816b64b2787b177895e0de4a}
+      \strng{authorbibnamehash}{9129f907816b64b2787b177895e0de4a}
+      \strng{authornamehash}{9129f907816b64b2787b177895e0de4a}
+      \strng{authorfullhash}{9129f907816b64b2787b177895e0de4a}
+      \field{labelalpha}{B7}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{URL: \url{https://github.com/Bly7/OBJ-Loader}, Zugriff am: 3. Februar 2026}
+      \field{title}{OBJ-Loader}
+    \endentry
     \entry{blender}{misc}{}
       \name{author}{1}{}{%
         {{hash=482982e64aebd743da9392fbc4b1f5d8}{%

@@ -178,7 +178,7 @@ Die Besonderheit dieser Arbeit ist, dass Wide BVH komplett außerhalb des Kontex
 
 Ziel ist es einzuschätzen, ob die Möglichkeit der parallelisierten Berechnung besser genutzt werden kann, durch z.B. mehr untersuchte Rays oder höhere Auflösungen, statt ineffiziente Erhöhung des Verzweigungsgrads. 
 
-\section{Aufbau}
+\section{Vorgehensweise}
 Zuerst wird in die benötigen Grundlagen und Terminologie des Raytracings eingeführt. Darunter zählen Rays, AABBs und BVH-Konstruktion, sowie Traversal. Im folgenden werden die implementierten Algorithmen und der experimentelle Aufbau, wie auch das dazugehörige Datenmodell beschrieben. Nach der Vorstellung der Messergebnisse, werden diese anschließend diskutiert, Limitationen aufgezeigt und in den Literaturkontext einfügt. Zuletzt wird ein Fazit ausgeführt, welches die zentralen Erkenntnisse zusammenfasst.
 
 \newpage
@@ -269,15 +269,16 @@ Die Binned Surface Area Heuristic ist eine Abwandlung, der SAH. Sie verwendet da
 
 \subsection{Überblick}
 
-Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heuristic Split} und \emph{Binned Surface Area Heuristic Split}. Als Referenz wird in jedem Fall ein Binärer Testdurchlauf mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht. Dabei existiert jeweils eine Variante in der die binäre BVH collapsed wird um die höheren Grade zu erreichen und eine Variante mit direktem k-way-split. Jeder erzeugt Frame hat eine Auflösung von $500 * 500$ Pixeln, was einer Menge von 250.000 Primärstrahlen pro berechneten Bild bzw. Traversalschritt entspricht.
-Innerhalb der Szenen wird eine einfache Kamerafahrt in 36 Frames unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stets im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. Die Frames unterscheiden sich damit lediglich in Kameraposition und -Ausrichtung. 
+Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heuristic Split} und \emph{Binned Surface Area Heuristic Split}. Als Referenz wird in jedem Fall ein Testdurchlauf mit der Konsteuktion einer BVH mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht, wobei jeweils eine Variante in der die binäre BVH collapsed wird um die höheren Grade zu erreichen und eine Variante mit direktem k-way splitting existiert. Jeder erzeugt Frame hat eine Auflösung von $500 * 500$ Pixeln, was einer Menge von $250.000$ Primärstrahlen pro berechneten Bild bzw. Traversalschritt entspricht.
+Innerhalb der Szenen wird eine einfache Kamerafahrt in $36$ Frames unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stets im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. Die Frames unterscheiden sich damit lediglich in Kameraposition und -Ausrichtung. 
+
 Dabei werden als Hauptmetriken die Construction-Time und die Traversal-Time erfasst. 
-Insgesamt werden pro Testdurchlauf 10 Datenpunkte für die Construction-Time und dann pro Frame jeweils die Traversal-Time gesammelt. 
-Alle Tests wurden um Messfehler auszuschließen 10 mal wiederholt.
-Damit kommt man für jede Permutation von Algorithmus, Verzweigungsgrad, Wide BVH Variante und Modell auf 84 verschiedene Testruns mit je 46 Datenpunkte und 10 Wiederholungen. Also gesamtheitlich auf \emph{38.640 Datenpunkte}.
+Insgesamt werden pro Testdurchlauf $10$ Datenpunkte für die Construction-Time und dann pro Frame jeweils die Traversal-Time gesammelt. 
+Alle Tests wurden um Messfehler auszuschließen $10$ mal wiederholt.
+Damit kommt man für jede Permutation von Algorithmus, Verzweigungsgrad, Wide BVH Variante und Modell auf $84$ verschiedene Testruns mit je $46$ Datenpunkte und $10$ Wiederholungen. Also gesamtheitlich auf \emph{$38.640$ Datenpunkte}.
 Im ersten Schritt werden Unterschiede in der Traversal-Time untersucht um auf Veränderungen in der BVH-Qualität zurückzuschließen. Im zweiten Schritt wird die Summe von Construction- und Traversal-Time betrachtet, um die Performance in einer dynamischen Szene zu modellieren, da in dynamischen Szenen die BVH theoretisch nach jeder Änderung an der Szene neu berechnet werden muss.  
 
-Die gewählten Szenen sind bekannte Testmodelle mit unterschiedlichen Größenordnungen im Bezug auf Polygonanzahl, die sich in einem ansonsten leeren Raum aufhalten. Alle Modelle verwenden Lizenzen zu freien Benutzung~\cite{blender,teapot,stanford}
+Die gewählten Szenen sind bekannte Testmodelle mit unterschiedlichen Größenordnungen im Bezug auf Polygonanzahl, die sich in einem ansonsten leeren Raum aufhalten. Alle Modelle verwenden Lizenzen zu freien Benutzung~\cite{blender,teapot,stanford}. Die Modelle sind nativ in unterschiedlichen Formaten, es existieren jedoch ins obj-Dateiformat konvertierte Versionen~\cite{alecjacobsen}. Zum Laden der Dateien wurde eine einfache Single-Header-Library unter der MIT-Lizenz verwendet~\cite{bly7}. Die Modelle sind so skaliert, dass sie zu jeder Zeit komplett innerhalb des Frames sind.
 Die Szenengröße kann man folgender Tabelle entnehmen:
 
 \begin{table}[h]
@@ -821,6 +822,13 @@ Ein wichtiger nächster Schritt wäre die Messungen mit einer größeren Menge a
 
 \newpage
 \chapter{Appendix}
+
+\section{Quellcode}
+
+Der Quellcode befindet sich in einem Git-Repository auf GitHub unter: \\
+https://github.com/insomnick/raytracingdemo
+
+\section{Messdaten}
 
 \begin{center}
     \input{results/static_statistical_results_table.tex}
