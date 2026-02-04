@@ -457,13 +457,13 @@ def create_detailed_results_table(results_df, results_dir: Path, column_mapping)
         print("\nSignificant improvements (faster algorithms):")
         improvements = significant_results[significant_results['% Change'] < 0]
         for _, row in improvements.iterrows():
-            print(f"  {row['Model']} | {row['Algorithm']} k={row['k']} ({row['Type']}): "
+            print(f"  {row['Model']} | {row['Algorithm']} k={row['k']}: "
                   f"{row['% Change']:.1f}% faster (p={row['p-value']})")
 
         print("\nSignificant degradations (slower algorithms):")
         degradations = significant_results[significant_results['% Change'] >= 0]
         for _, row in degradations.iterrows():
-            print(f"  {row['Model']} | {row['Algorithm']} k={row['k']} ({row['Type']}): "
+            print(f"  {row['Model']} | {row['Algorithm']} k={row['k']}: "
                   f"{row['% Change']:.1f}% slower (p={row['p-value']})")
 
 
@@ -501,7 +501,7 @@ def main():
         'model': 'Model',
         'algorithm_prefix': 'Algorithm',
         'degree': 'k',
-        'type': 'Type',
+        'type': 'type',
         'baseline_mean': 'k=2 Time (s)',
         'test_mean': f'k=X Time (s)',
         'speedup_factor': 'Speedup',
@@ -535,7 +535,7 @@ def main():
         'model': 'Model',
         'algorithm_prefix': 'Algorithm',
         'degree': 'k',
-        'type': 'Type',
+        'type': 'type',
         'baseline_mean': 'k=2 Time (s)',
         'test_mean': f'k=X Time (s)',
         'speedup_factor': 'Speedup',

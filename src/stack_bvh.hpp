@@ -155,7 +155,7 @@ private:
             for (size_t i = 0; i < segments.size(); ++i) {
                 const Segment &seg = segments[i];
                 size_t count = seg.end - seg.begin;
-                if (count < degree) continue; // cannot split further
+                if (count < 2) continue; // cannot split further
                 double cost = segmentCost(seg);
                 if (cost > highestCost) {
                     highestCost = cost;
@@ -344,7 +344,7 @@ private:
             for (size_t i = 0; i < segments.size(); ++i) {
                 const Segment &seg = segments[i];
                 size_t count = seg.end - seg.begin;
-                if (count < degree) continue; // cannot split further
+                if (count < 2) continue; // cannot split further
                 double cost = segmentCost(seg);
                 if (cost > highestCost) {
                     highestCost = cost;
