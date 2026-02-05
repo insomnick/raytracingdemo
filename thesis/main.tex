@@ -692,8 +692,8 @@ Werte $Speedup > 1$ gelten als Verbesserung, also geringerer Traversal-Time, geg
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{results/rq1_heatmap_grid_collapsed.png}
-    \caption{Abbildung Traversal-Speedup für statische Szenen}
+    \includegraphics[width=\textwidth]{results/rq1/rq1_heatmap_grid_collapsed.png}
+    \caption{Traversal-Speedup für statische Szenen}
     \label{fig:static}
 \end{figure}
 
@@ -712,10 +712,8 @@ Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapit
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.2]{results/comparison_speedup_k4.png}
-    \includegraphics[scale=0.2]{results/comparison_speedup_k8.png}
-    \includegraphics[scale=0.2]{results/comparison_speedup_k16.png}
-    \caption{Abbildung Traversal-Speedup collapse- gegen k-way- Verfahren}
+    \includegraphics[width=\textwidth]{results/rq2/rq2_heatmap.png}
+    \caption{Traversal-Speedup collapse- gegen k-way-Verfahren \\ (Referenz collapse)}
     \label{fig:comparison}
 \end{figure}
 
@@ -736,17 +734,22 @@ Ebenso entspricht $Speedup_{dynamic} > 1$ einer Verbesserung der kombinierten Me
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.2]{results/dynamic_combined_speedup_k4.png}
-    \includegraphics[scale=0.2]{results/dynamic_combined_speedup_k8.png}
-    \includegraphics[scale=0.2]{results/dynamic_combined_speedup_k16.png}
-    \caption{Abbildung kombinierter Speedup für Construction- und Traversal-Time}
-    \label{fig:dynamic}
+    \includegraphics[width=\textwidth]{results/rq3/rq3_heatmap_grid_k-way.png}
+    \caption{Kombinierter Speedup für Construction- und Traversal-Time \\ (k-way)}
+    \label{fig:dynamic-k-way}
 \end{figure}
 Die Abbildung~\ref{fig:dynamic} zeigt den Traversal-Speedup für $k \in \{4, 8, 16\}$ und Tabelle~\ref{tab:dynamic} enthält die dazugehörigen Ergebnisse. 
 Für $k = 4$ gibt es in kleineren Szenen einen Vorteil gegenüber $k = 2$, der sich durch Speedup-Mittelwerten zwischen $1,03$ und $1,08$ ausdrückt. Für größere Szenen nimmt dieser Vorteil ab, womit der Speedup nahe an $1$ liegt, oder sogar teilweise leicht darunter fällt. 
 Für $k = 8$ ist der Speedup für das dynamische Modell wieder deutlich unter $1$ mit Mittelwerten, die sich typischerweise im Bereich von $0,71$ bis $0,86$ aufhalten.
 Für $k = 16$ gibt es weitere Geschwindigkeitseinbußen mit Mittelwerten für den Speedup zwischen $0,16$ und $0,30$.
 Zusammengefasst zeigt das dynamische Modell ähnliche Ergebnistrends, wie im Rahmen der ersten Forschungsfrage gezeigt. Insgesamt bleibt die BVH mit $k = 4$ die Performanteste Datenstruktur für die untersuchten Szenen, auch wenn ein Abfall für größere Szenen erkennbar ist.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{results/rq3/rq3_heatmap_grid_collapsed.png}
+    \caption{Kombinierter Speedup für Construction- und Traversal-Time \\ (collapse)}
+    \label{fig:dynamic-collapse}
+\end{figure}
 
 \newpage
 
@@ -758,8 +761,8 @@ Vorher wurde gezeigt, dass es Einsparung in der Traversal-Time für $k = 4$ gege
 Eine plausible Erklärung für die beobachteten Ergebnisse ist ein Abwägung zwischen der Anzahl an inneren Knoten und der Anzahl an auszuführenden AABB-Tests bzw. Kollisionsüberprüfungen zwischen Primärstrahl und Bounding Boxen. Bei höheren Verzweigungsgraden müssen nämlich pro Node mehr Kinder überprüft werden, während es insgesamt aber auch weniger innere Nodes gibt, die überhaupt überprüft werden können. Es lässt sich interpretieren, dass für $k = 4$ die Menge an weniger besuchten Nodes die größere Menge an AABB-Tests noch überkompensiert, während dies ab $k = 8$ nicht mehr der Fall ist. Zur Veranschaulichung dient Abbildung~\ref{fig:aabb-example} in der man Beispielhaft die Menge an AABB-Tests und Triangle-Tests, bzw. Primärstrahl und Polygon Kollisionen, ablesen kann. 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{results/aabb-test-example.png}
-    \caption{AABB- und Triangle-Tests, Stanford Bunny, SAH}
+    \includegraphics[width=\textwidth]{results/rq1/hit_ray_analysis.png}
+    \caption{AABB- und Triangle-Tests, Stanford Bunny, Median, collapse}
     \label{fig:aabb-example}
 \end{figure}
 Zudem ist wichtig, dass der für $k = 4$ beobachtete Effekt zwar statistisch signifikant ist, aber trotzdem nur einen Vorteil im einstelligen Prozentbereich liefert. Das heißt, dass Wide BVH in diesem linearen Zusammenhang eher als Optimierung mit kleinem Effekt zu sehen ist.

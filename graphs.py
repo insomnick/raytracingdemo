@@ -484,6 +484,165 @@ def create_rq1_heatmap_model_algo_grid(df: pd.DataFrame, output_path: Path, resu
         print(f"  Saved: {output_path}")
 
 
+def create_rq2_heatmap_model_algo_grid(df: pd.DataFrame, output_path: Path):
+    """
+    RQ2 Graph: Heatmap with subplots per k value (4, 8, 16), models as rows, algorithms as columns.
+    Shows speedup of k-way over collapsed (collapsed time / k-way time).
+    """
+    # Filter out k=2 (no collapsed variant)
+    df_filtered = df[df['k'] != 2].copy()
+
+    if len(df_filtered) == 0:
+        print(f"  No data for k>2, skipping RQ2 heatmap")
+        return
+
+    if 'Algorithm' not in df_filtered.columns:
+        print(f"  Missing Algorithm column for RQ2 heatmap")
+        return
+
+    k_values = sorted(df_filtered['k'].unique())
+    # Order algorithms as: median, bsah, sah
+    algorithm_order = ['median', 'bsah', 'sah']
+    algorithms = [a for a in algorithm_order if a in df_filtered['Algorithm'].unique()]
+
+    # Get models sorted by polygon count
+    model_order = (df_filtered.groupby('Model')['polygon_count']
+                   .first().sort_values().index.tolist())
+
+    fig, axes = plt.subplots(1, len(k_values), figsize=(6*len(k_values), 6))
+    if len(k_values) == 1:
+        axes = [axes]
+
+    # Calculate global min/max for consistent color scale
+    all_speedups = df_filtered['Speedup'].values
+    data_min = np.percentile(all_speedups, 2)
+    data_max = np.percentile(all_speedups, 98)
+
+    vmin = max(0.5, min(data_min - 0.05, 0.85))
+    vmax = min(1.5, max(data_max + 0.05, 1.15))
+
+    for idx, k_val in enumerate(k_values):
+        k_data = df_filtered[df_filtered['k'] == k_val]
+
+        # Pivot: models as rows, algorithms as columns
+        pivot_data = k_data.groupby(['Model', 'Algorithm'])['Speedup'].mean().reset_index()
+        heatmap_data = pivot_data.pivot(index='Model', columns='Algorithm', values='Speedup')
+
+        # Reorder rows and columns
+        heatmap_data = heatmap_data.reindex(index=model_order, columns=algorithms)
+
+        # Capitalize model names
+        heatmap_data.index = [capitalize_model_name(name) for name in heatmap_data.index]
+
+        # Create heatmap with colorbar only on last subplot
+        cbar = (idx == len(k_values) - 1)
+        cbar_kws = {'label': 'Speedup Factor'} if cbar else None
+
+        sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='RdYlGn',
+                    center=1.0, vmin=vmin, vmax=vmax,
+                    cbar=cbar, cbar_kws=cbar_kws,
+                    annot_kws={'fontsize': 20, 'fontweight': 'bold'},
+                    linewidths=1, linecolor='gray', ax=axes[idx])
+
+        axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=16)
+        axes[idx].tick_params(labelsize=14)
+        if idx == 0:
+            axes[idx].set_ylabel('Model', fontsize=16)
+        else:
+            axes[idx].set_ylabel('')
+        if cbar:
+            cbar_obj = axes[idx].collections[0].colorbar
+            cbar_obj.ax.tick_params(labelsize=14)
+            cbar_obj.set_label('Speedup Factor', fontsize=16)
+
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  Saved: {output_path}")
+
+
+def _create_rq3_single_heatmap(df_filtered: pd.DataFrame, output_path: Path, model_order, algorithms):
+    """Helper: render one RQ3 heatmap figure (subplots per k value)."""
+    k_values = sorted(df_filtered['k'].unique())
+
+    fig, axes = plt.subplots(1, len(k_values), figsize=(6*len(k_values), 6))
+    if len(k_values) == 1:
+        axes = [axes]
+
+    all_speedups = df_filtered.groupby(['Model', 'Algorithm', 'k'])['Speedup'].mean().values
+    data_min = np.percentile(all_speedups, 2)
+    data_max = np.percentile(all_speedups, 98)
+    vmin = max(0.5, min(data_min - 0.05, 0.85))
+    vmax = min(1.5, max(data_max + 0.05, 1.15))
+
+    for idx, k_val in enumerate(k_values):
+        k_data = df_filtered[df_filtered['k'] == k_val]
+
+        pivot_data = k_data.groupby(['Model', 'Algorithm'])['Speedup'].mean().reset_index()
+        heatmap_data = pivot_data.pivot(index='Model', columns='Algorithm', values='Speedup')
+        heatmap_data = heatmap_data.reindex(index=model_order, columns=algorithms)
+        heatmap_data.index = [capitalize_model_name(name) for name in heatmap_data.index]
+
+        cbar = (idx == len(k_values) - 1)
+        cbar_kws = {'label': 'Speedup Factor'} if cbar else None
+
+        sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='RdYlGn',
+                    center=1.0, vmin=vmin, vmax=vmax,
+                    cbar=cbar, cbar_kws=cbar_kws,
+                    annot_kws={'fontsize': 20, 'fontweight': 'bold'},
+                    linewidths=1, linecolor='gray', ax=axes[idx])
+
+        axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=16)
+        axes[idx].tick_params(labelsize=14)
+        if idx == 0:
+            axes[idx].set_ylabel('Model', fontsize=16)
+        else:
+            axes[idx].set_ylabel('')
+        if cbar:
+            cbar_obj = axes[idx].collections[0].colorbar
+            cbar_obj.ax.tick_params(labelsize=14)
+            cbar_obj.set_label('Speedup Factor', fontsize=16)
+
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  Saved: {output_path}")
+
+
+def create_rq3_heatmap_model_algo_grid(df: pd.DataFrame, output_path: Path):
+    """
+    RQ3 Graph: Heatmaps with subplots per k value (4, 8, 16), models as rows, algorithms as columns.
+    Creates one for k-way, one for collapsed, and one combined (averaged). Same style as RQ1 heatmap.
+    """
+    df_filtered = df[df['k'] != 2].copy()
+
+    if len(df_filtered) == 0:
+        print(f"  No data for k>2, skipping RQ3 heatmaps")
+        return
+
+    if 'Algorithm' not in df_filtered.columns:
+        print(f"  Missing Algorithm column for RQ3 heatmaps")
+        return
+
+    algorithm_order = ['median', 'bsah', 'sah']
+    algorithms = [a for a in algorithm_order if a in df_filtered['Algorithm'].unique()]
+    model_order = (df_filtered.groupby('Model')['polygon_count']
+                   .first().sort_values().index.tolist())
+
+    # Per-type heatmaps (k-way, collapsed)
+    if 'type' in df_filtered.columns:
+        for algo_type in sorted(df_filtered['type'].unique()):
+            type_df = df_filtered[df_filtered['type'] == algo_type]
+            type_output = output_path.parent / f"{output_path.stem}_grid_{algo_type}{output_path.suffix}"
+            _create_rq3_single_heatmap(type_df, type_output, model_order, algorithms)
+
+    # Combined (averaged over types)
+    combined_output = output_path.parent / f"{output_path.stem}_grid_combined{output_path.suffix}"
+    _create_rq3_single_heatmap(df_filtered, combined_output, model_order, algorithms)
+
+
 def create_rq2_grouped_bar(df: pd.DataFrame, output_path: Path):
     """
     RQ2 Graph: Grouped bar chart comparing k-way vs collapsed.
@@ -758,11 +917,13 @@ def create_extended_graphs(result_dir: Path, polygon_df: pd.DataFrame, testrun_d
 
     # RQ2 graphs - only for comparison
     if result_dir.name == 'comparison':
+        create_rq2_heatmap_model_algo_grid(results_df, extended_dir / "rq2_heatmap.png")
         if 'type' in results_df.columns:
             create_rq2_grouped_bar(results_df, extended_dir / "rq2_kway_vs_collapsed.png")
 
     # RQ3 graphs - only for dynamic
     if result_dir.name == 'dynamic':
+        create_rq3_heatmap_model_algo_grid(results_df, extended_dir / "rq3_heatmap.png")
         # Construction vs Traversal scatter plots
         create_dynamic_construction_vs_traversal_scatter(
             results_df, extended_dir / "construction_vs_traversal_kway.png", filter_type='k-way')
