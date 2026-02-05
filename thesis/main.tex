@@ -692,19 +692,31 @@ Werte $Speedup > 1$ gelten als Verbesserung, also geringerer Traversal-Time, geg
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{results/rq1/rq1_heatmap_grid_collapsed.png}
-    \caption{Traversal-Speedup für statische Szenen}
-    \label{fig:static}
+    \includegraphics[width=\textwidth]{results/rq1/rq1_heatmap_grid_k-way.png}
+    \caption{Traversal-Speedup für statische Szenen (k-way)}
+    \label{fig:static-k-way}
 \end{figure}
 
-Die Abbildung~\ref{fig:static} zeigt den Traversal-Speedup für $k \in \{4, 8, 16\}$ und Tabelle~\ref{tab:static} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splittingverfahren und Wide BVH Methode.
-Für $k = 4$ gibt es über alle Kombinationen eine konsistente und statistisch signifikante Verbesserung gegenüber der binären Referenz. Die Mittelwerte der Speedups liegen zwischen ungefähr $1,03$ und $1,08$.
-Für $k = 8$ verschlechtert sich die Traversal-Time in allen untersuchten Fällen klar mit Speedup-Mittelwerten zwischen ungefähr $0,63$ und $0,77$.
-Für $k = 16$ fällt die Performance nochmal deutlich ab mit Mittelwerten zwischen \ $0,10$ und $0,19$, was einer stark höheren Traversal-Time gegenüber $k = 2$ entspricht.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{results/rq1/rq1_heatmap_grid_collapsed.png}
+    \caption{Traversal-Speedup für statische Szenen (collapse)}
+    \label{fig:static-collapse}
+\end{figure}
+
+Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:static-k-way} und~\ref{fig:static-collapse} die Speedups für $k \in \{2, 8, 16\}$, währen die zu Tabelle~\ref{tab:static} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
+
+Für $k = 4$ gibt es gegenüber $k = 2$ keinen einheitlichen Trend für alle untersuchten Kombinationen, jedoch durchgehend signifikante Ergebnisse. Für k-way splitting liegen die Speedups der Mittelwerte zwischen $0,975$ und $1,234$. Währenddessen liegen die Werte für collapsing zwischen $0,932$ und $1,093$. Dabei lässt sich eine deutliche Abhängigkeit vom gewählten Splitting-Verfahren zeigen. SAH und BSAH zeigen für collapsing in allen und für k-way splitting nahezu in allen Szenen Verbesserungen. Für den Median-Split gibt es fürs collapsing lediglich Speedups zwischen $0.932$ und $0.962$, womit man in jedem Fall eine Verschlechterung gegenüber der binären Referenz ablesen kann. Für das dazugehörige k-way splitting gibt es eine größere szenenabhängige Verteilung zwischen leichten Einbußen und klaren Gewinnen.
+
+Für $k = 8$ gibt es gegenüber der binären Referenz in jedem Fall eine Verlängerung der Traversal-Time. Die Speedup-Mittelwerte liegen für k-way splitting von $0,716$ bis $0,866$ und für collapsing von $0,529$ bis $0,757$. Damit ist der Speedup für $k = 8$ stetig besser bei Nutzung des k-way splittings.
+
+Für $k = 16$ gibt es weitere Geschwindigkeitseinbußen gegenüber der binärenen Referenz-BVH mit Speedup-Mittelwerten zwischen $0,077$ und $ 0,159$, wobei der Abfall für die Collapse-Methode besonders deutlich ausfällt.
+
+Insgesamt schließen die Konfidenzintervalle aus der Tabelle~\ref{tab:static} den Speedup-Wert $1$ komplett aus, wodurch sich die beobachteten Ergebnisse nicht durch Messungenauigkeiten erklären lassen. Der einzige Verzweigungsgrad mit potenzieller Verbesserung der Traversal-Time gegenüber $k = 2$ ist $k = 4$, wobei Verzweigungsgrade $k \ge 8$ im Kontext statischer Szenen Konsistent schlechtere Ergebnisse erzeugen. 
 
 \section{Wide BVH Konstruktionsmethode}
 Die zweiten Forschungsfrage bezieht sich darauf, inwiefern sich die Traversal-Time zwischen den beiden Untersuchten Verfahren zur Erzeugung einer Wide BVH unterscheidet.
-Zum Einen das direkte k-way-Splitting und zum Anderen das collapsing einer vorher konstruierten binären BVH. Wieder erfolgt der Vergleich über jede Szene und jedes Splitting-verfahren. Speedup hat an dieser Stelle nicht $k = 2$, sondern die collapse-Methode als Referenz. Damit definiert sich ein neuer Vergleichswert:
+Zum Einen das direkte k-way splitting und zum Anderen das collapsing einer vorher konstruierten binären BVH. Wieder erfolgt der Vergleich über jede Szene und jedes Splitting-Verfahren. Speedup hat an dieser Stelle nicht $k = 2$, sondern die Collapse-Methode als Referenz. Damit definiert sich ein neuer Vergleichswert:
 \[
 Speedup_{\text{comparison}} = \frac{T_{\mathrm{\mu, traversal}}(k, collapse)}{T_{\mu, \mathrm{traversal}}(k, k\text{-}way)}
 \]
@@ -717,9 +729,16 @@ Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapit
     \label{fig:comparison}
 \end{figure}
 
-Die Abbildung~\ref{fig:comparison} zeigt den Traversal-Speedup für $k \in \{4, 8, 16\}$ und Tabelle~\ref{tab:comparison} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splittingverfahren und Wide BVH Methode.
-Im Vergleich liegen die Speedup-Werte für alle Kombinationen Szenen und Splitting-Verfahren für alle $k \in \{4, 8, 16\}$ jeweils sehr nah bei $1$. Die Konfidenzintervalle reichen von $0,996$ bis $1,004$, beinhalten dabei aber immer den Wert $1$.
-Dadurch lässt sich für die untersuchten statischen Szenen kein statistisch signifikanter und damit praktisch nutzbarer Unterschied in der Traversal-Time zwischen direktem k-way-Splitting und der collapse-methode feststellen. Dies gilt unabhängig von untersuchter Szene oder gewählten Splitting-Verfahren.
+Die Abbildung~\ref{fig:comparison} zeigt den Traversal-Speedup für $k \in \{4, 8, 16\}$ und Tabelle~\ref{tab:comparison} enthält die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene und Splitting-Verfahren.
+
+Im Vergleich liegen die Speedup-Werte für $k =4$ für alle Kombinationen an Szenen und Splitting-Verfahren jeweils relativ nah um $1$, sind allerdings stark vom Splitting-Verfahren abhängig. Für den Median-Split liegt $Speedup_{\text{comparison}}$ zwischen $1,019$ und $1,283$, was einen teilweise klaren Vorteil von k-way splitting aufzeigt. Dagegen liegt $Speedup_{\text{comparison}}$ für BSAH konstant unter $1$ mit Mittelwerten zwischen $0,948$ und $0,992$, womit collapsing hier einen Vorteil gegenüber k-way splitting vorweist.
+
+Für $k = 8$ ist das k-way splitting für jeden mögliche Kombination an Parametern besser als collapsing, mit Mittelwerten zwischen $1,054$ und $1,478$. Dadurch gibt es bis zu fast $40\%$ schnelleres Traversal bei der Nutzung von k-way splitting.
+
+Der Unterschied in der Traversal-Time zwischen den beiden Verfahren erreicht für $k = 16$ seinen Höhepunkt. Hier liegen die Werte für $Speedup_{\text{comparison}}$ von $2,461$ bis $6,052$. Damit ist die Traversal-Time für collapsing je nach Szene für diesen Fall dramatisch langsamer.  
+
+Auch hier schließen die Konfidenzintervalle, abzulesen aus Tabelle~\ref{tab:comparison}, den Speedup-Wert $1$ komplett aus und die p-Werte weisen in jeden Fall auf hochsignifikante Ergebnisse hin. 
+Damit kann man einen praktischen Unterschied zwischen den Verfahren zur erzeugung von Wide BVH erkennen und k-way splitting gegenüber collapsing, vo allem für höhere Verzweigungsgrade, für die Untersuchten Szenen als überlegen ansehen.
 
 \section{Dynamisches Modell}
 Die dritte und letzte Forschungsfrage untersucht die Modellierung einer dynamischen Szene, bei der die (Re-)Construction der Szene vor jeder Traversal-Phase erforderlich ist. Für die Modellierung wird eine kombinierte Qualitätsmetrik aus Construction- und Traversal-Time verwendet.
@@ -770,7 +789,7 @@ Zudem ist wichtig, dass der für $k = 4$ beobachtete Effekt zwar statistisch sig
 \section{Interpretation: K-way splitting gegen collapsing}
 Im Rahmen der Ergebnissvorstellung wurde gezeigt, dass die Messergebnisse unabhängig von der gewählten Methode zur Erstellung der Wide BVH ähnliche Messungen ergaben. Die untersuchten Messergebnisse zeigten keinen signifikanten Unterschied zwischen den Traversal-Times für die beiden Methoden.
 
-Die naheliegendste Erklärung ist, dass die räumliche Partitionierung für beide verfahren sehr ähnlich ist. Vor allem deshalb, da beiden Methoden die gleichen Splitting-Algorithmen zugrunde liegen. Das zusammenfassen der binären BVH durch collapsing verändert zwar die Tiefe des Baumes, allerdings scheint es, dass sich die Wahrscheinlichkeit für die Kollision zwischen Ray und AABB nicht sonderlich zu der durch k-way splitting erzeugten BVH unterscheidet. In Abbildung~\ref{fig:aabb-comparison} lässt sich anhand eines Beispiels ablesen, dass die Menge an AABB-Tests, positiv wie negativ, unabhängig vom gewählten Verfahren in der gleichen Größenordnung liegen. Für das Beispiel wurden wieder Stanford Bunny und SAH gewählt.
+Die naheliegendste Erklärung ist, dass die räumliche Partitionierung für beide Verfahren sehr ähnlich ist. Vor allem deshalb, da beiden Methoden die gleichen Splitting-Algorithmen zugrunde liegen. Das zusammenfassen der binären BVH durch collapsing verändert zwar die Tiefe des Baumes, allerdings scheint es, dass sich die Wahrscheinlichkeit für die Kollision zwischen Ray und AABB nicht sonderlich zu der durch k-way splitting erzeugten BVH unterscheidet. In Abbildung~\ref{fig:aabb-comparison} lässt sich anhand eines Beispiels ablesen, dass die Menge an AABB-Tests, positiv wie negativ, unabhängig vom gewählten Verfahren in der gleichen Größenordnung liegen. Für das Beispiel wurden wieder Stanford Bunny und SAH gewählt.
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{results/aabb-test-comparison.png}
