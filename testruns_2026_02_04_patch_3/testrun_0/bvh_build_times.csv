@@ -1,0 +1,11 @@
+file_name,model_name,model_scale,algorithm_name,cam_pos_x,cam_pos_y,cam_pos_z,cam_dir_x,cam_dir_y,cam_dir_z,time_seconds
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.813609
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.823051
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.818967
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.819472
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.825358
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.822181
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.82385
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.822271
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.824083
+bvh_build_times.csv,armadillo.obj,0.035,median-2,-0.0843498,1.12393,5.02467,0,0,-1,0.822388
