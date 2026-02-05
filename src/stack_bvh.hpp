@@ -88,11 +88,13 @@ private:
             splitIndices.push_back(split);
         }
 
-        for (const unsigned long splitIndex : splitIndices) {
-            std::nth_element(begin, begin + static_cast<std::ptrdiff_t>(splitIndex), end,
+        auto rangeBegin = begin;
+        for (const size_t splitIndex : splitIndices) {
+            std::nth_element(rangeBegin, begin + static_cast<std::ptrdiff_t>(splitIndex), end,
                 [axis](const Primitive* a, const Primitive* b) {
                     return a->getCenter().getAxis(axis) < b->getCenter().getAxis(axis);
                 });
+            rangeBegin = begin + splitIndex + 1;
         }
         return splitIndices;
     }
