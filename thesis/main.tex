@@ -37,7 +37,7 @@
 \usepackage{longtable}
 \usepackage{caption}
 \usepackage[backend=biber, style=alphabetic]{biblatex} % Für die Einbindung von BibTeX
-
+\usepackage{breakurl}
 \input{template-config.tex}
 
 % Einstellungen für Seitenlayout
@@ -52,6 +52,8 @@
 
 % BibTeX-Datei einbinden
 \addbibresource{literatur.bib}
+\def\UrlBreaks{\do\/\do-}
+\setcounter{biburllcpenalty}{100}
 
 % Titel und Autor
 \subject{Bachelorarbeit}

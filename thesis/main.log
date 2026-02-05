@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  5 FEB 2026 15:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.10)  5 FEB 2026 15:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -797,9 +797,27 @@ Package biblatex Info: ... and expl3
 (biblatex)             setting 'casechanger=expl3'.
  (/usr/share/texlive/texmf-dist/tex/latex/biblatex/blx-case-expl3.sty
 Package: blx-case-expl3 2023/03/05 v3.19 expl3 case changing code for biblatex
-)) (./template-config.tex
+)) (/usr/share/texlive/texmf-dist/tex/latex/breakurl/breakurl.sty
+Package: breakurl 2013/04/10 v1.40 Breakable hyperref URLs
+ (/usr/share/texlive/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2022/06/16 v2.9 package option processing (HA)
+ (/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkeyval.tex (/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks35
+\XKV@tempa@toks=\toks36
+)
+\XKV@depth=\count448
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+)) (/usr/share/texlive/texmf-dist/tex/generic/iftex/ifpdf.sty
+Package: ifpdf 2019/10/25 v3.4 ifpdf legacy package. Use iftex instead.
+)
+
+Package breakurl Warning: You are using breakurl while processing via pdflatex.
+(breakurl)                \burl will be just a synonym of \url.
+(breakurl)                 on input line 48.
+
+) (./template-config.tex
 Package hyperref Info: Option `colorlinks' set `true' on input line 5.
-\c@theorem=\count448
+\c@theorem=\count449
 )
 1: section
 1: section
@@ -807,50 +825,50 @@ Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... found 'babel' package.
 Package csquotes Info: Adjusting default style.
 Package csquotes Info: Redefining alias 'default' -> 'ngerman'.
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 97.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 99.
 (/usr/share/texmf/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 97.
-LaTeX Font Info:    ... okay on input line 97.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 99.
+LaTeX Font Info:    ... okay on input line 99.
  (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count449
+\scratchcounter=\count450
 \scratchdimen=\dimen259
 \scratchbox=\box64
-\nofMPsegments=\count450
-\nofMParguments=\count451
-\everyMPshowfont=\toks35
-\MPscratchCnt=\count452
+\nofMPsegments=\count451
+\nofMParguments=\count452
+\everyMPshowfont=\toks37
+\MPscratchCnt=\count453
 \MPscratchDim=\dimen260
-\MPnumerator=\count453
-\makeMPintoPDFobject=\count454
-\everyMPtoPDFconversion=\toks36
+\MPnumerator=\count454
+\makeMPintoPDFobject=\count455
+\everyMPtoPDFconversion=\toks38
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring ON on input line 97.
+Package hyperref Info: Link coloring ON on input line 99.
  (./main.out) (./main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
@@ -862,12 +880,12 @@ Class scrreprt Info: loading recommended package `bookmark'.
 (scrreprt)           `bookmarkpackage=false' before \begin{document} and
 (scrreprt)           you can avoid this message adding:
 (scrreprt)             \usepackage{bookmark}
-(scrreprt)           before \begin{document} on input line 97.
+(scrreprt)           before \begin{document} on input line 99.
  (/usr/share/texlive/texmf-dist/tex/latex/bookmark/bookmark.sty
 Package: bookmark 2023-12-10 v1.31 PDF bookmarks (HO)
  (/usr/share/texlive/texmf-dist/tex/latex/bookmark/bkm-pdftex.def
 File: bkm-pdftex.def 2023-12-10 v1.31 bookmark driver for pdfTeX and luaTeX (HO)
-\BKM@id=\count455
+\BKM@id=\count456
 ))
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -903,7 +921,7 @@ File: bkm-pdftex.def 2023-12-10 v1.31 bookmark driver for pdfTeX and luaTeX (HO)
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\c@lstlisting=\count456
+\c@lstlisting=\count457
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 Package biblatex Info: Trying to load language 'ngerman'...
@@ -928,55 +946,55 @@ Package biblatex Info: Automatic encoding selection.
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' found.
  (./main.bbl)
-Package biblatex Info: Reference section=0 on input line 97.
-Package biblatex Info: Reference segment=0 on input line 97.
-LaTeX Font Info:    Trying to load font information for T1+lmss on input line 100.
+Package biblatex Info: Reference section=0 on input line 99.
+Package biblatex Info: Reference segment=0 on input line 99.
+LaTeX Font Info:    Trying to load font information for T1+lmss on input line 102.
  (/usr/share/texmf/tex/latex/lm/t1lmss.fd
 File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 100.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 102.
  (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 100.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 102.
  (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 100.
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 102.
  (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 100.
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 102.
  (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <14.4> on input line 100.
+(Font)              <14.4> on input line 102.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 100.
+(Font)              <10> on input line 102.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 100.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 100.
+(Font)              <7> on input line 102.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 102.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 100.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 102.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 100.
+(Font)              <12> on input line 102.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 100.
+(Font)              <8> on input line 102.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 100.
+(Font)              <6> on input line 102.
  [1
 
 
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 104.
+(Font)              <10.95> on input line 106.
  [2
 
 ] [3
@@ -1009,7 +1027,7 @@ Class scrreprt Warning: \float@addtolists detected!
 <images/bunny_boxes.png, id=118, 642.4pt x 642.4pt>
 File: images/bunny_boxes.png Graphic file (type png)
 <use images/bunny_boxes.png>
-Package pdftex.def Info: images/bunny_boxes.png  used on input line 142.
+Package pdftex.def Info: images/bunny_boxes.png  used on input line 144.
 (pdftex.def)             Requested size: 192.72148pt x 192.72148pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1017,7 +1035,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [6
 
 ]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 154.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 156.
  (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [7{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc} <./images/bunny_boxes.png>] [8]
@@ -1029,22 +1047,22 @@ chapter 3.
 <images/suzanne.png, id=183, 501.875pt x 501.875pt>
 File: images/suzanne.png Graphic file (type png)
 <use images/suzanne.png>
-Package pdftex.def Info: images/suzanne.png  used on input line 306.
+Package pdftex.def Info: images/suzanne.png  used on input line 308.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
 <images/teapot.png, id=184, 501.875pt x 501.875pt>
 File: images/teapot.png Graphic file (type png)
 <use images/teapot.png>
-Package pdftex.def Info: images/teapot.png  used on input line 307.
+Package pdftex.def Info: images/teapot.png  used on input line 309.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
 <images/bunny.png, id=185, 501.875pt x 501.875pt>
 File: images/bunny.png Graphic file (type png)
 <use images/bunny.png>
-Package pdftex.def Info: images/bunny.png  used on input line 308.
+Package pdftex.def Info: images/bunny.png  used on input line 310.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
 <images/armadillo.png, id=186, 501.875pt x 501.875pt>
 File: images/armadillo.png Graphic file (type png)
 <use images/armadillo.png>
-Package pdftex.def Info: images/armadillo.png  used on input line 309.
+Package pdftex.def Info: images/armadillo.png  used on input line 311.
 (pdftex.def)             Requested size: 102.43227pt x 102.43321pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1052,31 +1070,31 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [13
 
 ]
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 334.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 334.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 336.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 336.
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [14 <./images/suzanne.png> <./images/teapot.png> <./images/bunny.png> <./images/armadillo.png>]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <8> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 389.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 391.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 393.
+(Font)              <5> on input line 395.
  [15] [16] [17] [18] [19] [20]
 chapter 4.
 <results/static_combined_speedup_k4.png, id=507, 859.0494pt x 569.2467pt>
 File: results/static_combined_speedup_k4.png Graphic file (type png)
 <use results/static_combined_speedup_k4.png>
-Package pdftex.def Info: results/static_combined_speedup_k4.png  used on input line 693.
+Package pdftex.def Info: results/static_combined_speedup_k4.png  used on input line 695.
 (pdftex.def)             Requested size: 171.80682pt x 113.84732pt.
 <results/static_combined_speedup_k8.png, id=508, 859.5312pt x 569.2467pt>
 File: results/static_combined_speedup_k8.png Graphic file (type png)
 <use results/static_combined_speedup_k8.png>
-Package pdftex.def Info: results/static_combined_speedup_k8.png  used on input line 694.
+Package pdftex.def Info: results/static_combined_speedup_k8.png  used on input line 696.
 (pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
 <results/static_combined_speedup_k16.png, id=509, 859.5312pt x 569.2467pt>
 File: results/static_combined_speedup_k16.png Graphic file (type png)
 <use results/static_combined_speedup_k16.png>
-Package pdftex.def Info: results/static_combined_speedup_k16.png  used on input line 695.
+Package pdftex.def Info: results/static_combined_speedup_k16.png  used on input line 697.
 (pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1087,40 +1105,40 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <results/comparison_speedup_k4.png, id=519, 858.8085pt x 569.2467pt>
 File: results/comparison_speedup_k4.png Graphic file (type png)
 <use results/comparison_speedup_k4.png>
-Package pdftex.def Info: results/comparison_speedup_k4.png  used on input line 715.
+Package pdftex.def Info: results/comparison_speedup_k4.png  used on input line 717.
 (pdftex.def)             Requested size: 171.75865pt x 113.84732pt.
 <results/comparison_speedup_k8.png, id=520, 858.8085pt x 569.2467pt>
 File: results/comparison_speedup_k8.png Graphic file (type png)
 <use results/comparison_speedup_k8.png>
-Package pdftex.def Info: results/comparison_speedup_k8.png  used on input line 716.
+Package pdftex.def Info: results/comparison_speedup_k8.png  used on input line 718.
 (pdftex.def)             Requested size: 171.75865pt x 113.84732pt.
 <results/comparison_speedup_k16.png, id=521, 858.8085pt x 569.2467pt>
 File: results/comparison_speedup_k16.png Graphic file (type png)
 <use results/comparison_speedup_k16.png>
-Package pdftex.def Info: results/comparison_speedup_k16.png  used on input line 717.
+Package pdftex.def Info: results/comparison_speedup_k16.png  used on input line 719.
 (pdftex.def)             Requested size: 171.75865pt x 113.84732pt.
  [22 <./results/static_combined_speedup_k4.png> <./results/static_combined_speedup_k8.png> <./results/static_combined_speedup_k16.png> <./results/comparison_speedup_k4.png> <./results/comparison_speedup_k8.png> <./results/comparison_speedup_k16.png>]
 <results/dynamic_combined_speedup_k4.png, id=536, 859.0494pt x 569.2467pt>
 File: results/dynamic_combined_speedup_k4.png Graphic file (type png)
 <use results/dynamic_combined_speedup_k4.png>
-Package pdftex.def Info: results/dynamic_combined_speedup_k4.png  used on input line 739.
+Package pdftex.def Info: results/dynamic_combined_speedup_k4.png  used on input line 741.
 (pdftex.def)             Requested size: 171.80682pt x 113.84732pt.
 <results/dynamic_combined_speedup_k8.png, id=537, 859.2903pt x 569.2467pt>
 File: results/dynamic_combined_speedup_k8.png Graphic file (type png)
 <use results/dynamic_combined_speedup_k8.png>
-Package pdftex.def Info: results/dynamic_combined_speedup_k8.png  used on input line 740.
+Package pdftex.def Info: results/dynamic_combined_speedup_k8.png  used on input line 742.
 (pdftex.def)             Requested size: 171.85501pt x 113.84732pt.
 <results/dynamic_combined_speedup_k16.png, id=538, 859.5312pt x 569.2467pt>
 File: results/dynamic_combined_speedup_k16.png Graphic file (type png)
 <use results/dynamic_combined_speedup_k16.png>
-Package pdftex.def Info: results/dynamic_combined_speedup_k16.png  used on input line 741.
+Package pdftex.def Info: results/dynamic_combined_speedup_k16.png  used on input line 743.
 (pdftex.def)             Requested size: 171.90318pt x 113.84732pt.
  [23 <./results/dynamic_combined_speedup_k4.png> <./results/dynamic_combined_speedup_k8.png> <./results/dynamic_combined_speedup_k16.png>] [24]
 chapter 5.
 <results/aabb-test-example.png, id=556, 2055.68pt x 1166.3575pt>
 File: results/aabb-test-example.png Graphic file (type png)
 <use results/aabb-test-example.png>
-Package pdftex.def Info: results/aabb-test-example.png  used on input line 761.
+Package pdftex.def Info: results/aabb-test-example.png  used on input line 763.
 (pdftex.def)             Requested size: 426.79135pt x 242.14815pt.
 [25
 
@@ -1128,12 +1146,12 @@ Package pdftex.def Info: results/aabb-test-example.png  used on input line 761.
 <results/aabb-test-comparison.png, id=565, 2055.68pt x 1166.3575pt>
 File: results/aabb-test-comparison.png Graphic file (type png)
 <use results/aabb-test-comparison.png>
-Package pdftex.def Info: results/aabb-test-comparison.png  used on input line 773.
+Package pdftex.def Info: results/aabb-test-comparison.png  used on input line 775.
 (pdftex.def)             Requested size: 426.79135pt x 242.14815pt.
 <results/dynamic-construction-vs-traversal.png, id=567, 1923.185pt x 2055.68pt>
 File: results/dynamic-construction-vs-traversal.png Graphic file (type png)
 <use results/dynamic-construction-vs-traversal.png>
-Package pdftex.def Info: results/dynamic-construction-vs-traversal.png  used on input line 785.
+Package pdftex.def Info: results/dynamic-construction-vs-traversal.png  used on input line 787.
 (pdftex.def)             Requested size: 426.79135pt x 456.17189pt.
 
 
@@ -1197,17 +1215,7 @@ Overfull \hbox (1.9171pt too wide) in alignment at lines 17--90
  [] [] [] [] [] [] [] 
  []
 
-[32] [33]) [34]
-Overfull \hbox (33.23685pt too wide) in paragraph at lines 843--843
-[]\T1/lmr/m/n/10.95 alecjacobson. \T1/lmr/m/it/10.95 common-3d-test-models\T1/lmr/m/n/10.95 . URL: [][]$\T1/lmtt/m/n/10.95 https : / / github . com / alecjacobson /
- []
-
-
-Overfull \hbox (8.39067pt too wide) in paragraph at lines 843--843
-\T1/lmr/m/it/10.95 ning Re-po-si-to-ry\T1/lmr/m/n/10.95 . URL: [][]$\T1/lmtt/m/n/10.95 https : / / graphics . stanford . edu / data / 3Dscanrep/$[][]\T1/lmr/m/n/10.95 ,
- []
-
-[35
+[32] [33]) [34] [35
 
 ] (./main.aux)
  ***********
@@ -1221,18 +1229,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 29526 strings out of 474222
- 554275 string characters out of 5748733
+ 29800 strings out of 474222
+ 558949 string characters out of 5748733
  2326975 words of memory out of 5000000
- 51027 multiletter control sequences out of 15000+600000
+ 51285 multiletter control sequences out of 15000+600000
  640771 words of font info for 100 fonts, out of 8000000 for 9000
  1143 hyphenation exceptions out of 8191
- 108i,21n,107p,10943b,2371s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,21n,107p,10943b,2463s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi6.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type1/public/lm/lmss12.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (35 pages, 2725148 bytes).
+Output written on main.pdf (35 pages, 2725177 bytes).
 PDF statistics:
- 926 PDF objects out of 1000 (max. 8388607)
- 807 compressed objects within 9 object streams
+ 927 PDF objects out of 1000 (max. 8388607)
+ 808 compressed objects within 9 object streams
  382 named destinations out of 1000 (max. 500000)
  398 words of extra memory for PDF output out of 10000 (max. 10000000)
 
