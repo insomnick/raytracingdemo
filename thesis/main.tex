@@ -757,11 +757,6 @@ Ebenso entspricht $Speedup_{dynamic} > 1$ einer Verbesserung der kombinierten Me
     \caption{Kombinierter Speedup für Construction- und Traversal-Time \\ (k-way)}
     \label{fig:dynamic-k-way}
 \end{figure}
-Die Abbildung~\ref{fig:dynamic} zeigt den Traversal-Speedup für $k \in \{4, 8, 16\}$ und Tabelle~\ref{tab:dynamic} enthält die dazugehörigen Ergebnisse. 
-Für $k = 4$ gibt es in kleineren Szenen einen Vorteil gegenüber $k = 2$, der sich durch Speedup-Mittelwerten zwischen $1,03$ und $1,08$ ausdrückt. Für größere Szenen nimmt dieser Vorteil ab, womit der Speedup nahe an $1$ liegt, oder sogar teilweise leicht darunter fällt. 
-Für $k = 8$ ist der Speedup für das dynamische Modell wieder deutlich unter $1$ mit Mittelwerten, die sich typischerweise im Bereich von $0,71$ bis $0,86$ aufhalten.
-Für $k = 16$ gibt es weitere Geschwindigkeitseinbußen mit Mittelwerten für den Speedup zwischen $0,16$ und $0,30$.
-Zusammengefasst zeigt das dynamische Modell ähnliche Ergebnistrends, wie im Rahmen der ersten Forschungsfrage gezeigt. Insgesamt bleibt die BVH mit $k = 4$ die Performanteste Datenstruktur für die untersuchten Szenen, auch wenn ein Abfall für größere Szenen erkennbar ist.
 
 \begin{figure}[h]
     \centering
@@ -769,6 +764,17 @@ Zusammengefasst zeigt das dynamische Modell ähnliche Ergebnistrends, wie im Rah
     \caption{Kombinierter Speedup für Construction- und Traversal-Time \\ (collapse)}
     \label{fig:dynamic-collapse}
 \end{figure}
+
+Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:dynamic-k-way} und~\ref{fig:dynamic-collapse} \\ die Werte von $Speedup_{\text{comparison}}$ für $k \in \{2, 8, 16\}$, währen die zu Tabelle~\ref{tab:dynamic} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
+
+Für $k = 4$ zeigen sich für das überwiegend Verbesserungen für die kombinierte Qualitätsmetrik, allerdings existieren deutliche Unterschiede zwischen den beiden Wide BVH Konstruktionsmethoden. Für k-way splitting liegen die Mittelwerte für $Speedup_{dynamic}$ zwischen $0,987$ und $1,470$, während die Werte fürs collapsing mit $0,931$ bis $1,092$ näher an $1$ liegen.
+Ähnlich der Analyse im statischen Kontext ist der Median-Split bei Verwendung von collapsing mit Werten für $Speedup_{dynamic}$ von $0,931$ bis $0,962$ schlechter als die binäre Referenz, während die Werte für k-way splitting je nach Szene zwischen teils deutlicher Verbesserung mit $Speedup_{dynamic} = 1,236$ und leichter Verschlechterung mit $Speedup_{dynamic} = 0,987$ schwanken.
+
+Für $k = 8$ gibt es bei Verwendung von collapsing eine Verschlechterung der Gesamtzeit gegenüber $k = 2$ mit $Speedup_{dynamic}$ zwischen $0,605$ und $0,847$. Dagegen zeigt sich für k-way splitting ein gemischtes Bild, mit Speedup-Mittelwerten zwischen $0,731$ und $1,482$. Dabei gibt es im dynamischen Modell Fälle in denen $k = 8$ bessere Ergebnisse als die binäre Referenz produziert, vor allem unter verwendung von BSAH.
+
+Für $k = 16$ sind die Ergebnisse ähnlich $k = 8$, womit bei Nutzung von collapsing die Speedup-Werte zwischen $0,116$ und $0,258$ eine konstant schlechtere Zeit gegenüber der binären Referenz aufzeigen. Für k-way splitting liegen die Werte für $Speedup_{dynamic}$ zwischen $0,378$ und $1,251$, womit auch wieder hier in einzelnen Ausnahmen Verbesserungen gegenüber $k = 2$ auftreten, um genau zu sein unter Verwendung von BSAH.  
+
+Insgesamt schließen die Konfidenzintervalle aus der Tabelle~\ref{tab:dynamic} den Speedup-Wert $1$ wieder komplett aus. Dabei zeigt die Tabelle über alle Werte hinweg signifikante Ergebnisse. Zusammengefasst zeigt das dynamische Modell für $k = 4$ häufig eine Verbesserung der kombinierten Qualitätsmetrik, während für Verzweigungsgrade $k \ge 8$ für einzelne Modelle unter Nutzung von BSAH starke Verbesserungen gegenüber der binären Referenz aufzeigt werden können.
 
 \newpage
 
