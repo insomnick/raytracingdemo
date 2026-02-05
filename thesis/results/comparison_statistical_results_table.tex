@@ -1,10 +1,10 @@
-\begin{longtable}{llrlll}
-\caption{Statistical Analysis Results} \label{tab:comparison} \\
+\begin{longtable}{@{\extracolsep{\fill}}llrrlr}
+\caption{Comparison Statistical Results} \label{tab:comparison} \\
 \toprule
 Model & Algorithm & k & Speedup $\mu$ & Speedup CI & p \\
 \midrule
 \endfirsthead
-\caption[]{Statistical Analysis Results} \\
+\caption[]{Comparison Statistical Results} \\
 \toprule
 Model & Algorithm & k & Speedup $\mu$ & Speedup CI & p \\
 \midrule
@@ -15,40 +15,40 @@ Model & Algorithm & k & Speedup $\mu$ & Speedup CI & p \\
 \endfoot
 \bottomrule
 \endlastfoot
-armadillo & bsah & 4 & 0.996 & [0.989, 1.002] & 3.17e-01 \\
-stanford-bunny & bsah & 4 & 0.998 & [0.995, 1.001] & 2.82e-01 \\
-suzanne & bsah & 4 & 1.000 & [0.999, 1.001] & 9.17e-01 \\
-teapot & bsah & 4 & 1.001 & [1.000, 1.003] & 8.32e-02 \\
-armadillo & median & 4 & 1.000 & [0.999, 1.001] & 8.59e-01 \\
-stanford-bunny & median & 4 & 1.004 & [0.999, 1.011] & 3.61e-01 \\
-suzanne & median & 4 & 1.000 & [0.998, 1.001] & 4.51e-01 \\
-teapot & median & 4 & 1.000 & [0.998, 1.001] & 7.00e-01 \\
-armadillo & sah & 4 & 1.001 & [0.998, 1.003] & 6.64e-01 \\
-stanford-bunny & sah & 4 & 1.000 & [0.998, 1.002] & 9.84e-01 \\
-suzanne & sah & 4 & 1.001 & [1.000, 1.002] & 2.64e-01 \\
-teapot & sah & 4 & 1.000 & [0.999, 1.001] & 7.09e-01 \\
-armadillo & bsah & 8 & 1.001 & [1.000, 1.003] & 2.16e-01 \\
-stanford-bunny & bsah & 8 & 1.001 & [0.998, 1.005] & 6.28e-01 \\
-suzanne & bsah & 8 & 1.002 & [0.999, 1.006] & 3.62e-01 \\
-teapot & bsah & 8 & 1.001 & [1.000, 1.002] & 2.32e-01 \\
-armadillo & median & 8 & 1.001 & [1.000, 1.002] & 6.77e-02 \\
-stanford-bunny & median & 8 & 1.001 & [1.000, 1.002] & 2.94e-01 \\
-suzanne & median & 8 & 0.999 & [0.998, 1.000] & 2.47e-01 \\
-teapot & median & 8 & 1.000 & [0.999, 1.001] & 9.99e-01 \\
-armadillo & sah & 8 & 1.000 & [0.999, 1.001] & 8.13e-01 \\
-stanford-bunny & sah & 8 & 1.000 & [0.998, 1.002] & 8.89e-01 \\
-suzanne & sah & 8 & 1.000 & [0.999, 1.001] & 7.74e-01 \\
-teapot & sah & 8 & 0.999 & [0.998, 1.000] & 8.66e-02 \\
-armadillo & bsah & 16 & 1.000 & [0.998, 1.001] & 7.03e-01 \\
-stanford-bunny & bsah & 16 & 1.002 & [1.000, 1.004] & 9.08e-02 \\
-suzanne & bsah & 16 & 0.999 & [0.998, 1.000] & 2.10e-01 \\
-teapot & bsah & 16 & 1.000 & [0.998, 1.001] & 6.03e-01 \\
-armadillo & median & 16 & 1.000 & [0.999, 1.002] & 6.27e-01 \\
-stanford-bunny & median & 16 & 1.001 & [1.000, 1.002] & 1.81e-01 \\
-suzanne & median & 16 & 1.000 & [0.999, 1.001] & 5.89e-01 \\
-teapot & median & 16 & 1.000 & [0.999, 1.001] & 8.13e-01 \\
-armadillo & sah & 16 & 0.999 & [0.998, 1.001] & 4.44e-01 \\
-stanford-bunny & sah & 16 & 1.001 & [1.000, 1.002] & 6.51e-02 \\
-suzanne & sah & 16 & 1.001 & [1.000, 1.002] & 1.32e-01 \\
-teapot & sah & 16 & 1.000 & [0.999, 1.001] & 9.22e-01 \\
+Armadillo & bsah & 4 & 0.979 & [0.977, 0.981] & 1.54e-09*** \\
+Bunny & bsah & 4 & 0.948 & [0.946, 0.950] & 7.41e-16*** \\
+Suzanne & bsah & 4 & 0.992 & [0.991, 0.994] & 1.52e-08*** \\
+Teapot & bsah & 4 & 0.963 & [0.962, 0.965] & 1.39e-18*** \\
+Armadillo & median & 4 & 1.053 & [1.050, 1.055] & 3.05e-20*** \\
+Bunny & median & 4 & 1.085 & [1.083, 1.088] & 1.33e-19*** \\
+Suzanne & median & 4 & 1.283 & [1.281, 1.285] & 2.33e-32*** \\
+Teapot & median & 4 & 1.019 & [1.017, 1.021] & 9.25e-13*** \\
+Armadillo & sah & 4 & 0.995 & [0.993, 0.997] & 2.84e-04*** \\
+Bunny & sah & 4 & 0.971 & [0.970, 0.973] & 1.14e-17*** \\
+Suzanne & sah & 4 & 1.003 & [1.001, 1.006] & 1.79e-02* \\
+Teapot & sah & 4 & 1.056 & [1.054, 1.058] & 1.17e-19*** \\
+Armadillo & bsah & 8 & 1.215 & [1.214, 1.217] & 4.81e-34*** \\
+Bunny & bsah & 8 & 1.219 & [1.218, 1.221] & 4.90e-35*** \\
+Suzanne & bsah & 8 & 1.063 & [1.062, 1.064] & 8.63e-26*** \\
+Teapot & bsah & 8 & 1.121 & [1.120, 1.123] & 4.98e-25*** \\
+Armadillo & median & 8 & 1.478 & [1.474, 1.482] & 6.35e-34*** \\
+Bunny & median & 8 & 1.245 & [1.242, 1.247] & 4.91e-30*** \\
+Suzanne & median & 8 & 1.341 & [1.339, 1.344] & 8.98e-33*** \\
+Teapot & median & 8 & 1.198 & [1.196, 1.200] & 1.90e-27*** \\
+Armadillo & sah & 8 & 1.214 & [1.213, 1.216] & 4.37e-30*** \\
+Bunny & sah & 8 & 1.211 & [1.209, 1.213] & 5.83e-32*** \\
+Suzanne & sah & 8 & 1.054 & [1.053, 1.056] & 1.58e-23*** \\
+Teapot & sah & 8 & 1.125 & [1.124, 1.127] & 9.83e-28*** \\
+Armadillo & bsah & 16 & 5.919 & [5.911, 5.926] & 4.52e-29*** \\
+Bunny & bsah & 16 & 5.210 & [5.205, 5.216] & 6.43e-33*** \\
+Suzanne & bsah & 16 & 4.002 & [3.997, 4.008] & 1.53e-30*** \\
+Teapot & bsah & 16 & 3.543 & [3.534, 3.551] & 3.86e-37*** \\
+Armadillo & median & 16 & 6.052 & [6.041, 6.062] & 1.49e-26*** \\
+Bunny & median & 16 & 4.193 & [4.185, 4.202] & 4.12e-32*** \\
+Suzanne & median & 16 & 4.950 & [4.940, 4.959] & 1.35e-28*** \\
+Teapot & median & 16 & 2.461 & [2.456, 2.465] & 5.31e-31*** \\
+Armadillo & sah & 16 & 4.932 & [4.918, 4.941] & 4.94e-43*** \\
+Bunny & sah & 16 & 4.541 & [4.536, 4.546] & 5.12e-27*** \\
+Suzanne & sah & 16 & 3.564 & [3.559, 3.570] & 2.12e-25*** \\
+Teapot & sah & 16 & 2.714 & [2.711, 2.717] & 1.75e-48*** \\
 \end{longtable}

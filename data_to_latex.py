@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Gawrsh! This script converts CSV tables to LaTeX format!
-It reads all the CSV tables from results folders and creates beautiful LaTeX tables.
-Ah-hyuck, sometimes the tables whisper their secrets in the formatting...
+Converts statistical results CSV tables to LaTeX format.
+Produces three tables (static, comparison, dynamic) with consistent column formatting.
 """
 
 import pandas as pd
@@ -10,14 +9,11 @@ import argparse
 from pathlib import Path
 
 
-def format_p_value_with_stars(p_val_str):
-    """Format p-value strings with significance stars"""
-    # Handle case where p-value might already have stars
-    if '*' in str(p_val_str):
-        return str(p_val_str)
-
+def format_p_value(p_val_str):
+    """Format p-value strings with significance stars."""
+    clean = str(p_val_str).replace('*', '')
     try:
-        p_val = float(p_val_str)
+        p_val = float(clean)
         p_str = f"{p_val:.2e}"
         if p_val < 0.001:
             return f"{p_str}***"
@@ -31,151 +27,103 @@ def format_p_value_with_stars(p_val_str):
         return str(p_val_str)
 
 
-def process_csv_to_latex(csv_path, output_dir, table_config):
-    """Process a single CSV file to LaTeX format"""
-    print(f"Processing: {csv_path}")
+def format_ci(ci_min, ci_max):
+    """Format confidence interval as [CI-Min, CI-Max]."""
+    return f"[{ci_min:.3f}, {ci_max:.3f}]"
 
-    try:
-        df = pd.read_csv(csv_path)
-    except Exception as e:
-        print(f"Error reading {csv_path}: {e}")
-        return
 
-    if df.empty:
-        print(f"Empty CSV file: {csv_path}")
-        return
+def capitalize_model_name(name):
+    """Capitalize model names for display (e.g., 'stanford-bunny' -> 'Bunny')."""
+    if pd.isna(name):
+        return name
+    return str(name).split('-')[-1].capitalize()
 
-    # Apply table-specific formatting
-    formatted_df = df.copy()
 
-    # Format p-values if they exist
-    if 'p-value' in formatted_df.columns:
-        formatted_df['p-value'] = formatted_df['p-value'].apply(format_p_value_with_stars)
+def process_table(csv_path, table_type):
+    """Process a single CSV file into a formatted DataFrame."""
+    df = pd.read_csv(csv_path)
 
-    # Format numeric columns BEFORE deleting them
-    # round speedup columns to 3 decimal places
-    for col in formatted_df.columns:
-        if 'Speedup' in col:
-            formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:.3f}" if pd.notnull(x) else x)
+    p_col = 'p-value' if 'p-value' in df.columns else None
 
-    # round time columns to 4 decimal places
-    for col in formatted_df.columns:
-        if 'Time' in col:
-            formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:.4f}" if pd.notnull(x) else x)
+    out = pd.DataFrame()
+    out['Model'] = df['Model'].apply(capitalize_model_name)
+    out['Algorithm'] = df['Algorithm']
+    out['k'] = df['k']
 
-    # Escape % symbols for LaTeX in column names
-    for col in formatted_df.columns:
-        if '% Change' in col or 'Change' in col:
-            formatted_df = formatted_df.rename(columns={col: col.replace('%', '\\%')})
+    # Static and dynamic have a Type column; comparison does not
+    if table_type != 'comparison' and 'type' in df.columns:
+        out['Type'] = df['type']
 
-    # Delete unwanted columns AFTER formatting
-    # delete t-statistic column if it exists
-    if 't-statistic' in formatted_df.columns:
-        formatted_df = formatted_df.drop(columns=['t-statistic'])
-
-    # delete Time columns (but keep formatted ones if needed)
-    cols_to_drop = []
-    for col in formatted_df.columns:
-        if 'Time' in col:
-            cols_to_drop.append(col)
-    if cols_to_drop:
-        formatted_df = formatted_df.drop(columns=cols_to_drop)
-
-    # delete percentage change columns
-    cols_to_drop = []
-    for col in formatted_df.columns:
-        if '\\% Change' in col or '% Change' in col:
-            cols_to_drop.append(col)
-    if cols_to_drop:
-        formatted_df = formatted_df.drop(columns=cols_to_drop)
-
-    # Generate LaTeX
-    latex_table = formatted_df.to_latex(
-        index=False,
-        escape=False,
-        longtable=True,
-        caption=table_config['caption'],
-        label=table_config['label'],
-        column_format=table_config.get('column_format', None)
+    out['Speedup $\\mu$'] = df['Speedup'].apply(lambda x: f"{x:.3f}")
+    out['Speedup CI'] = df.apply(
+        lambda row: format_ci(row['Speedup CI Min'], row['Speedup CI Max']), axis=1
     )
 
-    # Save individual LaTeX file with folder prefix
-    folder_name = csv_path.parent.name
-    if folder_name != "results":
-        latex_filename = f"{folder_name}_{csv_path.stem}.tex"
-    else:
-        latex_filename = f"{csv_path.stem}.tex"
-    latex_path = output_dir / latex_filename
+    if p_col:
+        out['p'] = df[p_col].apply(format_p_value)
 
-    with open(latex_path, 'w') as f:
-        f.write(latex_table)
-
-    print(f"LaTeX table saved to: {latex_path}")
-
-    return {
-        'name': csv_path.stem,
-        'caption': table_config['caption'],
-        'latex_content': latex_table,
-        'section_title': table_config['section_title']
-    }
+    return out
 
 
-def create_consolidated_latex_document(table_data, output_dir):
-    latex_file = output_dir / "all_tables_consolidated.tex"
+def df_to_longtable(df, caption, label, table_type):
+    """Convert a DataFrame to a LaTeX longtable string."""
+    n_cols = len(df.columns)
+    # Build column format: l for text, r for numeric
+    col_fmt = '@{\\extracolsep{\\fill}}'
+    for col in df.columns:
+        if col in ('k',):
+            col_fmt += 'r'
+        elif col in ('Speedup $\\mu$', 'p'):
+            col_fmt += 'r'
+        else:
+            col_fmt += 'l'
 
-    with open(latex_file, 'w') as f:
-        # Write LaTeX document header
-        f.write("\\documentclass{article}\n")
-        f.write("\\usepackage[utf8]{inputenc}\n")
-        f.write("\\usepackage{booktabs}\n")
-        f.write("\\usepackage{longtable}\n")
-        f.write("\\usepackage{geometry}\n")
-        f.write("\\geometry{margin=0.8in}\n")
-        f.write("\\usepackage{rotating}\n")
-        f.write("\\usepackage{pdflscape}\n")
-        f.write("\\begin{document}\n\n")
-        f.write("\\title{BVH Analysis Results - All Tables}\n")
-        f.write("\\author{Generated by data\\_to\\_latex.py}\n")
-        f.write("\\date{\\today}\n")
-        f.write("\\maketitle\n\n")
-        f.write("\\tableofcontents\n")
-        f.write("\\clearpage\n\n")
+    header = ' & '.join(df.columns) + ' \\\\'
 
-        # Write each table as a section
-        for table_info in table_data:
-            f.write(f"\\section{{{table_info['section_title']}}}\n")
-            f.write(table_info['latex_content'])
-            f.write("\n\\clearpage\n\n")
+    lines = []
+    lines.append(f'\\begin{{longtable}}{{{col_fmt}}}')
+    lines.append(f'\\caption{{{caption}}} \\label{{tab:{label}}} \\\\')
+    lines.append('\\toprule')
+    lines.append(header)
+    lines.append('\\midrule')
+    lines.append('\\endfirsthead')
+    lines.append(f'\\caption[]{{{caption}}} \\\\')
+    lines.append('\\toprule')
+    lines.append(header)
+    lines.append('\\midrule')
+    lines.append('\\endhead')
+    lines.append('\\midrule')
+    lines.append(f'\\multicolumn{{{n_cols}}}{{r}}{{Continued on next page}} \\\\')
+    lines.append('\\midrule')
+    lines.append('\\endfoot')
+    lines.append('\\bottomrule')
+    lines.append('\\endlastfoot')
 
-        f.write("\\end{document}\n")
+    for _, row in df.iterrows():
+        row_str = ' & '.join(str(v) for v in row.values) + ' \\\\'
+        lines.append(row_str)
 
-    print(f"Consolidated LaTeX document saved to: {latex_file}")
+    lines.append('\\end{longtable}')
+    return '\n'.join(lines) + '\n'
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Convert CSV tables to LaTeX format - Ah-hyuck!")
+    parser = argparse.ArgumentParser(description="Convert CSV tables to LaTeX format")
     parser.add_argument(
         "--results_dir",
         type=Path,
-        help="Path to results directory containing CSV files"
+        help="Path to results directory containing static/, comparison/, dynamic/ subdirs"
     )
     parser.add_argument(
         "--output_dir",
         type=Path,
         help="Output directory for LaTeX files (default: same as results_dir)"
     )
-    parser.add_argument(
-        "--pattern",
-        type=str,
-        default="*table*.csv",
-        help="File pattern to match CSV files (default: *table*.csv)"
-    )
 
     args = parser.parse_args()
 
     # Find results directory automatically if not specified
     if not args.results_dir:
-        # Look for the most recent results directory
         base_dir = Path(".")
         possible_dirs = list(base_dir.glob("**/results"))
         if possible_dirs:
@@ -192,78 +140,32 @@ def main():
         print(f"Results directory not found: {results_dir}")
         return
 
-    # Create output directory if it doesn't exist
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Define table configurations
-    table_configs = {
-        'statistical': {
-            'caption': 'Statistical Analysis Results',
-            'label': 'tab:statistical',
-            'section_title': 'Statistical Analysis'
-        },
-        'comparison': {
-            'caption': 'Algorithm Comparison Results',
-            'label': 'tab:comparison',
-            'section_title': 'Algorithm Comparison'
-        },
-        'dynamic': {
-            'caption': 'Dynamic Analysis Results',
-            'label': 'tab:dynamic',
-            'section_title': 'Dynamic Analysis'
-        },
-        'detailed': {
-            'caption': 'Detailed Quality Analysis Results',
-            'label': 'tab:detailed',
-            'section_title': 'Detailed Quality Analysis'
-        }
-    }
+    # Table definitions: (subdir, table_type, caption, label)
+    tables = [
+        ('static', 'static', 'Static Statistical Results', 'static'),
+        ('comparison', 'comparison', 'Comparison Statistical Results', 'comparison'),
+        ('dynamic', 'dynamic', 'Dynamic Statistical Results', 'dynamic'),
+    ]
 
-    # Find CSV files recursively in all subdirectories
-    csv_files = list(results_dir.rglob(args.pattern))
-    if not csv_files:
-        print(f"No CSV files found matching pattern '{args.pattern}' in {results_dir} or its subdirectories")
-        return
+    for subdir, table_type, caption, label in tables:
+        csv_path = results_dir / subdir / 'statistical_results_table.csv'
+        if not csv_path.exists():
+            # Try flat structure
+            csv_path = results_dir / f'{subdir}_statistical_results_table.csv'
+        if not csv_path.exists():
+            print(f"Skipping {table_type}: CSV not found")
+            continue
 
-    print(f"Found {len(csv_files)} CSV files to process:")
-    for csv_file in csv_files:
-        print(f"  - {csv_file.name}")
+        print(f"Processing: {csv_path}")
+        df = process_table(csv_path, table_type)
+        latex = df_to_longtable(df, caption, label, table_type)
 
-    # Process each CSV file
-    processed_tables = []
-
-    for csv_file in csv_files:
-        # Get the folder name to determine table type
-        folder_name = csv_file.parent.name
-        relative_path = csv_file.relative_to(results_dir)
-
-        # Try to match with known table types based on folder name
-        table_config = None
-        for config_key, config in table_configs.items():
-            if config_key in folder_name or config_key in csv_file.stem:
-                table_config = config
-                break
-
-        # Use default config if no match found
-        if not table_config:
-            # Include folder info in the title for better identification
-            folder_info = f" - {folder_name}" if folder_name != "results" else ""
-            table_config = {
-                'caption': f'Analysis Results Table: {csv_file.stem.replace("_", " ").title()}{folder_info}',
-                'label': f'tab:{csv_file.stem}_{folder_name}',
-                'section_title': f'{csv_file.stem.replace("_", " ").title()}{folder_info}'
-            }
-
-        table_info = process_csv_to_latex(csv_file, output_dir, table_config)
-        if table_info:
-            processed_tables.append(table_info)
-
-    # Create consolidated document
-    if processed_tables:
-        create_consolidated_latex_document(processed_tables, output_dir)
-        print(f"Individual LaTeX files and consolidated document saved to: {output_dir}")
-    else:
-        print("No tables were processed successfully.")
+        out_path = output_dir / f'{table_type}_statistical_results_table.tex'
+        with open(out_path, 'w') as f:
+            f.write(latex)
+        print(f"  Saved: {out_path}")
 
 
 if __name__ == "__main__":

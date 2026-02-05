@@ -13,12 +13,11 @@ plt.ioff()
 
 # Helper function to capitalize model names
 def capitalize_model_name(name):
-    """Capitalize model names for display (e.g., 'stanford-bunny' -> 'Stanford-Bunny')."""
+    """Capitalize model names for display (e.g., 'stanford-bunny' -> 'Bunny')."""
     if pd.isna(name):
         return name
     # Split on hyphen, capitalize each part, rejoin
-    parts = str(name).split('-')
-    return '-'.join(part.capitalize() for part in parts)
+    return str(name).split('-')[-1].capitalize()
 
 # Color scheme: similar colors for same algorithm, different shades for types
 COLOR_SCHEME = {
@@ -357,13 +356,19 @@ def create_rq1_heatmap_model_algo_grid(df: pd.DataFrame, output_path: Path, resu
                 sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='RdYlGn',
                             center=1.0, vmin=vmin, vmax=vmax,
                             cbar=cbar, cbar_kws=cbar_kws,
+                            annot_kws={'fontsize': 20, 'fontweight': 'bold'},
                             linewidths=1, linecolor='gray', ax=axes[idx])
 
-                axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=11)
+                axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=16)
+                axes[idx].tick_params(labelsize=14)
                 if idx == 0:
-                    axes[idx].set_ylabel('Model', fontsize=11)
+                    axes[idx].set_ylabel('Model', fontsize=16)
                 else:
                     axes[idx].set_ylabel('')
+                if cbar:
+                    cbar_obj = axes[idx].collections[0].colorbar
+                    cbar_obj.ax.tick_params(labelsize=14)
+                    cbar_obj.set_label('Speedup Factor', fontsize=16)
 
             fig.tight_layout()
 
@@ -406,13 +411,19 @@ def create_rq1_heatmap_model_algo_grid(df: pd.DataFrame, output_path: Path, resu
             sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='RdYlGn',
                         center=1.0, vmin=vmin, vmax=vmax,
                         cbar=cbar, cbar_kws=cbar_kws,
+                        annot_kws={'fontsize': 20, 'fontweight': 'bold'},
                         linewidths=1, linecolor='gray', ax=axes[idx])
 
-            axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=11)
+            axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=16)
+            axes[idx].tick_params(labelsize=14)
             if idx == 0:
-                axes[idx].set_ylabel('Model', fontsize=11)
+                axes[idx].set_ylabel('Model', fontsize=16)
             else:
                 axes[idx].set_ylabel('')
+            if cbar:
+                cbar_obj = axes[idx].collections[0].colorbar
+                cbar_obj.ax.tick_params(labelsize=14)
+                cbar_obj.set_label('Speedup Factor', fontsize=16)
 
         fig.tight_layout()
 
@@ -452,13 +463,19 @@ def create_rq1_heatmap_model_algo_grid(df: pd.DataFrame, output_path: Path, resu
             sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='RdYlGn',
                         center=1.0, vmin=vmin, vmax=vmax,
                         cbar=cbar, cbar_kws=cbar_kws,
+                        annot_kws={'fontsize': 20, 'fontweight': 'bold'},
                         linewidths=1, linecolor='gray', ax=axes[idx])
 
-            axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=11)
+            axes[idx].set_xlabel(f'Algorithm (k={k_val})', fontsize=16)
+            axes[idx].tick_params(labelsize=14)
             if idx == 0:
-                axes[idx].set_ylabel('Model', fontsize=11)
+                axes[idx].set_ylabel('Model', fontsize=16)
             else:
                 axes[idx].set_ylabel('')
+            if cbar:
+                cbar_obj = axes[idx].collections[0].colorbar
+                cbar_obj.ax.tick_params(labelsize=14)
+                cbar_obj.set_label('Speedup Factor', fontsize=16)
 
         fig.tight_layout()
         output_path.parent.mkdir(parents=True, exist_ok=True)
