@@ -113,7 +113,7 @@ def aggregate_data(df):
     return aggregated
 
 def create_stacked_bar_chart(df):
-    algorithms = ['median-2', 'median-4', 'median-8', 'median-16']
+    algorithms = ['median-2', 'median-c-4', 'median-c-8', 'median-c-16']
 
     filtered_df = df[df['algorithm_name'].isin(algorithms)]
 
@@ -185,12 +185,10 @@ def create_stacked_bar_chart(df):
                     ha='center', va='bottom', fontweight='bold', fontsize=11,
                     bbox=dict(boxstyle='round,pad=0.3', facecolor='lightgray', alpha=0.7))
 
-    ax.set_xlabel('BVH Construction Algorithm (Median)', fontsize=12, fontweight='bold')
-    ax.set_ylabel('Number of Intersection Tests per Frame', fontsize=12, fontweight='bold')
-    ax.set_title('Ray-BVH Intersection Tests Analysis(Stanford Bunny)',
-                fontsize=14, fontweight='bold', pad=20)
+    ax.set_xlabel('Branching Factor k (Median, collapse)', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Intersection Tests per Frame', fontsize=12, fontweight='bold')
     ax.set_xticks(x)
-    ax.set_xticklabels(algorithms)
+    ax.set_xticklabels(['2', '4', '8', '16'])
 
     # Format y-axis to show thousands separator
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{int(x):,}'))
@@ -223,37 +221,6 @@ def print_detailed_summary(df):
     )
 
     pivot_df = pivot_df.reindex(algorithms)
-
-    print("\n" + "="*90)
-    print("DETAILED RAY-BVH INTERSECTION TEST SUMMARY")
-    print("="*90)
-    print(f"{'Algorithm':<12} {'AABB Pos':<12} {'AABB Neg':<12} {'AABB Total':<12} {'TRI Tests':<12} {'Total Tests':<12}")
-    print("-"*90)
-
-    for algorithm in algorithms:
-        aabb_pos = int(pivot_df.loc[algorithm, 'aabb_pos']) if 'aabb_pos' in pivot_df.columns else 0
-        aabb_neg = int(pivot_df.loc[algorithm, 'aabb_neg']) if 'aabb_neg' in pivot_df.columns else 0
-        aabb_total = aabb_pos + aabb_neg
-
-        # Check for combined aabb count if pos/neg not available
-        if aabb_total == 0 and 'aabb' in pivot_df.columns:
-            aabb_total = int(pivot_df.loc[algorithm, 'aabb'])
-            aabb_pos = aabb_total  # Treat as positive for display
-            aabb_neg = 0
-
-        tri_count = int(pivot_df.loc[algorithm, 'tri']) if 'tri' in pivot_df.columns else 0
-        total_count = aabb_total + tri_count
-
-        print(f"{algorithm:<12} {aabb_pos:<12,} {aabb_neg:<12,} {aabb_total:<12,} {tri_count:<12,} {total_count:<12,}")
-
-    print("-"*90)
-    print("Notes:")
-    print("- AABB Pos: Successful bounding box intersection tests (rays that hit the box)")
-    print("- AABB Neg: Failed bounding box tests (rays that miss the box)")
-    print("- TRI Tests: Actual triangle intersection tests (most expensive)")
-    print("- Lower total counts indicate better BVH spatial partitioning efficiency")
-    print("- SAH = Surface Area Heuristic with different bucket counts (2, 4, 8, 16)")
-    print("="*90)
 
 def main():
     print("Searching for ray data files...")

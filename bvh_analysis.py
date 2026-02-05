@@ -155,6 +155,10 @@ def detailed_quality_analysis(df, baseline_filter, metric, results_dir) -> pd.Da
 
                     ci_low, ci_high = bootstrap_ci_speedup(baseline_times, test_times, 20000, alpha=alpha, random_state=42)
 
+                    # Capture construction times for dynamic analysis
+                    baseline_construction_mean = baseline_data['construction_time'].mean()
+                    test_construction_mean = test_data['construction_time'].mean()
+
                     results_summary.append({
                         'model': model,
                         'algorithm_prefix': algorithm_prefix,
@@ -162,6 +166,8 @@ def detailed_quality_analysis(df, baseline_filter, metric, results_dir) -> pd.Da
                         'type': algorithm_type,
                         'baseline_mean': baseline_mean,
                         'test_mean': test_mean,
+                        'baseline_construction_time': baseline_construction_mean,
+                        'test_construction_time': test_construction_mean,
                         'speedup_factor': speedup_factor,
                         'speedup_factor_ci_low': ci_low,
                         'speedup_factor_ci_high': ci_high,
@@ -366,6 +372,10 @@ def create_detailed_results_table(results_df, results_dir: Path, column_mapping)
     # Round numerical values for better presentation
     formatted_df['baseline_mean'] = formatted_df['baseline_mean'].round(5)
     formatted_df['test_mean'] = formatted_df['test_mean'].round(5)
+    if 'baseline_construction_time' in formatted_df.columns:
+        formatted_df['baseline_construction_time'] = formatted_df['baseline_construction_time'].round(5)
+    if 'test_construction_time' in formatted_df.columns:
+        formatted_df['test_construction_time'] = formatted_df['test_construction_time'].round(5)
     formatted_df['speedup_factor'] = formatted_df['speedup_factor'].round(5)
     formatted_df['speedup_factor_ci_low'] = formatted_df['speedup_factor_ci_low'].round(5)
     formatted_df['speedup_factor_ci_high'] = formatted_df['speedup_factor_ci_high'].round(5)
@@ -537,10 +547,13 @@ def main():
         'degree': 'k',
         'type': 'type',
         'baseline_mean': 'k=2 Time (s)',
-        'test_mean': f'k=X Time (s)',
+        'test_mean': 'k=X Time (s)',
+        'baseline_construction_time': 'C-Time k=2 (s)',
+        'test_construction_time': 'C-Time k=X (s)',
         'speedup_factor': 'Speedup',
         'speedup_factor_ci_low': 'Speedup CI Min',
-        'speedup_factor_ci_high': 'Speedup CI Max',        'percent_change': '% Change',
+        'speedup_factor_ci_high': 'Speedup CI Max',
+        'percent_change': '% Change',
         't_stat': 't-statistic',
         'p_value_with_stars': 'p-value',
     }

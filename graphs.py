@@ -524,45 +524,174 @@ def create_rq2_grouped_bar(df: pd.DataFrame, output_path: Path):
     print(f"  Saved: {output_path}")
 
 
-def create_scaling_plot(df: pd.DataFrame, output_path: Path, result_type: str):
+# Color scheme for k values
+K_COLOR_SCHEME = {
+    2: '#1f77b4',   # Blue
+    4: '#ff7f0e',   # Orange
+    8: '#2ca02c',   # Green
+    16: '#d62728',  # Red
+}
+
+# Marker scheme for algorithms
+ALGO_MARKER_SCHEME = {
+    'median': 'o',  # Circle
+    'bsah': 's',    # Square
+    'sah': '^',     # Triangle
+}
+
+
+def create_dynamic_construction_vs_traversal_scatter(df: pd.DataFrame, output_path: Path, filter_type: str = None):
     """
-    Cross-cutting: Log-log plot of time vs polygon count.
+    Create scatter plot with construction time on x-axis and traversal time on y-axis.
+    One point per (algorithm, k) combination, averaged across models.
+    Points with the same k are colored the same.
+
+    Args:
+        df: DataFrame with dynamic results
+        output_path: Path to save the graph
+        filter_type: 'k-way', 'collapsed', or None for combined
     """
-    # For static/dynamic results, use 'k=X Time (s)'
-    # For comparison results, average k-way and collapsed times
-    if 'k=X Time (s)' in df.columns:
-        time_col = 'k=X Time (s)'
-    elif 'k-way Time (s)' in df.columns and 'collapsed Time (s)' in df.columns:
-        # For comparison: average the two
-        df = df.copy()
-        df['avg_time'] = (df['k-way Time (s)'] + df['collapsed Time (s)']) / 2
-        time_col = 'avg_time'
-    else:
-        print(f"  Cannot find time column for scaling plot")
+    # Check required columns exist
+    required_cols = ['k=2 Time (s)', 'k=X Time (s)', 'C-Time k=2 (s)', 'C-Time k=X (s)', 'Algorithm', 'k']
+    for col in required_cols:
+        if col not in df.columns:
+            print(f"  Missing column '{col}', skipping construction vs traversal scatter")
+            return
+
+    # Build a unified dataset with all k values
+    # Each row in df compares k=2 vs k=X, so we need to extract both
+    data_points = []
+
+    # Get unique algorithms
+    algorithms = df['Algorithm'].unique()
+
+    # First, extract k=2 data (baseline) - only from k-way rows since k=2 has no collapsed
+    # We take k=2 data once per algorithm (it's the same across all k comparisons)
+    for algo in algorithms:
+        algo_df = df[df['Algorithm'] == algo]
+
+        # For k=2, use the baseline columns, averaged across all models
+        # Filter by type if needed (but k=2 is always k-way effectively)
+        if filter_type == 'collapsed':
+            # k=2 doesn't have collapsed, so skip k=2 for collapsed graph
+            pass
+        else:
+            # For k-way or combined, include k=2
+            k2_construction = algo_df['C-Time k=2 (s)'].mean()
+            k2_combined = algo_df['k=2 Time (s)'].mean()
+            k2_traversal = k2_combined - k2_construction
+
+            data_points.append({
+                'Algorithm': algo,
+                'k': 2,
+                'construction_time': k2_construction,
+                'traversal_time': k2_traversal,
+                'type': 'k-way'  # k=2 is effectively k-way
+            })
+
+    # Now extract k=X data (4, 8, 16)
+    k_values = sorted([k for k in df['k'].unique() if k != 2])
+
+    for k_val in k_values:
+        k_df = df[df['k'] == k_val]
+
+        for algo in algorithms:
+            algo_k_df = k_df[k_df['Algorithm'] == algo]
+
+            if filter_type is not None:
+                # Filter by type
+                algo_k_df = algo_k_df[algo_k_df['type'] == filter_type]
+
+            if len(algo_k_df) == 0:
+                continue
+
+            # Average across models
+            construction = algo_k_df['C-Time k=X (s)'].mean()
+            combined = algo_k_df['k=X Time (s)'].mean()
+            traversal = combined - construction
+
+            # For combined graph, we average k-way and collapsed together
+            # (this is already handled by not filtering)
+            data_points.append({
+                'Algorithm': algo,
+                'k': k_val,
+                'construction_time': construction,
+                'traversal_time': traversal,
+                'type': filter_type if filter_type else 'combined'
+            })
+
+    if len(data_points) == 0:
+        print(f"  No data points for construction vs traversal scatter")
         return
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    plot_df = pd.DataFrame(data_points)
 
-    k_values = sorted(df['k'].unique())
-    colors = plt.cm.viridis(np.linspace(0, 1, len(k_values)))
+    # Create the scatter plot
+    fig, ax = plt.subplots(figsize=(10, 7))
 
-    for k_val, color in zip(k_values, colors):
-        k_data = df[df['k'] == k_val]
+    # Plot each (algorithm, k) combination
+    for _, row in plot_df.iterrows():
+        k_val = row['k']
+        algo = row['Algorithm']
 
-        # Average over algorithms/types
-        plot_data = k_data.groupby(['Model', 'polygon_count'])[time_col].mean().reset_index()
-        plot_data = plot_data.sort_values('polygon_count')
+        color = K_COLOR_SCHEME.get(k_val, '#333333')
+        marker = ALGO_MARKER_SCHEME.get(algo, 'o')
 
-        ax.plot(plot_data['polygon_count'], plot_data[time_col],
-                marker='o', linewidth=2, markersize=8,
-                label=f"k={k_val}", color=color)
+        ax.scatter(
+            row['construction_time'],
+            row['traversal_time'],
+            c=color,
+            marker=marker,
+            s=150,
+            edgecolors='black',
+            linewidths=1,
+            alpha=0.8,
+            zorder=3
+        )
 
-    ax.set_xlabel('Polygon Count', fontsize=12)
-    ax.set_ylabel('Time (s)', fontsize=12)
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.grid(True, alpha=0.3, which='both')
-    ax.legend(loc='best', fontsize=10)
+        # Add label next to point
+        ax.annotate(
+            f"{algo}",
+            (row['construction_time'], row['traversal_time']),
+            xytext=(5, 5),
+            textcoords='offset points',
+            fontsize=8,
+            alpha=0.7
+        )
+
+    # Create legend for k values (colors)
+    k_handles = []
+    for k_val in sorted(plot_df['k'].unique()):
+        color = K_COLOR_SCHEME.get(k_val, '#333333')
+        handle = plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color,
+                           markersize=10, label=f'k={k_val}', markeredgecolor='black')
+        k_handles.append(handle)
+
+    # Create legend for algorithms (markers)
+    algo_handles = []
+    for algo in sorted(plot_df['Algorithm'].unique()):
+        marker = ALGO_MARKER_SCHEME.get(algo, 'o')
+        handle = plt.Line2D([0], [0], marker=marker, color='w', markerfacecolor='gray',
+                           markersize=10, label=algo, markeredgecolor='black')
+        algo_handles.append(handle)
+
+    # Add both legends
+    legend1 = ax.legend(handles=k_handles, title='Branching Factor', loc='upper left')
+    ax.add_artist(legend1)
+    ax.legend(handles=algo_handles, title='Algorithm', loc='upper right')
+
+    # Configure axes
+    ax.set_xlabel('Construction Time (s)', fontsize=12)
+    ax.set_ylabel('Traversal Time (s)', fontsize=12)
+    ax.grid(True, alpha=0.3)
+
+    # Set title based on filter type
+    if filter_type == 'k-way':
+        ax.set_title('Construction vs Traversal Time (k-way)', fontsize=14)
+    elif filter_type == 'collapsed':
+        ax.set_title('Construction vs Traversal Time (collapsed)', fontsize=14)
+    else:
+        ax.set_title('Construction vs Traversal Time (combined average)', fontsize=14)
 
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -614,14 +743,15 @@ def create_extended_graphs(result_dir: Path, polygon_df: pd.DataFrame, testrun_d
         if 'type' in results_df.columns:
             create_rq2_grouped_bar(results_df, extended_dir / "rq2_kway_vs_collapsed.png")
 
-    # RQ3 graphs - only for dynamic (TODO: need raw data)
+    # RQ3 graphs - only for dynamic
     if result_dir.name == 'dynamic':
-        # create_rq3_stacked_bar(results_df, extended_dir / "rq3_stacked_bar.png")
-        # create_rq3_scatter(results_df, extended_dir / "rq3_scatter.png")
-        pass
-
-    # Scaling plot for all types
-    create_scaling_plot(results_df, extended_dir / "scaling_plot.png", result_dir.name)
+        # Construction vs Traversal scatter plots
+        create_dynamic_construction_vs_traversal_scatter(
+            results_df, extended_dir / "construction_vs_traversal_kway.png", filter_type='k-way')
+        create_dynamic_construction_vs_traversal_scatter(
+            results_df, extended_dir / "construction_vs_traversal_collapsed.png", filter_type='collapsed')
+        create_dynamic_construction_vs_traversal_scatter(
+            results_df, extended_dir / "construction_vs_traversal_combined.png", filter_type=None)
 
 
 def main():
