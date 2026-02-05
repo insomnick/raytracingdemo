@@ -98,8 +98,11 @@ Zweitgutachter:in:& Dr. Markus Brenneis\\ % Namen eintragen
 
 \maketitle
 
+\chapter*{Hinweise zu verwendeten Hilfsmitteln}
+Für Teile des Entstehungsprozesses dieser Arbeit wurden Large-Language-Models (Sonnet 4.5, Opus 4.5, GPT 5.2) verwendet. Dies geschah im Rahmen von Programmierunterstützung und sprachlichen Glättung, sowie Strukturierung des schriftlichen Teils.
+
 \chapter*{Selbstständigkeitserklärung}
-Hiermit erkläre ich, die vorliegende Bachelorarbeit selbstständig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel verwendet zu haben. Alle Stellen, die aus Quellen entnommen wurden, sind als solche kenntlich gemacht worden. Diese Arbeit hat in gleicher oder ähnlicher Form noch keiner anderen Prüfungsbehörde vorgelegen. 
+Hiermit erkläre ich, die vorliegende Bachelorarbeit selbstständig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel verwendet zu haben. Alle Stellen, die aus Quellen entnommen wurden, sind als solche kenntlich gemacht worden. Diese Arbeit hat in gleicher oder ähnlicher Form noch keiner anderen Prüfungsbehörde vorgelegen.
 
 \vspace{2cm}
 \noindent Ort, Datum \hfill Unterschrift
@@ -485,7 +488,7 @@ end function
 Der Median-Split ist die einfachste Variante einer Split-Funtion. Die Menge der Primitives wird in, vom Verzweigungsgrad abhängige, gleichgroße Teile gespalten. Dafür wird die Menge der Primitives $n$ durch den Verzweigungsgrad geteilt um die Größe einer Teilmenge zu bestimmen. Vielfache dieser Zahl innerhalb des Intervalls $(0, n)$ werden als Indizes für das Splitting verwendet. Allerdings muss dafür noch die Menge an Primitives, entlang der gegebenen Achse, partiell Sortiert werden, sodass für alle Indizes gilt, dass der Mittelpunkt der Position der Primitives links des Index kleiner sind als die rechts des Indexes.   
 
 \begin{lstlisting}[style=codestyle,caption={Median Partition}]
-function medianSplit(primitives, axis, degree):    //O(n)
+function medianSplit(primitives, axis, degree):
     count := primitives.size()
     splitIndices := empty list
 
@@ -519,7 +522,7 @@ Dabei beschreibt $Area(\cdot)$ den Oberflächeninhalt der AABB der Teilmenge. Ge
 Für Wide BVHs wird dieser Vorgang greedily mehrfach wiederholt, bis der gewünschte Verzweigungsgrad erreicht ist. Dafür wird das Segment, bzw. die Teilmenge an Primitives für den Algorithmus berücksichtig, welches die aktuell höchsten SAH-Kosten entstehen lässt. Insgesamt entstehen dadurch $k - 1$ Split-Indizes, die $k$ Teilmengen definieren. 
 
 \begin{lstlisting}[style=codestyle,caption={Surface Area Heuristic Partition},mathescape]
-function sahSplit(primitives, axis, degree):   //O(n * log(n))
+function sahSplit(primitives, axis, degree):
 
     count := primitives.size()
     if isLeaf(count, degree) then
@@ -574,7 +577,7 @@ c(j) = Area(\mathrm{AABB}(Bins_{\le j})) \cdot |P_{\le j}| + Area(\mathrm{AABB}(
 Die Kosten für alle möglichen Splits können in diesem Fall in $O(b)$ statt $O(n)$ ausgewertet werden. Analog zum SAH-Split wird dieser Vorgang greedily wiederholt und das teuerste Segment gesplittet. Zuletzt werden die errechneten Split-Indizes für die Bins in absolute Indizes umgerechnet und zurückgegeben.
 
 \begin{lstlisting}[style=codestyle,caption={Binned Surface Area Heuristic Partition},mathescape]
-    function binnedSahSplit(primitives, axis, degree):   //O(n * log(n))
+    function binnedSahSplit(primitives, axis, degree): 
     
         Bin_SIZE := 16  // b
 
