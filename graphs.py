@@ -675,23 +675,24 @@ def create_dynamic_construction_vs_traversal_scatter(df: pd.DataFrame, output_pa
                            markersize=10, label=algo, markeredgecolor='black')
         algo_handles.append(handle)
 
-    # Add both legends
-    legend1 = ax.legend(handles=k_handles, title='Branching Factor', loc='upper left')
+    # Add both legends side by side in the upper right corner
+    legend1 = ax.legend(handles=k_handles, title='Branching Factor', loc='upper right',
+                        bbox_to_anchor=(0.88, 1.0))
     ax.add_artist(legend1)
-    ax.legend(handles=algo_handles, title='Algorithm', loc='upper right')
+    legend2 = ax.legend(handles=algo_handles, title='Algorithm', loc='upper right')
 
     # Configure axes
     ax.set_xlabel('Construction Time (s)', fontsize=12)
     ax.set_ylabel('Traversal Time (s)', fontsize=12)
     ax.grid(True, alpha=0.3)
 
-    # Set title based on filter type
-    if filter_type == 'k-way':
-        ax.set_title('Construction vs Traversal Time (k-way)', fontsize=14)
-    elif filter_type == 'collapsed':
-        ax.set_title('Construction vs Traversal Time (collapsed)', fontsize=14)
-    else:
-        ax.set_title('Construction vs Traversal Time (combined average)', fontsize=14)
+    # Set equal scale for both axes
+    all_times = list(plot_df['construction_time']) + list(plot_df['traversal_time'])
+    max_val = max(all_times) * 1.1  # Add 10% padding
+    min_val = min(0, min(all_times))  # Start from 0 or lower if negative
+    ax.set_xlim(min_val, max_val)
+    ax.set_ylim(min_val, max_val)
+    ax.set_aspect('equal', adjustable='box')
 
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
