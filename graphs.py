@@ -825,15 +825,6 @@ def create_dynamic_construction_vs_traversal_scatter(df: pd.DataFrame, output_pa
             zorder=3
         )
 
-        # Add label next to point
-        ax.annotate(
-            f"{algo}",
-            (row['construction_time'], row['traversal_time']),
-            xytext=(5, 5),
-            textcoords='offset points',
-            fontsize=8,
-            alpha=0.7
-        )
 
     # Create legend for k values (colors)
     k_handles = []
@@ -851,9 +842,8 @@ def create_dynamic_construction_vs_traversal_scatter(df: pd.DataFrame, output_pa
                            markersize=10, label=algo, markeredgecolor='black')
         algo_handles.append(handle)
 
-    # Add both legends side by side in the upper right corner
-    legend1 = ax.legend(handles=k_handles, title='Branching Factor', loc='upper right',
-                        bbox_to_anchor=(0.88, 1.0))
+    # Add both legends without overlap
+    legend1 = ax.legend(handles=k_handles, title='Branching Factor', loc='upper left')
     ax.add_artist(legend1)
     legend2 = ax.legend(handles=algo_handles, title='Algorithm', loc='upper right')
 
@@ -869,6 +859,242 @@ def create_dynamic_construction_vs_traversal_scatter(df: pd.DataFrame, output_pa
     ax.set_xlim(min_val, max_val)
     ax.set_ylim(min_val, max_val)
     ax.set_aspect('equal', adjustable='box')
+
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  Saved: {output_path}")
+
+
+def create_rq3_bsah_detail(df: pd.DataFrame, output_path: Path):
+    """
+    RQ3 BSAH detail: stacked bar (construction + traversal).
+    X-axis: k values. 4 grouped bars per k (one per model).
+    Two subplots: k-way (with k=2) and collapsed.
+    """
+    required_cols = ['k=2 Time (s)', 'k=X Time (s)', 'C-Time k=2 (s)', 'C-Time k=X (s)', 'Algorithm', 'k']
+    for col in required_cols:
+        if col not in df.columns:
+            print(f"  Missing column '{col}', skipping RQ3 BSAH detail")
+            return
+
+    if 'type' not in df.columns:
+        print(f"  No 'type' column, skipping RQ3 BSAH detail")
+        return
+
+    bsah_df = df[df['Algorithm'] == 'bsah']
+    if len(bsah_df) == 0:
+        print(f"  No BSAH data, skipping RQ3 BSAH detail")
+        return
+
+    model_order = ['suzanne', 'teapot', 'stanford-bunny', 'armadillo']
+    model_labels = ['Suzanne', 'Teapot', 'Bunny', 'Armadillo']
+    available = [m for m in model_order if m in bsah_df['Model'].unique()]
+    available_labels = [model_labels[model_order.index(m)] for m in available]
+
+    # One color per model
+    model_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
+
+    color_construction = '#555555'
+    color_traversal = '#cccccc'
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
+
+    for subplot_idx, bvh_type in enumerate(['k-way', 'collapsed']):
+        ax = axes[subplot_idx]
+
+        data_points = []
+
+        # k=2 baseline (only for k-way)
+        if bvh_type == 'k-way':
+            for model in available:
+                model_df = bsah_df[bsah_df['Model'] == model]
+                if len(model_df) == 0:
+                    continue
+                c_time = model_df['C-Time k=2 (s)'].mean()
+                combined = model_df['k=2 Time (s)'].mean()
+                data_points.append({
+                    'Model': model, 'k': 2,
+                    'construction': c_time, 'traversal': combined - c_time
+                })
+
+        k_values = sorted([k for k in bsah_df['k'].unique() if k != 2])
+        for k_val in k_values:
+            k_type_df = bsah_df[(bsah_df['k'] == k_val) & (bsah_df['type'] == bvh_type)]
+            for model in available:
+                model_k_df = k_type_df[k_type_df['Model'] == model]
+                if len(model_k_df) == 0:
+                    continue
+                c_time = model_k_df['C-Time k=X (s)'].mean()
+                combined = model_k_df['k=X Time (s)'].mean()
+                data_points.append({
+                    'Model': model, 'k': k_val,
+                    'construction': c_time, 'traversal': combined - c_time
+                })
+
+        if len(data_points) == 0:
+            continue
+
+        plot_df = pd.DataFrame(data_points)
+        k_vals_in_plot = sorted(plot_df['k'].unique())
+
+        n_models = len(available)
+        bar_width = 0.8 / n_models
+        x_positions = np.arange(len(k_vals_in_plot))
+
+        for m_idx, (model, label) in enumerate(zip(available, available_labels)):
+            m_data = plot_df[plot_df['Model'] == model].set_index('k')
+            constructions = [m_data.loc[k, 'construction'] if k in m_data.index else 0
+                             for k in k_vals_in_plot]
+            traversals = [m_data.loc[k, 'traversal'] if k in m_data.index else 0
+                          for k in k_vals_in_plot]
+
+            x = x_positions + (m_idx - (n_models - 1) / 2) * bar_width
+            m_color = model_colors[m_idx % len(model_colors)]
+            import matplotlib.colors as mcolors
+            rgb = mcolors.to_rgb(m_color)
+            color_c = tuple(min(1, c * 0.7) for c in rgb)
+            color_t = tuple(min(1, c * 1.0 + 0.3 * (1 - c)) for c in rgb)
+
+            ax.bar(x, constructions, bar_width, color=color_c,
+                   edgecolor='black', linewidth=0.5)
+            ax.bar(x, traversals, bar_width, bottom=constructions, color=color_t,
+                   edgecolor='black', linewidth=0.5)
+
+            # Model name label below each bar
+            for i, xi in enumerate(x):
+                ax.annotate(label, xy=(xi, 0), xytext=(0, -5),
+                            textcoords='offset points', ha='center', va='top',
+                            fontsize=6, rotation=45)
+
+        ax.set_xticks(x_positions)
+        ax.set_xticklabels([f'k={k}' for k in k_vals_in_plot], fontsize=11)
+        ax.tick_params(axis='x', pad=50)
+        ax.set_xlabel('Branching Factor', fontsize=12)
+        ax.grid(True, alpha=0.3, axis='y')
+
+        if subplot_idx == 0:
+            ax.set_ylabel('Time (s)', fontsize=12)
+
+    # Legend for construction vs traversal
+    legend_handles = [
+        plt.Rectangle((0, 0), 1, 1, fc='#555555', ec='black', lw=0.5, label='Construction'),
+        plt.Rectangle((0, 0), 1, 1, fc='#cccccc', ec='black', lw=0.5, label='Traversal'),
+    ]
+    axes[0].legend(handles=legend_handles, loc='best', fontsize=10)
+
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  Saved: {output_path}")
+
+
+def create_rq3_stacked_bar(df: pd.DataFrame, output_path: Path):
+    """
+    RQ3 Stacked bar graph: construction vs traversal time per k value and algorithm.
+    Two subplots: left = k-way (incl. k=2), right = collapsed (k=4,8,16).
+    Times averaged across all models.
+    """
+    required_cols = ['k=2 Time (s)', 'k=X Time (s)', 'C-Time k=2 (s)', 'C-Time k=X (s)', 'Algorithm', 'k']
+    for col in required_cols:
+        if col not in df.columns:
+            print(f"  Missing column '{col}', skipping RQ3 stacked bar")
+            return
+
+    if 'type' not in df.columns:
+        print(f"  No 'type' column, skipping RQ3 stacked bar")
+        return
+
+    algorithm_order = ['median', 'bsah', 'sah']
+    algorithms = [a for a in algorithm_order if a in df['Algorithm'].unique()]
+
+    # Colors for construction and traversal
+    color_construction = '#4C72B0'
+    color_traversal = '#DD8452'
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
+
+    for subplot_idx, bvh_type in enumerate(['k-way', 'collapsed']):
+        ax = axes[subplot_idx]
+
+        data_points = []
+
+        # k=2 baseline (only for k-way)
+        if bvh_type == 'k-way':
+            for algo in algorithms:
+                algo_df = df[df['Algorithm'] == algo]
+                if len(algo_df) == 0:
+                    continue
+                c_time = algo_df['C-Time k=2 (s)'].mean()
+                combined = algo_df['k=2 Time (s)'].mean()
+                t_time = combined - c_time
+                data_points.append({
+                    'Algorithm': algo, 'k': 2,
+                    'construction': c_time, 'traversal': t_time
+                })
+
+        # k=4,8,16
+        k_values = sorted([k for k in df['k'].unique() if k != 2])
+        for k_val in k_values:
+            k_df = df[(df['k'] == k_val) & (df['type'] == bvh_type)]
+            for algo in algorithms:
+                algo_k_df = k_df[k_df['Algorithm'] == algo]
+                if len(algo_k_df) == 0:
+                    continue
+                c_time = algo_k_df['C-Time k=X (s)'].mean()
+                combined = algo_k_df['k=X Time (s)'].mean()
+                t_time = combined - c_time
+                data_points.append({
+                    'Algorithm': algo, 'k': k_val,
+                    'construction': c_time, 'traversal': t_time
+                })
+
+        if len(data_points) == 0:
+            ax.set_title(bvh_type, fontsize=14)
+            continue
+
+        plot_df = pd.DataFrame(data_points)
+        k_vals_in_plot = sorted(plot_df['k'].unique())
+
+        # Compute bar positions: group by k, within each group one bar per algorithm
+        n_algos = len(algorithms)
+        bar_width = 0.25
+        group_width = n_algos * bar_width
+
+        x_positions = np.arange(len(k_vals_in_plot))
+
+        for algo_idx, algo in enumerate(algorithms):
+            algo_data = plot_df[plot_df['Algorithm'] == algo].set_index('k')
+            constructions = [algo_data.loc[k, 'construction'] if k in algo_data.index else 0
+                             for k in k_vals_in_plot]
+            traversals = [algo_data.loc[k, 'traversal'] if k in algo_data.index else 0
+                          for k in k_vals_in_plot]
+
+            x = x_positions + (algo_idx - (n_algos - 1) / 2) * bar_width
+
+            ax.bar(x, constructions, bar_width, label='Construction' if algo_idx == 0 else None,
+                   color=color_construction, edgecolor='black', linewidth=0.5)
+            ax.bar(x, traversals, bar_width, bottom=constructions,
+                   label='Traversal' if algo_idx == 0 else None,
+                   color=color_traversal, edgecolor='black', linewidth=0.5)
+
+            # Add algorithm label below each bar group
+            for i, xi in enumerate(x):
+                ax.text(xi, -0.02 * ax.get_ylim()[1] if ax.get_ylim()[1] > 0 else -0.01,
+                        algo, ha='center', va='top', fontsize=7, rotation=45)
+
+        ax.set_xticks(x_positions)
+        ax.set_xticklabels([f'k={k}' for k in k_vals_in_plot], fontsize=11)
+        ax.set_title(bvh_type, fontsize=14)
+        ax.grid(True, alpha=0.3, axis='y')
+
+        if subplot_idx == 0:
+            ax.set_ylabel('Time (s)', fontsize=12)
+
+    # Shared legend
+    axes[0].legend(loc='upper left', fontsize=10)
 
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -931,6 +1157,8 @@ def create_extended_graphs(result_dir: Path, polygon_df: pd.DataFrame, testrun_d
             results_df, extended_dir / "construction_vs_traversal_collapsed.png", filter_type='collapsed')
         create_dynamic_construction_vs_traversal_scatter(
             results_df, extended_dir / "construction_vs_traversal_combined.png", filter_type=None)
+        create_rq3_stacked_bar(results_df, extended_dir / "rq3_construction_vs_traversal_stacked.png")
+        create_rq3_bsah_detail(results_df, extended_dir / "rq3_bsah_detail.png")
 
 
 def main():
