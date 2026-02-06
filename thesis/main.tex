@@ -783,16 +783,18 @@ Insgesamt schließen die Konfidenzintervalle aus der Tabelle~\ref{tab:dynamic} d
 \section{Interpretation: Einfluss des Verzweigungsgrades auf die Traversal}
 Vorher wurde gezeigt, dass es teilweise Einsparung in der Traversal-Time für $k = 4$ gegenüber der binären Referenz gab, während es für $k \in \{8, 16\}$ in jedem untersuchten Fall starke Einbußen in der Performance gab.
 
-Für k-way splitting sind die Messwerte
-
-Eine plausible Erklärung für die beobachteten Ergebnisse ist ein Abwägung zwischen der Anzahl an inneren Knoten und der Anzahl an auszuführenden AABB-Tests bzw. Kollisionsüberprüfungen zwischen Primärstrahl und Bounding Boxen. Bei höheren Verzweigungsgraden müssen nämlich pro Node mehr Kinder überprüft werden, während es insgesamt aber auch weniger innere Nodes gibt, die überhaupt überprüft werden können. Es lässt sich interpretieren, dass für $k = 4$ die Menge an weniger besuchten Nodes die größere Menge an AABB-Tests noch überkompensiert, während dies ab $k = 8$ nicht mehr der Fall ist. Zur Veranschaulichung dient Abbildung~\ref{fig:aabb-example} in der man Beispielhaft die Menge an AABB-Tests und Triangle-Tests, bzw. Primärstrahl und Polygon Kollisionen, ablesen kann. 
+% Hier noch update
+Für $k = 4$ schwanken die Werte bei Nutzung des k-way splittings und näheren sich für die größeren untersuchten Modelle 
+Unter Nutzung des Collapsing-Verfahrens sind die Speedups deutlich wertstabiler. Hier lassen sich klare Negativtrends für den Median-Split und Positivtrends für SAH und BSAH ablesen. 
+%Ab hier ok
+Eine plausible Erklärung für die beobachteten Ergebnisse ist ein Abwägung zwischen der Anzahl an inneren Knoten und der Anzahl an auszuführenden AABB-Tests bzw. Kollisionsüberprüfungen zwischen Primärstrahl und Bounding Boxen. Bei höheren Verzweigungsgraden müssen nämlich pro Node mehr Kinder überprüft werden, während es insgesamt aber auch weniger innere Nodes gibt, die überhaupt überprüft werden können. Es lässt sich interpretieren, dass für $k = 4$ die Menge an weniger besuchten Nodes die größere Menge an AABB-Tests noch in den meisten Fällen überkompensiert, während dies ab $k = 8$ nicht mehr der Fall ist. Zur Veranschaulichung dient Abbildung~\ref{fig:aabb-example} in der man Beispielhaft die Menge an AABB-Tests und Triangle-Tests, bzw. Primärstrahl und Polygon Kollisionen, ablesen kann. 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{results/rq1/hit_ray_analysis.png}
-    \caption{AABB- und Triangle-Tests, Stanford Bunny, Median, collapse}
+    \caption{AABB- und Triangle-Tests, Stanford Bunny, BSAH}
     \label{fig:aabb-example}
 \end{figure}
-Zudem ist wichtig, dass der für $k = 4$ beobachtete Effekt zwar statistisch signifikant ist, aber trotzdem nur einen Vorteil im einstelligen Prozentbereich liefert. Das heißt, dass Wide BVH in diesem linearen Zusammenhang eher als Optimierung mit kleinem Effekt zu sehen ist.
+Zudem ist wichtig, dass der für $k = 4$ beobachtete Effekt zwar statistisch signifikant ist, aber trotzdem stark vom untersuchten Modell abhängt und maximal 10 Prozent beträgt. Die größte Optimierung geschieht bei Modellen mit ohnehin sehr kurzer Traversal-Time. Das heißt, dass Wide BVH in diesem linearen Zusammenhang eher als szenenabhäbgige Optimierung mit kleinem Effekt zu sehen ist. Zudem bringt die Nutzung von collapsing Wertstabilere Ergebnisse hervor. 
 
 \section{Interpretation: K-way splitting gegen collapsing}
 Im Rahmen der Ergebnissvorstellung wurde gezeigt, dass die Messergebnisse unabhängig von der gewählten Methode zur Erstellung der Wide BVH ähnliche Messungen ergaben. Die untersuchten Messergebnisse zeigten keinen signifikanten Unterschied zwischen den Traversal-Times für die beiden Methoden.
