@@ -704,7 +704,7 @@ Werte $Speedup > 1$ gelten als Verbesserung, also geringerer Traversal-Time, geg
     \label{fig:static-collapse}
 \end{figure}
 
-Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:static-k-way} und~\ref{fig:static-collapse} die Speedups für $k \in \{2, 8, 16\}$, währen die zu Tabelle~\ref{tab:static} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
+Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:static-k-way} und~\ref{fig:static-collapse} die Speedups für $k \in \{4, 8, 16\}$, währen die zu Tabelle~\ref{tab:static} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
 
 Für $k = 4$ gibt es gegenüber $k = 2$ keinen einheitlichen Trend für alle untersuchten Kombinationen, jedoch durchgehend signifikante Ergebnisse. Für k-way splitting liegen die Speedups der Mittelwerte zwischen $0,975$ und $1,234$. Währenddessen liegen die Werte für collapsing zwischen $0,932$ und $1,093$. Dabei lässt sich eine deutliche Abhängigkeit vom gewählten Splitting-Verfahren zeigen. SAH und BSAH zeigen für collapsing in allen und für k-way splitting nahezu in allen Szenen Verbesserungen. Für den Median-Split gibt es fürs collapsing lediglich Speedups zwischen $0.932$ und $0.962$, womit man in jedem Fall eine Verschlechterung gegenüber der binären Referenz ablesen kann. Für das dazugehörige k-way splitting gibt es eine größere szenenabhängige Verteilung zwischen leichten Einbußen und klaren Gewinnen.
 
@@ -765,7 +765,7 @@ Ebenso entspricht $Speedup_{dynamic} > 1$ einer Verbesserung der kombinierten Me
     \label{fig:dynamic-collapse}
 \end{figure}
 
-Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:dynamic-k-way} und~\ref{fig:dynamic-collapse} \\ die Werte von $Speedup_{\text{comparison}}$ für $k \in \{2, 8, 16\}$, währen die zu Tabelle~\ref{tab:dynamic} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
+Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:dynamic-k-way} und~\ref{fig:dynamic-collapse} \\ die Werte von $Speedup_{\text{dynamic}}$ für $k \in \{4, 8, 16\}$, währen die zu Tabelle~\ref{tab:dynamic} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
 
 Für $k = 4$ zeigen sich für das überwiegend Verbesserungen für die kombinierte Qualitätsmetrik, allerdings existieren deutliche Unterschiede zwischen den beiden Wide BVH Konstruktionsmethoden. Für k-way splitting liegen die Mittelwerte für $Speedup_{dynamic}$ zwischen $0,987$ und $1,470$, während die Werte fürs collapsing mit $0,931$ bis $1,092$ näher an $1$ liegen.
 Ähnlich der Analyse im statischen Kontext ist der Median-Split bei Verwendung von collapsing mit Werten für $Speedup_{dynamic}$ von $0,931$ bis $0,962$ schlechter als die binäre Referenz, während die Werte für k-way splitting je nach Szene zwischen teils deutlicher Verbesserung mit $Speedup_{dynamic} = 1,236$ und leichter Verschlechterung mit $Speedup_{dynamic} = 0,987$ schwanken.
