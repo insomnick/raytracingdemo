@@ -964,13 +964,13 @@ def create_rq3_bsah_detail(df: pd.DataFrame, output_path: Path):
 
             # Model name label below each bar
             for i, xi in enumerate(x):
-                ax.annotate(label, xy=(xi, 0), xytext=(0, -5),
-                            textcoords='offset points', ha='center', va='top',
-                            fontsize=6, rotation=45)
+                ax.annotate(label, xy=(xi, 0), xytext=(0, -3),
+                            textcoords='offset points', ha='right', va='top',
+                            fontsize=20, rotation=45)
 
         ax.set_xticks(x_positions)
         ax.set_xticklabels([f'k={k}' for k in k_vals_in_plot], fontsize=11)
-        ax.tick_params(axis='x', pad=50)
+        ax.tick_params(axis='x', pad=25)
         ax.set_xlabel('Branching Factor', fontsize=12)
         ax.grid(True, alpha=0.3, axis='y')
 
@@ -979,8 +979,8 @@ def create_rq3_bsah_detail(df: pd.DataFrame, output_path: Path):
 
     # Legend for construction vs traversal
     legend_handles = [
-        plt.Rectangle((0, 0), 1, 1, fc='#555555', ec='black', lw=0.5, label='Construction'),
-        plt.Rectangle((0, 0), 1, 1, fc='#cccccc', ec='black', lw=0.5, label='Traversal'),
+        plt.Rectangle((0, 0), 1, 1, fc=color_construction, ec='black', lw=0.5, label='Construction'),
+        plt.Rectangle((0, 0), 1, 1, fc=color_traversal, ec='black', lw=0.5, label='Traversal'),
     ]
     axes[0].legend(handles=legend_handles, loc='best', fontsize=10)
 
@@ -1086,7 +1086,7 @@ def create_rq3_stacked_bar(df: pd.DataFrame, output_path: Path):
                         algo, ha='center', va='top', fontsize=7, rotation=45)
 
         ax.set_xticks(x_positions)
-        ax.set_xticklabels([f'k={k}' for k in k_vals_in_plot], fontsize=11)
+        ax.set_xticklabels([f'k={k}' for k in k_vals_in_plot], fontsize=10)
         ax.set_title(bvh_type, fontsize=14)
         ax.grid(True, alpha=0.3, axis='y')
 

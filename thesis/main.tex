@@ -813,11 +813,20 @@ Die naheliegendste Erklärung ist auch hier wieder die die Menge an ausgeführte
 Insgesamt lässt sich sagen, dass sich für die Konstruktion von Wide BVH in statischen Szenen k-way splitting empfehlen lässt, auch wenn es für $k = 4$ eher von der gewählten Szene abhängt.  
 
 \section{Interpretation: Dynamisches Modell}
-Für das dynamische Modell wurde gezeigt, dass auch hier $k = 4$ überwiegend bessere Ergebnisse gegenüber der binären Referenz aufzeigt, der Effekt allerdings mit steigender Szenengröße zu sinken bzw. sich sogar leicht umzukehren scheint. Für $k = 8$ und $k = 16$ wurden klar schlechtere Ergebnisse gezeigt.
+Für das dynamische Modell wurde gezeigt, dass auch hier $k = 4$ überwiegend bessere Ergebnisse gegenüber der binären Referenz aufzeigt, der Effekt sich allerdings im Durchschnitt mit steigenderm $k$ umzukehren scheint, womit für $k = 8$ und $k = 16$ klar schlechtere Ergebnisse gezeigt werden können. Die einzuige Ausnahme dieser Regel gibt die Verwendung von BSAH in Kombination mit k-way splitting in den beiden größeren untersuchten Szenen, hier in Abbildung~\ref{fig:bsah-example-dynamic} zu sehen. 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{results/rq3/rq3_bsah_detail.png}
+    \caption{Mittelwerte Construction- und Traversal-Time, BSAH, k-way (links) und collapsing (rechts)}
+    \label{fig:bsah-example-dynamic}
+\end{figure}
+Bei einem näheren Blick lässt sich erkennen, dass für BSAH unter Verwendung von k-way splitting eine immer kleinere Construction-Time benötigt wird. Gegenüber ist die Construction-Time bei der Nutzung von collapsing über alle Verzweigungsgrade nahezu konstant. Zudem profitiert das k-way splitting von den drastisch kürzeren Traversal-Times für große $k$. Dass die Construction-Times gerade in diesem Fall abnehmen ist logisch, da die verwendete Zeit zur Konstruktion stärker von der gewählten Bin-Größe als von den übrigen Primitiven in der Subszene abhängt. Für größere Verzweigungsgrade werden zwar weniger Konstruktionsiterationen durchgeführt, dafür allerdings häufiger auf größeren Teilmengen der Primitives. Die andern Konstruktionsalgorithmen haben eine stärkere Abhängigkeit von dieser Anzahl. Das collaping wiederum verwendet immer einen Binärbaum als Grundlage, weshalb die Konstruktionszeiten wegen des vergleichsweise sparsamen kollabieren ähnlich bleiben. Da die Konstruktionszeit für kleinere Szenen ohnehin verschwindent gering ist, ist der Effekt hier nicht erkennbar.
+
+Zusammenfassend kann man sagen, dass BSAH in Kombination mit k-way splitting die besten Indizien für eine Nutzung in einem dynamischen Kontext vorweist, unabhängig von Verzweigungsgrad, allerdings abhängig von der Szenengröße. Dazu lässt sich eine Empfehlung für $k = 4$ aussprechen, hier ist der Speedup der kombinierten Qualitätsmetrik auf seinem Maximum.
 
 \section{Literaturkontext}
 In der Literatur werden Wide BVH eher im Kontext mit der Nutzung von SIMD oder GPUs erwähnt, da höhere Verzweigungsgrade Chancen für die bessere Parallelisierbarkeit bieten~\cite{4634620}. 
-Der beobachtete Einbruch des Speedups für größere $k$ ist daher mit der Literatur konsistent, da in diesem Falle der erhöhte Aufwand durch mehr AABB-Tests nicht durch parallele Berechnung amortisiert werden kann. Dadurch erscheint es so, dass ein kleinerer Verzweigungsgrad wie $ k = 4$ als Optimum für die untersuchten Szenen glaubhaft wirkt.
+Der insgesamt beobachtete Einbruch des Traversal-Speedups für größere $k$ ist daher mit der Literatur konsistent, da in diesem Falle der erhöhte Aufwand durch mehr AABB-Tests nicht durch parallele Berechnung amortisiert werden kann. Dadurch erscheint es so, dass ein kleinerer Verzweigungsgrad wie $ k = 4$ in Kombination mit einer Heuristik als Optimum für einige der untersuchten Szenen glaubhaft wirkt. Die Überlegenheit von BSAH im dynamsichen Modell deckt sich auch mit Empfehlungen vorangegangener Forschung von SAH basierten Optimierungen~\cite{https://doi.org/10.1111/cgf.142662}.
 
 \section{Limitationen}
 Alle besprochenen Ergebnisse gelten innerhalb der folgenden Annahmen:
