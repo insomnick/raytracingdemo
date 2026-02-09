@@ -24,3 +24,4 @@ To build and run the demo:
 
 The results of the benchmarks are saved in the `testruns/results` folder using the provided Python script `bvh_analysis.py`.
 
+For more detailed analysis and visualization of the results, you can check out the other python scrips in the `scripts` folder.
