@@ -116,7 +116,7 @@ Bounding Volume Hierarchies (BVHs) gehören zu den wichtigsten Beschleunigungsda
 
 Diese Arbeit untersucht Top-Down konstruierte BVH in statischen dreidimensionalen Szenen für Verzweigungsgrade $k \in \{2, 4 ,8 ,16\}$. Dies geschieht unter Berücksichtigung von drei Splitting-Verfahren (Median, Surface Area Heuristic und Binned Surface Area Heuristic), sowie zwei Methoden zur Erzeugung von Wide BVHs (k-way splitting und binary BVH collapse). Dabei steht die Traversal-Time als primäres und die Construction-Time als sekundäres Qualitätsmerkmal im Fokus. Zudem wird durch eine Kombination der beiden Qualitätsmetriken das Szenario einer dynamischer Szene modelliert.
 
-Für statische Szenen zeigt $k = 4$ gegenüber der binären Referenz keinen einheitlichen Trend for alle Kombinationen an Parametern. Abhängig von Splitting-Verfahren und Wide BVH Erzeugungsmethode liegen die dazugehörigen Speedups zwischen $0,932$ und $1,234$. Insbesondere der Median-Split in Kombination mit collapsing erzeugt schlechtere Traversal-times gegenüber $k = 2$, während SAH und BSAH häufiger Verbesserungen aufzeigen. Für größere Verzweigungsgrade verschlechtern sich die Traversal-Times über alle Konfigurationen mit Speedups zwischen $0,529$ und $0,866$ für $k = 8$, sowie nochmal deutlich schlechtere für $k = 16$ mit Speedups zwischen $0,077$ und $0,666$. Dabei ist die Streuung dieser Werte stark abhängig von der gewählten Wide BVH Erzeugungsmethode.
+Für statische Szenen zeigt $k = 4$ gegenüber der referenz $k = 2$ keinen einheitlichen Trend für alle Kombinationen an Parametern. Abhängig von Splitting-Verfahren und Wide BVH Erzeugungsmethode liegen die dazugehörigen Speedups zwischen $0,932$ und $1,234$. Insbesondere der Median-Split in Kombination mit collapsing erzeugt schlechtere Traversal-times gegenüber der binären Referenz, während SAH und BSAH häufiger Verbesserungen aufzeigen. Für größere Verzweigungsgrade verschlechtern sich die Traversal-Times über alle Konfigurationen mit Speedups zwischen $0,529$ und $0,866$ für $k = 8$, sowie nochmal deutlich schlechtere für $k = 16$ mit Speedups zwischen $0,077$ und $0,666$. Dabei ist die Streuung dieser Werte stark abhängig von der gewählten Wide BVH Erzeugungsmethode.
 
 Im direkten Vergleich zwischen k-way splitting und collapsing zeigt sich, dass die Verfahren keine gleichwertigen Wide BVH erzeugen. Während der Unterschied für $k = 4$ noch stark abhängig vom gewählten Splitting-Algorithmus, mit Speedups nahe $1$, ist, ist k-way splitting für $k \ge 8$ in allen untersuchten Szenen für alle Splitting-Algorithmen schneller. Für $k = 16$ liegt der Vorteil teils sogar bei einer ungefähr 2,5-fachen bis 6-fachen besseren Geschwindigkeit gegenüber der Nutzung von collapsing.     
 
@@ -136,8 +136,8 @@ Effiziente Kollisionserkennung hat grundlegenden Nutzen in diversen Feldern, üb
 
 \section{Thema und fachliche Einordnung}
 
-Um den Vorgang zu beschleunigen, kommen zwei Datenstrukturen ins Spiel: Die \emph{Axis Aligned Bounding Box (AABB)} und darauf aufbauend die \emph{Bounding Volume Hierarchy (BVH)}~\cite{VahlGordonClevenger+2021}. Eine AABB definiert achsenorientierte obere und untere Schranken für Teilmengen von Primitives in Form eines Quaders, der diese eng im Raum einschließt. Durch die Einführung von AABB lassen sich die nötigen Ray-Primitive-Kollisionstests, auch \emph{Intersection-Tests} genannt, verringern, indem man für jeden Ray erst die Kollision mit den umschließenden AABBs überprüft. Wenn es bereits keine Kollision mit der umschließenden Bounding Box gibt, kann von vornherein ausgeschlossen werden, dass es eine Kollision mit den innenliegenden Primitives gibt. 
-Um den Vorteil dieses Verfahrens effektiv zu nutzen, kann man nun rekursiv die eingeschlossenen Teilmengen wieder aufteilen und mit AABBs umschließen. Dadurch lassen sich die Bounding Boxes in eine hierarchische Reihenfolge bringen, die eine Baumstruktur aufweist. Diese Struktur ist eine Bounding Volume Hierarchy. Durch eine BVH wird die Laufzeit auf ein Niveau gesenkt, das typischerweise bei geeigneter Ray-Verteilung logarithmisch von der Anzahl an Primitives in der Szene abhängt, was die Zeit für ein fertig gerendertes Bild drastisch sinken lassen kann. Diesen Vorteil erkauft man sich durch das Einführen des zusätzlichen Konstruktionsschrittes, der in Abwägung dazu steht. 
+Um den Vorgang zu beschleunigen, kommen zwei Datenstrukturen ins Spiel: Die \emph{Axis Aligned Bounding Box (AABB)} und darauf aufbauend die \emph{Bounding Volume Hierarchy (BVH)}~\cite{VahlGordonClevenger+2021}. Eine AABB definiert achsenorientierte obere und untere Schranken für Teilmengen von Primitives in Form eines Quaders, der diese eng im Raum einschließt. Durch die Einführung von AABB lassen sich die nötigen Ray-Primitive-Kollisionstests, auch \emph{Intersection-Tests} genannt, verringern, indem man für jeden Ray erst die Kollision mit den umschließenden AABBs überprüft. Wenn es keine Kollision mit der umschließenden Bounding Box gibt, kann bereits von vornherein ausgeschlossen werden, dass es eine Kollision mit den innenliegenden Primitives gibt. 
+Um den Vorteil dieses Verfahrens effektiv zu nutzen, kann man nun rekursiv die eingeschlossenen Teilmengen wieder aufteilen und mit AABBs umschließen. Dadurch lassen sich die Bounding Boxes in eine hierarchische Reihenfolge bringen, die eine Baumstruktur aufweist. Diese Struktur ist eine Bounding Volume Hierarchy. Abbiludung~\ref{fig:bunny} zeigt die AABBs einer BVH in einem praktischen Beispiel. Durch eine BVH wird die Laufzeit auf ein Niveau gesenkt, das typischerweise bei geeigneter Ray-Verteilung logarithmisch von der Anzahl an Primitives in der Szene abhängt, was die Zeit für ein fertig gerendertes Bild drastisch sinken lassen kann. Diesen Vorteil erkauft man sich durch das Einführen des zusätzlichen Konstruktionsschrittes, der in Abwägung dazu steht. 
 Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit. 
 
 
@@ -145,6 +145,7 @@ Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit.
 \centering
 \includegraphics[scale=0.3]{images/bunny_boxes.png}
 \caption{Stanford Bunny mit sichtbaren Bounding Boxes}
+\label{fig:bunny}
 \end{figure}
 
 \section{Zielsetzung}
@@ -152,7 +153,7 @@ Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit.
 Es existieren Konstruktionsverfahren verschiedener Komplexitätsklassen, deren Endprodukt sich auf die \emph{Traversal-Time (Renderzeit)} auswirkt. Von der \emph{Construction-Time (Konstruktionszeit)} lässt sich die Nutzbarkeit einer BVH in dynamischen Szenen, also Szenen mit bewegten Objekten, ableiten. Die Traversal-Time ist das Hauptqualitätsmerkmal für eine BVH, da sich durch niedrigere Zeiten höhere Auflösungen und Bildwiederholraten, sowohl in statischen wie auch dynamischen Szenen, realisieren lassen.
 Ein genutzter Vorteil der Baumstruktur ist, dass sich sowohl Construction (Konstruktion) als auch Traversal (Durchsuchung) auf GPUs parallelisieren lassen. Dabei spielt auch die Konstruktion mit höheren Verzweigungsgraden eine Rolle, wobei man auch dies durch unterschiedliche Erzeugungsverfahren erreichen kann, wie dem \emph{k-way splitting} oder durch \emph{collapse} (Kollabierung) der Hierarchie. Diese Art von BVH wird \emph{Wide BVH (Weite BVH)} oder auch \emph{BVHk} genannt. 
 Ziel der Arbeit ist die Analyse verschiedener Konstruktionen von Wide BVHs mit Hinblick auf Einsparung in Traversal- aber auch Construction-Time in statischen Szenen. Diese Art von BVH ist bereits in der parallelisierten Berechnung mit GPUs weiter verbreitet, im Rahmen dieser Arbeit wird allerdings eine serielle Berechnung auf der CPU untersucht und damit die algorithmischen Vor- und Nachteile von Wide BVH. Dabei sollen die Ergebnisse abhängig von dem verwendeten Verfahren der Konstruktion, dem Verzweigungsgrad der Hierarchie und der Primitive-Anzahl der Szene beleuchtet werden. 
-Dabei haben sich drei Problemfragen ergeben, die den Umfang dieser Arbeit definieren:
+Hieraus haben sich drei Problemfragen ergeben, die den Umfang dieser Arbeit definieren:
 \begin{itemize} 
 \item
 Wie verändert sich die Traversal-Time bei Top-Down-Konstruierten Wide BVHs für Verzweigungsgrade $k \in \{2, 4, 8, 16\}$ in statischen Szenen?
@@ -165,11 +166,11 @@ Wie verändern sich Construction- und Traversal-Time als kombinierte Qualitätsm
 Die Analyse soll dabei auf einer selbstimplementierten Testbench stattfinden und anschließend mit unabhängigen T-Tests ausgewertet werden. Mittelwerte, sowie Konfidenzintervalle dienen zur späteren Diskussion der Ergebnisse.
 
 \section{Abgrenzung zu vorherigen Arbeiten}
-In der zugrundeliegenden Arbeit werden lediglich statische dreidimensionale Szenen untersucht. Verfahren die darauf abzielen die BVH dynamisch anzupassen (Refitting etc.) werden nicht untersucht.
+In der zugrundeliegenden Arbeit werden lediglich statische dreidimensionale Szenen untersucht. Verfahren die darauf abzielen die BVH dynamisch anzupassen (Refitting etc.) werden nicht verwendet. Trotzdem wird in späteren Kapiteln ein Modell für dynamsiche Szenen auf Grundlage der Datensätze erarbeitet.
 
 Zudem werden ausschließlich Top-Down-Konstruktionsmethoden verwendet, da diese in Forschung und Lehre weit verbreitet und einfacher zu implementieren sind~\cite{https://doi.org/10.1111/cgf.142662}.
 
-Die verglichenen Datenstrukturen sind lediglich BVH bzw. Wide BVH, es werden keine anderen Beschleunigungsstrukturen, wie k-d-Trees beachtet. Wide BVHs werden im Vergleich zu ihrer binären Referenzimplementation untersucht. 
+Die verglichenen Datenstrukturen sind lediglich BVH bzw. Wide BVH. Es werden keine anderen Beschleunigungsstrukturen, wie k-d-Trees betrachtet. Wide BVHs werden im Vergleich zu ihrer binären Referenzimplementation untersucht. 
 
 Es werden ganz explizit verschiedene Verfahren zur Konstruktion von Wide BVHs untersucht und verglichen. Das sogenannte k-way splitting, also das Partitionieren der Menge in k Teilmengen in einem Iterationsschritt entlang einer Achse, ist das erste untersuchte Verfahren. Auf der anderen Seite steht das collapsing bei dem Nodes einer binären Hierarchie nach der Konstruktion mit ihren Kindern verschmolzen werden, um den Verzweigungsgrad zu verdoppeln.
 
@@ -183,10 +184,10 @@ Die Qualität einer BVH wird rein durch die Traversal-Time definiert. Andere Asp
 
 Die Besonderheit dieser Arbeit ist, dass Wide BVH komplett außerhalb des Kontext der Parallelisierbarkeit analysiert werden und alle Berechnungen seriell auf der CPU ausgeführt werden. Es wird explizit die die gesamte serielle Zeit der Algorithmen untersucht, um Veränderungen durch Struktur der BVHs zu ermitteln. 
 
-Ziel ist es einzuschätzen, ob die Möglichkeit der parallelisierten Berechnung besser genutzt werden kann, durch z.B. mehr untersuchte Rays oder höhere Auflösungen, statt ineffiziente Erhöhung des Verzweigungsgrads. 
+Ziel ist es einzuschätzen, ob die Möglichkeit der parallelisierten Berechnung besser genutzt werden kann, durch z.B. mehr untersuchte Rays oder höhere Auflösungen, statt möglicherweise ineffiziente Erhöhung des Verzweigungsgrads. 
 
 \section{Vorgehensweise}
-Zuerst wird in die benötigen Grundlagen und Terminologie des Raytracings eingeführt. Darunter zählen Rays, AABBs und BVH-Konstruktion, sowie Traversal. Im folgenden werden die implementierten Algorithmen und der experimentelle Aufbau, wie auch das dazugehörige Datenmodell beschrieben. Nach der Vorstellung der Messergebnisse, werden diese anschließend diskutiert, Limitationen aufgezeigt und in den Literaturkontext einfügt. Zuletzt wird ein Fazit ausgeführt, welches die zentralen Erkenntnisse zusammenfasst.
+Zuerst wird in die benötigen Grundlagen und die Terminologie des Raytracings eingeführt. Darunter zählen Rays, AABBs und BVH-Construction, sowie Traversal. Darauf folgend werden die implementierten Algorithmen und der experimentelle Aufbau, wie auch das dazugehörige Datenmodell beschrieben. Nach der Vorstellung der Messergebnisse, werden diese anschließend diskutiert, Limitationen aufgezeigt und die Ergebnisse in den Literaturkontext eingeordnet. Zuletzt wird ein Fazit ausgeführt, welches die zentralen Erkenntnisse zusammenfasst.
 
 \newpage
 
@@ -194,25 +195,25 @@ Zuerst wird in die benötigen Grundlagen und Terminologie des Raytracings eingef
 
 \section{Modell}
 
-Für das weitere Vorgehen werden unter Primitives immer Polygone, also Dreiecke, verstanden, da die verwendeten Szenen in diesem Format vorliegen. Polygone werden durch ihre drei Eckpunkte definiert, die jeweils durch dreidimensionale Vektoren beschrieben werden. Zudem wird für die Vereinfachung von Berechnungen der Mittelpunkt des Polygons bestimmt, \emph{Centroid} genannt. Eine zusammenhängende Struktur aus Polygonen wird als \emph{Mesh} verstanden. 
+Für das weitere Vorgehen werden unter Primitives immer Polygone, also Dreiecke, verstanden, da die verwendeten Szenen in diesem Format vorliegen und es auch sonst in den meisten Anwendungsfällen als Standard gesehen wird. Polygone werden durch ihre drei Eckpunkte definiert, die jeweils durch dreidimensionale Vektoren beschrieben werden. Zudem wird für die Vereinfachung von Berechnungen der Mittelpunkt des Polygons bestimmt, \emph{Centroid} genannt. Eine zusammenhängende Struktur aus Polygonen wird als \emph{Mesh} verstanden. 
 
-Wenn sich im Traversal-Schritt die Frage stellt, ob ein Ray ein Primitive schneidet, stellt sich eigentlich die Frage, ob ein bestimmtes Primitive das erste ist, was der untersuchte Ray schneidet. Man spricht hier von \emph{closest hit test}~\cite{https://doi.org/10.1111/cgf.142662}.
+Wenn sich im Traversal-Schritt die Frage stellt, ob ein Ray ein Primitive schneidet, stellt sich eigentlich die Frage, ob ein bestimmtes Primitive das erste ist, was der untersuchte Ray schneidet. Man spricht hier von einem \emph{closest hit test}~\cite{https://doi.org/10.1111/cgf.142662}.
 
 \section{Axis Aligned Bounding Box}
 
-Um Konstruktion und Traversal von Nodes einer BVH möglichst einfach zu gestalten müssen einige Punkte gegeben sein: 
+Um Construction und Traversal von Nodes einer BVH möglichst einfach zu gestalten, müssen einige Punkte gegeben sein: 
 \begin{itemize}
-    \item Sie müssen eine möglichst performante Möglichkeit bieten die Kollision mit einem Ray zu überprüfen.
-    \item Ihre räumlichen Grenzen sollen möglichst einfach Berechnet werden können.
-    \item Sie sollen möglichst wenig Speicherplatz verbrauchen, bzw. möglichst wenig Zusatzinformationen benötigen.
+    \item Nodes müssen eine möglichst performante Möglichkeit bieten, die mögliche Kollision zwischen einem Ray und ihren Primitives zu überprüfen.
+    \item Die räumlichen Grenzen von Nodes sollen möglichst einfach Berechnet werden können.
+    \item Nodes sollen möglichst wenig Speicherplatz verbrauchen, bzw. möglichst wenig Zusatzinformationen benötigen.
 \end{itemize}
-Die am häufigsten verwendete Datenstruktur, die diese Punkte miteinander vereint ist die Axis Aligned Bounding Box. Man kann sie sich vorstellen wie ein an den Koordinatenachsen ausgerichteter Quader, der die darin enthaltenen Primitives möglichst eng einschließt. Die räumlichen Grenzen lassen sich durch zwei Vektoren, die die oberen und unteren Schranken der Box definieren leicht definieren und durch eine lineare Suche in den enthaltenen Primitives relativ effizient berechnen.
+Die am häufigsten verwendete Datenstruktur, die diese Punkte miteinander vereint, ist die Axis Aligned Bounding Box. Man kann sie sich als einen an den Koordinatenachsen ausgerichteten Quader vorstellen, der die darin enthaltenen Primitives möglichst eng einschließt. Die räumlichen Grenzen lassen sich durch zwei Vektoren, die die oberen und unteren Schranken der Box beschreiben leicht definieren. Diese Vektoren lassen sich durch die Grenzen der enthaltenen Primitives effizient ermitteln.
 
 Die Kollision mit Rays ist durch die \emph{SLAB-Methode} sehr performant~\cite{10.1145/15922.15916}. Hierbei wird ein Ray achsenweise mit den durch die AABB definierten Begrenzungsebenen getestet. Für jede Raumachse existieren paarweise zwei parallele Ebenen, die eine obere und untere Schranke darstellen. Für jede Achse wird ein Parameterintervall für die Ein- und Austrittsparameter des Rays bestimmt. Eine Kollision liegt nur dann vor, wenn sich die Intervalle über alle Achsen überlappen.
 
 \section{Bounding Volume Hierarchy}
 
-Eine BVH ist im Kern eine Baumstruktur, die eine sinnvolle Partitionierung der Primitives in der Szene erwirkt. Um einen inneren Knoten zu definieren benötigt man eine AABB, Referenzen zu den eingeschlossenen Primitives und Referenzen zu ihren Child-Nodes. Die AABBs von Child-Nodes befinden sich immer innerhalb der grenzen der AABB ihres Parent-Nodes. Es ist allerdings möglich, dass die AABBS der Child-Nodes sich überschneiden. Die Wurzel ist gleich definiert. Die Blätter der Datenstruktur sind konzeptionell Nodes, deren Menge an Primitives kleiner gleich dem festgelegten Verzweigungsgrad sind. 
+Eine BVH ist im Kern eine Baumstruktur, die eine hierarchische Partitionierung der Primitives in der Szene erwirkt. Um einen inneren Node zu definieren, benötigt man eine AABB, sowie Referenzen zu den eingeschlossenen Primitives und Referenzen zu ihren Child-Nodes. Die AABBs von Child-Nodes befinden sich immer innerhalb der Grenzen der AABB ihres Parent-Nodes. Es ist allerdings möglich, dass die AABBs der Child-Nodes sich überschneiden. Die Wurzel ist gleich definiert. Die Leaf-Nodes der Datenstruktur sind konzeptionell jene, deren Menge an Primitives kleiner gleich dem festgelegten Verzweigungsgrad sind. 
 Qualitätsmerkmale einer BVH sind in etwa wenig Überschneidungen von AABBs, AABBs mit möglichst kleinen Flächeninhalten und möglichst wenig Kollisionsüberprüfungen mit Primitives~\cite{10.1145/2492045.2492056}. 
 
 Dabei hängt die Qualität einer BVH von der verwendeten Konstruktionsmethode ab, welche wiederum variierende Komplexität haben. Häufig existiert eine Abwägung zwischen Construction und Traversal-Time. 
@@ -220,14 +221,14 @@ Dabei hängt die Qualität einer BVH von der verwendeten Konstruktionsmethode ab
 \subsection{Wide Bounding Volume Hierarchy}
 
 Wide BVH werden für das Arbeiten mit Grafikkarten immer interessanter, da sich durch die erweiterte Breite der BVH noch mehr Möglichkeiten für parallelisiertes Arbeiten ergeben. Dabei existiert für die untersuchten Algorithmen immer eine Referenzmethode zur Erstellung von Binärbäumen. Die untersuchten Verzweigungsgrade sind vielfache von Zwei. Dadurch wird die Vergleichbarkeit zwischen den verschiedenen Konstruktionsmethoden gewährleistet, da das collapse-Verfahren in dieser Implementierung auf Binärbäumen basiert.
-Die direkte Konsequenzen von Wide BVH sind eine geringere Tiefe und mehr Kollisionschecks mit Child-Nodes pro Knoten. Vor- und Nachteile bezogen auf Construction und Traversal werden innerhalb dieser Arbeit untersucht.
+Die direkte Konsequenzen von Wide BVH sind eine geringere Tiefe und mehr Kollisionschecks mit Child-Nodes pro Node. Vor- und Nachteile bezogen auf Construction und Traversal werden innerhalb dieser Arbeit untersucht.
 
 \subsection{Traversal}
-Der Traversal-Schritt ist der Kerngrund für die Verwendung einer BVH. Die Traversal-Time zu minimieren ist ihre Hauptaufgabe. Die Traversal geschieht dabei Top-Down durch die Hierarchie. Falls es eine Kollision zwischen Ray und AABB eines Knotens gibt, sollen auch die Child-Nodes, bzw. bei einem Blatt die Primitives, überprüft werden. Falls nicht kann der gesamte Teilbaum ausgelassen werden. Die Reihenfolge wird hier durch einen Stack gegeben. In diesem Fall handelt es sich um eine Art der Tiefensuche mit frühem Abbruchkriterium pro Teilbaum.
-Die Zeit für einen AABB-Test und einen Primitive-Test unterscheiden sich, wodurch sich ein weiteres Abbruchkriterium ergeben kann. Dies geschieht indem man die Zeit für Ray-Primitive-Kollision, die Dauer des durchsuchens eines Teilbaums und die Menge an Primitives im Teilbaum in eine Kostengleichung einträgt. Es existieren auch Vereinfachungen dieser Gleichung, diese werden im folgenden Erklärt.
+Der Traversal-Schritt ist der Kerngrund für die Verwendung einer BVH. Die Traversal-Time zu minimieren ist ihre Hauptaufgabe. Die Traversal geschieht dabei Top-Down durch die Hierarchie. Falls es eine Kollision zwischen Ray und AABB eines Nodes gibt, sollen auch die Child-Nodes, bzw. bei einem Blatt die Primitives, überprüft werden. Falls nicht, kann der gesamte Teilbaum ausgelassen werden. Die Reihenfolge wird hier durch einen Stack gegeben. In diesem Fall handelt es sich um eine Art der Tiefensuche mit frühem Abbruchkriterium pro Teilbaum.
+Die Zeiten für einen AABB-Test und einen Primitive-Test unterscheiden sich, wodurch sich ein weiteres Abbruchkriterium ergeben kann. Dies geschieht, indem man die Zeit für Ray-Primitive-Kollision, die Dauer des Durchsuchens eines Teilbaums und die Menge an Primitives im Teilbaum in eine Kostengleichung einträgt. Es existieren auch Vereinfachungen dieser Gleichung, welche im folgenden Schritt erklärt werden.
 
 \subsection{Kostenmodelle}
-Es gibt eine Reihe von sogenannten \emph{Traversal-Cost-Models}~\cite{meister2022performance}. Hierbei gibt es eine \emph{Cost- bzw. Loss-Function} die bei der Konstruktion des Baumes verwendet wird um den, für die Funktion, optimalen Split zu finden.
+Es gibt eine Reihe von sogenannten \emph{Traversal-Cost-Models}~\cite{meister2022performance}. Hierbei gibt es eine \emph{Cost-} bzw. \emph{Loss-Function}, die bei der Konstruktion des Baumes verwendet wird, um den für die Funktion optimalen Split zu finden.
 
 Das Grundgerüst der Kostenfunktion sieht in den meisten Fällen ähnlich aus und unterscheidet sich je nach Heuristik in der gemessenen Wahrscheinlichkeit, mit der der Teilbaum eines gegebene Nodes besucht wird.  
 Dabei entsprechen die Kosten eines inneren Nodes $N$:
@@ -235,9 +236,9 @@ Dabei entsprechen die Kosten eines inneren Nodes $N$:
 c(N) = c_T + \sum_{N_{child}} P(N_{child} \mid N)\ c(N_{child})
 \]
 
-Dabei entspricht $c_T$ der durchschnittlichen Zeit für einen Schritt während der Traversal und $N_{child}$ wird als Iterator über alle Kinder des Knoten $N$ verstanden.
+Dabei entspricht $c_T$ der durchschnittlichen Zeit für einen Schritt, während der Traversal und $N_{child}$ wird als Iterator über alle Kinder des Nodes $N$ verstanden.
 
-Falls es sich nicht um einen inneren Node handelt ist die Kostenfunktion $c(N) = c_I \lvert N \rvert$ mit Ray-Primitive-Intersection-Time $c_I$ und Anzahl an Primitives in Node $\lvert N \rvert$.
+Falls es sich nicht um einen inneren Node handelt, ist die Kostenfunktion $c(N) = c_I \lvert N \rvert$ mit Ray-Primitive-Intersection-Time $c_I$ und Anzahl an Primitives in Node $\lvert N \rvert$.
 
 Das bekannteste Kostenmodell zur Konstruktion einer BVH ist die \emph{Surface Area Heuristic}, welche die in dieser Arbeit untersuchte Heuristik darstellt. Es existieren allerdings eine ganze Reihe an Modellen wie zum Beispiel die \emph{Ray Distribution Heuristic (RDH)}, \emph{Occlusion Heuristic (OH)} oder \emph{End-point Overlap Heuristic (EPO)}~\cite{https://doi.org/10.1111/cgf.142662}, um eine Auswahl zu nennen, deren Untersuchung nicht Teil dieser Arbeit ist.
 
@@ -254,19 +255,19 @@ Die naivste Partitionsstrategie ist der Median Split. Dabei wird die entlang ein
 
 Dagegen stehen Traversal-Kostenmodelle wie die Surface Area Heuristic (SAH). Von ihr leiten sich einige spezialisierte Partitionierungsstrategien ab, wovon eine auch näher in dieser Arbeit besprochen wird.
 
-Die Grundidee ist es, die Wahrscheinlichkeit, dass ein Ray auf die AABB eines Nodes trifft, als geometrische Wahrscheinlichkeit zu sehen. Das bedeutet, dass der Flächeninhalt der AABB einer Node mit den potenziellen Flächeninhalten ihrer Child-Nodes ins Verhältnis gesetzt werden~\cite{meister2022performance}. Daraus ergibt sich, dass kleinere Flächeninhalte die Kostenfunktion minimieren, also als besser gesehen werden. Die SAH berücksichtigt dabei nicht die tatsächliche Ausrichtung und verteilung von Rays.
+Die Grundidee ist es, die Wahrscheinlichkeit, dass ein Ray auf die AABB eines Nodes trifft, als geometrische Wahrscheinlichkeit zu sehen. Das bedeutet, dass der Flächeninhalt der AABB einer Node mit den potenziellen Flächeninhalten ihrer Child-Nodes ins Verhältnis gesetzt werden~\cite{meister2022performance}. Daraus ergibt sich, dass kleinere Flächeninhalte die Kostenfunktion minimieren, also als besser gesehen werden. Die SAH berücksichtigt dabei nicht die tatsächliche Ausrichtung und Verteilung von Rays.
 
 \[
 P(N_{child} \mid  N)_{SAH} = \frac{Area(N_{child})}{ Area(N)} 
 \]
 
-Um die Kostenfunktion zu minimieren muss jeder mögliche Split untersucht werden. Da das Kostenmodell verwendet wird um Vergleichswerte zu erstellen und nicht absolute Werte zu errechnen, können Konstanten, wie die Traversal-Time des Teilbaums oder die Zeit für die Kollisionserkennung vernachlässigt werden, was die Funktion stark vereinfacht.
+Um die Kostenfunktion zu minimieren, muss jeder mögliche Split untersucht werden. Da das Kostenmodell verwendet wird um Vergleichswerte zu erstellen und nicht absolute Werte zu errechnen, können Konstanten, wie die Traversal-Time des Teilbaums oder die Zeit für die Kollisionserkennung vernachlässigt werden, was die Funktion stark vereinfacht.
 
 Theoretisch lassen sich durch die Verwendung dieser Konstanten und das Berechnen absoluter Werte ein neues Abbruchkriterium für das Erstellen einer BVH ermitteln, allerdings müssten diese Konstanten im besten Fall vorher empirisch bestimmt werden. Da ein optimales Kostenmodell nicht der Schwerpunkt dieser Arbeit ist, wurde dies nicht behandelt. 
 
 \subsubsection{Binned Surface Area Heuristic}
 
-Die Binned Surface Area Heuristic ist eine Abwandlung, der SAH. Sie verwendet das gleiche Kostenmodell, hat allerdings einen Implementationsspezifischen Unterschied. Statt Splits zwischen jedem Primitive zuzulassen, werden die Primitives vorerst entlang der Achse in eine beliebige Menge Bins, im diesem Falle 16, einsortiert. Dann wird der optimale Split zwischen diesen Bins ermittelt. Der Vorteil ist, dass lediglich ein Bruchteil an Berechnungen gemacht werden muss, um einen Split zu berechnen. Dieser Gewinn in der Construction-Time geht allerdings gegebenenfalls auf Kosten der BVH-Qualität.
+Die Binned Surface Area Heuristic (BSAH) ist eine Abwandlung der SAH. Sie verwendet das gleiche Kostenmodell, hat allerdings einen implementationsspezifischen Unterschied. Statt Splits zwischen jeden Primitives zuzulassen, werden die Primitives vorerst entlang der Achse in eine beliebige Menge Bins, im diesem Falle 16, einsortiert. Dann wird der optimale Split zwischen diesen Bins ermittelt. Der Vorteil ist, dass lediglich ein Bruchteil an Berechnungen gemacht werden muss, um einen Split zu berechnen. Dieser Gewinn in der Construction-Time geht allerdings gegebenenfalls auf Kosten der BVH-Qualität.
 
 \newpage
 
@@ -276,17 +277,17 @@ Die Binned Surface Area Heuristic ist eine Abwandlung, der SAH. Sie verwendet da
 
 \subsection{Überblick}
 
-Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heuristic Split} und \emph{Binned Surface Area Heuristic Split}. Als Referenz wird in jedem Fall ein Testdurchlauf mit der Konsteuktion einer BVH mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht, wobei jeweils eine Variante in der die binäre BVH collapsed wird um die höheren Grade zu erreichen und eine Variante mit direktem k-way splitting existiert. Jeder erzeugt Frame hat eine Auflösung von $500 * 500$ Pixeln, was einer Menge von $250.000$ Primärstrahlen pro berechneten Bild bzw. Traversalschritt entspricht.
-Innerhalb der Szenen wird eine einfache Kamerafahrt in $36$ Frames unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stets im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. Die Frames unterscheiden sich damit lediglich in Kameraposition und -Ausrichtung. 
+Verglichen werden BVH in verschieden großen Szenen, die sich in Konstruktionsalgorithmus und Verzweigungsgrad unterscheiden. Die Untersuchten Algorithmen sind der \emph{Median Split, Surface Area Heuristic Split} und \emph{Binned Surface Area Heuristic Split}. Als Referenz wird in jedem Fall ein Testdurchlauf mit der Konstruktion einer BVH mit Verzweigungsgrad $k=2$ durchgeführt. Zudem werden $k=4$, $k=8$ und $k=16$ untersucht, wobei jeweils eine Variante in der die binäre BVH collapsed wird, um die höheren Grade zu erreichen und eine Variante mit direktem k-way splitting existiert. Jeder erzeugt Frame hat eine Auflösung von $500 * 500$ Pixeln, was einer Menge von $250.000$ Primärstrahlen pro berechnetem Bild bzw. Traversalschritt entspricht.
+Innerhalb der Szenen wird eine einfache Kamerafahrt in $36$ Frames unterteilt. Bei der Kamerafahrt handelt es sich um eine einfachen Pfad um den Ursprung der Szene, bei dem dieser stets im Mittelpunkt steht. In den meisten Szenen rotiert damit die Kamera um ein Objekt. Die Frames unterscheiden sich damit lediglich in Kameraposition und -ausrichtung. 
 
 Dabei werden als Hauptmetriken die Construction-Time und die Traversal-Time pro berechneten Frame erfasst. 
-Insgesamt werden pro Testdurchlauf $10$ Datenpunkte für die Construction-Time und dann pro Frame jeweils die Traversal-Time gesammelt. 
-Alle Tests wurden um Messfehler auszuschließen $10$ mal wiederholt.
-Damit kommt man für jede Permutation von Algorithmus, Verzweigungsgrad, Wide BVH Variante und Modell auf $84$ verschiedene Testruns mit je $46$ Datenpunkte und $10$ Wiederholungen. Also gesamtheitlich auf \emph{$38.640$ Datenpunkte}.
-Im ersten Schritt werden Unterschiede in der Traversal-Time untersucht um auf Veränderungen in der BVH-Qualität zurückzuschließen. Im zweiten Schritt wird die Summe von Construction- und Traversal-Time betrachtet, um die Performance in einer dynamischen Szene zu modellieren, da in dynamischen Szenen die BVH theoretisch nach jeder Änderung an der Szene neu berechnet werden muss.  
+Insgesamt werden pro Testdurchlauf $10$ Datenpunkte für die Construction-Time erfasst und dann pro Frame jeweils die Traversal-Time gesammelt. 
+Alle Tests wurden $10$ Mal wiederholt, um Messfehler auszuschließen.
+Damit kommt man für jede Permutation von Algorithmus, Verzweigungsgrad, Wide BVH Variante und Modell auf $84$ verschiedene Testdurchläufe mit je $46$ Datenpunkten und $10$ Wiederholungen. Das ergibt gesamtheitlich \emph{38.640 Datenpunkte}.
+Im ersten Schritt werden Unterschiede in der Traversal-Time untersucht, um auf Veränderungen in der BVH-Qualität zurückzuschließen. Im zweiten Schritt wird die Summe von Construction- und Traversal-Time betrachtet, um die Performance in einer dynamischen Szene zu modellieren, da in dynamischen Szenen die BVH theoretisch nach jeder Änderung an der Szene neu berechnet werden muss.  
 
-Die gewählten Szenen sind bekannte Testmodelle mit unterschiedlichen Größenordnungen im Bezug auf Polygonanzahl, die sich in einem ansonsten leeren Raum aufhalten. Alle Modelle verwenden Lizenzen zu freien Benutzung~\cite{blender,teapot,stanford}. Die Modelle sind nativ in unterschiedlichen Formaten, es existieren jedoch ins obj-Dateiformat konvertierte Versionen~\cite{alecjacobsen}. Zum Laden der Dateien wurde eine einfache Single-Header-Library unter der MIT-Lizenz verwendet~\cite{bly7}. Die Modelle sind so skaliert, dass sie zu jeder Zeit komplett innerhalb des Frames sind.
-Die Szenengröße kann man folgender Tabelle entnehmen:
+Die gewählten Szenen sind bekannte Testmodelle mit unterschiedlichen Größenordnungen in Bezug auf Polygonanzahl, die sich in einem ansonsten leeren Raum aufhalten. Alle Modelle verwenden Lizenzen zur freien Benutzung~\cite{blender,teapot,stanford}. Die Modelle sind nativ in unterschiedlichen Formaten, es existieren jedoch ins obj-Dateiformat konvertierte Versionen~\cite{alecjacobsen}. Zum Laden der Dateien wurde eine einfache Single-Header-Library unter der MIT-Lizenz verwendet~\cite{bly7}. Die Modelle sind so skaliert, dass sie zu jeder Zeit komplett innerhalb des Frames sind.
+Die Szenengröße kann man der Tabelle~\ref{tab:object-meta} entnehmen:
 
 \begin{table}[h]
     \centering
@@ -312,9 +313,10 @@ Die Szenengröße kann man folgender Tabelle entnehmen:
     \includegraphics[width=0.24\textwidth]{images/bunny.png}
     \includegraphics[width=0.24\textwidth]{images/armadillo.png}
     \caption{Suzanne, Utah Teapot, Stanford Bunny. Stanford Armadillo}
+    \label{fig:models}
 \end{figure}
 
-Zu jedem Frame wird wie oben dargestellt ein Bild erzeugt, welches dazu dient die Korrektheit der Traversal zu untersuchen. Damit kann zudem sichergestellt werden, dass die untersuchte BVH eine gültige Form besitzt. Unabhängig vom Testrun sollen die erzeugten Bilder pro Testszene immer gleich sein. 
+Zu jedem Frame wird, wie in Abbildung~\ref{fig:models} dargestellt, ein Bild erzeugt, welches dazu dient die Korrektheit der Traversal zu untersuchen. Damit kann zudem sichergestellt werden, dass die untersuchte BVH eine gültige Form besitzt. Unabhängig vom Testdurchlauf sollen die erzeugten Bilder pro Testszene immer gleich sein.  
 
 \subsection{Reproduzierbarkeit}
 
@@ -322,8 +324,8 @@ Die verwendete Testbench hat folgende Systemeigenschaften:
 \begin{itemize}
     \item CPU: AMD Ryzen 7 7800X3D
     \item RAM: 32 GB DDR5 6000 MHz
-    \item OS: Ubuntu 22 (WSL)
-    \item Compiler: GCC 
+    \item OS: Ubuntu 22.04.22 (WSL)
+    \item Compiler: GCC 11.4.0
     \item Timer: C++ Standard Library (std::chrono)
 \end{itemize}
 Das System war während der Experimente nach besten Möglichkeiten von äußeren Störfaktoren getrennt und lief offline.
@@ -332,7 +334,7 @@ Das System war während der Experimente nach besten Möglichkeiten von äußeren
 
 Punkte im Raum werden als Vektoren im Stil von 3er-Tupeln erfasst, hier \emph{Vector3} genannt.
 
-Die implementierte BVH verwendet nicht direkt Polygone, sondern ist in der Lage Primitives verschiedener Arten zu verarbeiten, solange sie die benötigten Grundeigenschaften besitzen. Dazu gehören ein Mittelpunkt (Center oder auch Centroid), einen Minimal- und Maximalpunkt im Sinne einer Bounding Box, die nur das Primitive selbst einschließt und eine Funktion um Kollisionen (Intersections) mit Rays zu erkennen und gegebenenfalls den dazugehörigen Punkt im Raum zu bestimmen. 
+Die implementierte BVH verwendet nicht direkt Polygone, sondern ist in der Lage Primitives verschiedener Arten zu verarbeiten, solange sie die benötigten Grundeigenschaften besitzen. Dazu gehören ein Mittelpunkt (Center oder auch Centroid), ein Minimal- und Maximalpunkt im Sinne einer Bounding Box, die nur das Primitive selbst einschließt und eine Funktion, um Kollisionen (Intersections) mit Rays zu erkennen und gegebenenfalls den dazugehörigen Punkt im Raum zu bestimmen. 
 Polygone verfügen über all diese Eigenschaften.
 
 \begin{lstlisting}[style=codestyle,caption={Primitive}]
@@ -345,7 +347,7 @@ class Primitive
 }
 \end{lstlisting}
 
-AABBs verfügen über ähnliche Attribute. Sie benötigen allerdings keine referenz zu ihrem Mittelpunkt, da sie während der Laufzeit nicht entlang einer Achse sortiert werden müssen. 
+AABBs verfügen über ähnliche Attribute. Sie benötigen allerdings keine Referenz zu ihrem Mittelpunkt, da sie während der Laufzeit nicht entlang einer Achse sortiert werden müssen. 
 
 \begin{lstlisting}[style=codestyle,caption={Axis Aligned Bounding Box}]
 class AABB 
@@ -359,7 +361,7 @@ class AABB
 Die BVH selbst besteht aus aufeinander referenzierende Nodes. Ein Node wird dabei durch seine Bounding Box, Referenzen zu den eingeschlossenen Primitives und Referenzen zu seinen Child-Nodes definiert.
 
 Innerhalb der BVH muss so nur eine Referenz auf die Wurzel (Root) gegeben sein, alle anderen Referenzen erfolgen implizit. 
-Zudem liegt die Working-Copy aller Primitives innerhalb der BVH, auf die die jeweiligen Nodes jeweils ihre referenzen besitzen. 
+Zudem liegt die Working-Copy aller Primitives innerhalb der BVH, auf die die jeweiligen Nodes jeweils ihre Referenzen besitzen. 
 \begin{lstlisting}[style=codestyle,caption={Bounding Volume Hierarchie}]
 class BVHNode 
 {
@@ -375,7 +377,7 @@ class BVH
 }
 \end{lstlisting}
 
-Das festgelegte Leaf-Kriterium ist wie folgt: Es existieren gleich oder weniger Primitives in der zu teilenden Menge, als vom Verzweigungsgrad verlangte splits nötig sind. 
+Das festgelegte Leaf-Kriterium ist wie folgt: Es existieren gleich oder weniger Primitives in der zu teilenden Menge, als vom Verzweigungsgrad verlangte Splits nötig sind. 
 
 \section{Algorithmenanalyse}
 
@@ -383,9 +385,9 @@ Das festgelegte Leaf-Kriterium ist wie folgt: Es existieren gleich oder weniger 
 
 Für die Traversal wird ein Stack verwendet. Anfangs wird die Root der BVH auf den Stack gelegt. Im folgenden wird immer der oberste Node vom Stack genommen. 
 
-Falls es eine Kollision zwischen Ray und Bounding Box des Nodes gibt werden, falls vorhanden, alle Child-Nodes auf den Stack gelegt, andernfalls geschieht nichts. Für den Fall, dass es sich um einen Leaf-Node handelt, werden die Primitives des Nodes näher angeschaut. 
+Falls es eine Kollision zwischen Ray und Bounding Box des Nodes gibt, werden, falls vorhanden, alle Child-Nodes auf den Stack gelegt, andernfalls geschieht nichts. Für den Fall, dass es sich um einen Leaf-Node handelt, werden die Primitives des Nodes näher angeschaut. 
 
-Kommt es zu einer Kollision zwischen Ray und Primitive, wird die Distanz zwischen Ray-Origin und Schnittpunkt berechnet. Ist nun die Distanz kürzer als die jeder zuvor gefundene Kollision, wird sie gespeichert. Für komplexere Raytracer würde man den Schnittpunkt, sowie Eigenschaften des Primitives, wie Material oder Oberflächenwinkel des Rays, abzuspeichern, dies ist in diesem Anwendungsfall allerdings nicht notwendig. 
+Kommt es zu einer Kollision zwischen Ray und Primitive, wird die Distanz zwischen Ray-Origin und Schnittpunkt berechnet. Ist nun die Distanz kürzer als die jeder zuvor gefundene Kollision, wird sie gespeichert. Für komplexere Raytracer würde man den Schnittpunkt, sowie Eigenschaften des Primitives, wie Material oder Oberflächenwinkel des Rays, abzuspeichern. Dies ist in diesem Anwendungsfall allerdings nicht notwendig. 
 
 Die Funktion gibt letztendlich die kürzeste Distanz einer Kollision zurück. Diese Art von Traversal wird als \emph{closest hit} bezeichnet.
 
@@ -428,9 +430,9 @@ end function
 \subsection{Construction}
 
 Die Konstruktionsfunktion unterstützt eine variable Split-Funktion, hier \emph{partitionFunction} mit variablem Verzweigungsgrad.
-Nachdem eine Kopie der Primitives für die BVH erstellt und sichergegangen wird, dass überhaupt Primitives in der Szene existieren, wird die \emph{Root-Node} erstellt. Diese wird auf einen Stack gelegt. 
+Nachdem eine Kopie der Primitives für die BVH erstellt und sichergegangen wurde, dass überhaupt Primitives in der Szene existieren, wird die \emph{Root-Node} erstellt. Diese wird auf einen Stack gelegt. 
 
-Solange Nodes auf dem Stack liegen, wird der oberste vom Stack genommen und behandelt. Nachdem die längste Achse der korrespondierenden AABB berechnet wurde, wird die ausgewählte Split-Funtion mit den Primitives des Nodes und der Achse aufgerufen. Die daraus resultierenden Indizes werden verwendet um die Primitives aufzuteilen. Falls keine Indizes zurückgegeben werden, wird der behandelte Node als Leaf angesehen und der Schleifendurchlauf abgebrochen. Für alle neuen Teilmengen werden dann neue AABBs berechnet und neue Nodes erstellt. Diese neue Nodes werden in den behandelten Nodes als Child-Nodes referenziert. Daraufhin werden sie auf den Stack gelegt und die Schleife beginnt von neuen. 
+Solange Nodes auf dem Stack liegen, wird der Oberste vom Stack genommen und behandelt. Nachdem die längste Achse der korrespondierenden AABB berechnet wurde, wird die ausgewählte Split-Funtion mit den Primitives des Nodes und der Achse aufgerufen. Die daraus resultierenden Indizes werden verwendet, um die Primitives aufzuteilen. Falls keine Indizes zurückgegeben werden, wird der behandelte Node als Leaf angesehen und der Schleifendurchlauf abgebrochen. Für alle neuen Teilmengen werden dann neue AABBs berechnet und neue Nodes erstellt. Diese neuen Nodes werden in den behandelten Nodes als Child-Nodes referenziert. Daraufhin werden sie auf den Stack gelegt und die Schleife beginnt von neuem. 
 
 Letztendlich wird eine BVH-Instanz mit dem zuerst berechneten Root-Node und der Kopie aller Primitives zurückgegeben. 
 
@@ -489,7 +491,7 @@ end function
 
 \subsubsection{Median Split}
 
-Der Median-Split ist die einfachste Variante einer Split-Funtion. Die Menge der Primitives wird in, vom Verzweigungsgrad abhängige, gleichgroße Teile gespalten. Dafür wird die Menge der Primitives $n$ durch den Verzweigungsgrad geteilt um die Größe einer Teilmenge zu bestimmen. Vielfache dieser Zahl innerhalb des Intervalls $(0, n)$ werden als Indizes für das Splitting verwendet. Allerdings muss dafür noch die Menge an Primitives, entlang der gegebenen Achse, partiell Sortiert werden, sodass für alle Indizes gilt, dass der Mittelpunkt der Position der Primitives links des Index kleiner sind als die rechts des Indexes.   
+Der Median-Split ist die einfachste Variante einer Split-Funtion. Die Menge der Primitives wird in, vom Verzweigungsgrad abhängige, gleichgroße Teile gespalten. Dafür wird die Menge der Primitives $n$ durch den Verzweigungsgrad geteilt um die Größe einer Teilmenge zu bestimmen. Vielfache dieser Zahl innerhalb des Intervalls $(0, n)$ werden als Indizes für das Splitting verwendet. Allerdings muss dafür noch die Menge an Primitives, entlang der gegebenen Achse, partiell Sortiert werden. Dies geschiet, sodass für alle Indizes gilt, dass der Mittelpunkt der Position der Primitives links des Index kleiner sind als die rechts des Indexes.   
 
 \begin{lstlisting}[style=codestyle,caption={Median Partition}]
 function medianSplit(primitives, axis, degree):
@@ -523,7 +525,7 @@ c(i) = Area(\mathrm{AABB}(P_L)) \cdot |P_L| + Area(\mathrm{AABB}(P_R)) \cdot |P_
 \]
 Dabei beschreibt $Area(\cdot)$ den Oberflächeninhalt der AABB der Teilmenge. Gewählt wird Split-Index $i$ für den $c(i)$ minimal ist. Das errechnen der kosten geschieht in $O(n)$
 
-Für Wide BVHs wird dieser Vorgang greedily mehrfach wiederholt, bis der gewünschte Verzweigungsgrad erreicht ist. Dafür wird das Segment, bzw. die Teilmenge an Primitives für den Algorithmus berücksichtig, welches die aktuell höchsten SAH-Kosten entstehen lässt. Insgesamt entstehen dadurch $k - 1$ Split-Indizes, die $k$ Teilmengen definieren. 
+Für Wide BVHs wird dieser Vorgang \emph{greedily} mehrfach wiederholt, bis der gewünschte Verzweigungsgrad erreicht ist. Dafür wird das Segment, bzw. die Teilmenge an Primitives für den Algorithmus berücksichtig, welches die aktuell höchsten SAH-Kosten entstehen lässt. Insgesamt entstehen dadurch $k - 1$ Split-Indizes, die $k$ Teilmengen definieren. 
 
 \begin{lstlisting}[style=codestyle,caption={Surface Area Heuristic Partition},mathescape]
 function sahSplit(primitives, axis, degree):
@@ -573,7 +575,7 @@ end function
 \end{lstlisting}
 
 \subsubsection{Binned Surface Area Heuristic Split}
-Der Binned-SAH-Split ist eine approximation des vorher beschriebenen SAH-Splits. Die Idee ist es statt jeden Punkt zwischen Primitives als Split-Index in betracht zu ziehen, zuerst die Primitives in $b= 16$ Bins entlang der Achse einzuteilen und dann Splits nur zwischen den Bins zuzulassen. Jeder Bin speichert die Anzahl an enthaltener Primitives und die zusammengefassten Bounds. 
+Der BSAH-Split ist eine Approximation des vorher beschriebenen SAH-Splits. Die Idee ist es statt jeden Punkt zwischen Primitives als Split-Index in betracht zu ziehen, zuerst die Primitives in $b= 16$ Bins entlang der Achse einzuteilen und dann Splits nur zwischen den Bins zuzulassen. Jeder Bin speichert die Anzahl an enthaltener Primitives und die zusammengefassten Bounds. 
 Wieder werden die die Oberflächeninhalte und Menge an Primitives für jeden der möglichen der $b$ Splits vorweg berechnet. Damit sind die Kosten:
 \[
 c(j) = Area(\mathrm{AABB}(Bins_{\le j})) \cdot |P_{\le j}| + Area(\mathrm{AABB}(Bins_{> j})) \cdot |Bins_{> j}|
@@ -639,7 +641,7 @@ Die Kosten für alle möglichen Splits können in diesem Fall in $O(b)$ statt $O
 \subsection{Collapse}
 
 Für das collapse Verfahren wird eine bereits generierte BVH verwendet. Es wird mit einer binären BVH gestartet. Mit jeder Ausführung der Funktion wird der Verzweigungsgrad verdoppelt. Das bedeutet einmalige Ausführung für $k = 4$, zweimalige für $k = 8$ und dreimalige für $k = 16$.  
-Es wird wieder mit einem Stack gearbeitet, angefangen bei der Root-Node. Für jedes Element auf dem Stack gilt: Falls der behandelte Node über Child-nodes verfügt, wird für jeden Child-Node überprüft, ob diese selbst Child-Nodes besitzen. Falls ja werden die Grandchild-Nodes zu den neuen Child-Nodes des behandelten Nodes. Diese werden zuletzt auf den Stack gelegt um in einem späteren Iterationsschritt behandelt zu werden.   
+Es wird wieder mit einem Stack gearbeitet, angefangen bei der Root-Node. Für jedes Element auf dem Stack gilt: Falls der behandelte Node über Child-Nodes verfügt, wird für jeden Child-Node überprüft, ob diese selbst Child-Nodes besitzen. Falls ja, werden die Grandchild-Nodes zu den neuen Child-Nodes des behandelten Nodes. Diese werden zuletzt auf den Stack gelegt, um in einem späteren Iterationsschritt behandelt zu werden.   
 
 \begin{lstlisting}[style=codestyle,caption={BVH-Collapsing}]
     function collapse(bvh):
@@ -740,7 +742,7 @@ Für $k = 8$ ist das k-way splitting für jeden mögliche Kombination an Paramet
 Der Unterschied in der Traversal-Time zwischen den beiden Verfahren erreicht für $k = 16$ seinen Höhepunkt. Hier liegen die Werte für $Speedup_{\text{comparison}}$ von $2,461$ bis $6,052$. Damit ist die Traversal-Time für collapsing je nach Szene für diesen Fall dramatisch langsamer.  
 
 Auch hier schließen die Konfidenzintervalle, abzulesen aus Tabelle~\ref{tab:comparison}, den Speedup-Wert $1$ komplett aus und die p-Werte weisen in jeden Fall auf hochsignifikante Ergebnisse hin. 
-Damit kann man einen praktischen Unterschied zwischen den Verfahren zur erzeugung von Wide BVH erkennen und k-way splitting gegenüber collapsing, vo allem für höhere Verzweigungsgrade, für die Untersuchten Szenen als überlegen ansehen.
+Damit kann man einen praktischen Unterschied zwischen den Verfahren zur Erzeugung von Wide BVH erkennen und k-way splitting gegenüber collapsing, vor allem für höhere Verzweigungsgrade, für alle untersuchten Szenen als überlegen ansehen.
 
 \section{Dynamisches Modell}
 Die dritte und letzte Forschungsfrage untersucht die Modellierung einer dynamischen Szene, bei der die (Re-)Construction der Szene vor jeder Traversal-Phase erforderlich ist. Für die Modellierung wird eine kombinierte Qualitätsmetrik aus Construction- und Traversal-Time verwendet.
@@ -767,7 +769,7 @@ Ebenso entspricht $Speedup_{dynamic} > 1$ einer Verbesserung der kombinierten Me
     \label{fig:dynamic-collapse}
 \end{figure}
 
-Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:dynamic-k-way} und~\ref{fig:dynamic-collapse} \\ die Werte von $Speedup_{\text{dynamic}}$ für $k \in \{4, 8, 16\}$, währen die zu Tabelle~\ref{tab:dynamic} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
+Getrennt nach Wide BVH Methode zeigen die Abbildungen~\ref{fig:dynamic-k-way} und~\ref{fig:dynamic-collapse} die Werte von $Speedup_{\text{dynamic}}$ für $k \in \{4, 8, 16\}$, währen die zu Tabelle~\ref{tab:dynamic} die dazugehörigen Mittelwerte, Konfidenzintervalle und p-Werte für jede Kombination von Szene, Splitting-Verfahren und Wide BVH Methode enthält.
 
 Für $k = 4$ zeigen sich für das überwiegend Verbesserungen für die kombinierte Qualitätsmetrik, allerdings existieren deutliche Unterschiede zwischen den beiden Wide BVH Konstruktionsmethoden. Für k-way splitting liegen die Mittelwerte für $Speedup_{dynamic}$ zwischen $0,987$ und $1,470$, während die Werte fürs collapsing mit $0,931$ bis $1,092$ näher an $1$ liegen.
 Ähnlich der Analyse im statischen Kontext ist der Median-Split bei Verwendung von collapsing mit Werten für $Speedup_{dynamic}$ von $0,931$ bis $0,962$ schlechter als die binäre Referenz, während die Werte für k-way splitting je nach Szene zwischen teils deutlicher Verbesserung mit $Speedup_{dynamic} = 1,236$ und leichter Verschlechterung mit $Speedup_{dynamic} = 0,987$ schwanken.
@@ -786,7 +788,7 @@ Insgesamt schließen die Konfidenzintervalle aus der Tabelle~\ref{tab:dynamic} d
 Vorher wurde gezeigt, dass es teilweise Einsparung in der Traversal-Time für $k = 4$ gegenüber der binären Referenz gab, während es für $k \in \{8, 16\}$ in jedem untersuchten Fall starke Einbußen in der Performance gab.
 
 Für $k = 4$ liegen die Werte bei Nutzung des k-way splittings für Median-Split sowie SAH sowohl über als auch unter $1$ und näheren sich für die größeren untersuchten Modelle immer mehr in Richtung $1$ an. Unter Nutzung des Collapsing-Verfahrens sind die Speedups deutlich wertstabiler. Hier lassen sich klare Negativtrends für den Median-Split und Positivtrends für SAH und BSAH ablesen. Über die verschiedenen $k$ folgen allerdings alle Splitting-Algorithmen dem gleichen Trend.
-Eine plausible Erklärung für die, bis auf den Median-Split, konstante Verbessserung der Ergebnisse, im Fall $k = 4$ mit collapsing, ist ein Abwägung zwischen der Anzahl an inneren Knoten und der Anzahl an auszuführenden AABB-Tests bzw. Kollisionsüberprüfungen zwischen Primärstrahl und Bounding Boxen. Bei höheren Verzweigungsgraden müssen nämlich pro Node mehr Kinder überprüft werden, während es insgesamt aber auch weniger innere Nodes gibt, die überhaupt überprüft werden können. Es lässt sich interpretieren, dass für $k = 4$ die Menge an weniger besuchten Nodes die größere Menge an AABB-Tests noch in den meisten Fällen überkompensiert, während dies ab $k = 8$ nicht mehr der Fall ist. Zur Veranschaulichung dient Abbildung~\ref{fig:aabb-example-collaping} in der man Beispielhaft die Menge an AABB-Tests und Triangle-Tests, bzw. Primärstrahl und Polygon Kollisionen, ablesen kann. 
+Eine plausible Erklärung für die, bis auf den Median-Split, konstante Verbessserung der Ergebnisse, im Fall $k = 4$ mit collapsing, ist ein Abwägung zwischen der Anzahl an inneren Nodes und der Anzahl an auszuführenden AABB-Tests bzw. Kollisionsüberprüfungen zwischen Primärstrahl und Bounding Boxen. Bei höheren Verzweigungsgraden müssen nämlich pro Node mehr Kinder überprüft werden, während es insgesamt aber auch weniger innere Nodes gibt, die überhaupt überprüft werden können. Es lässt sich interpretieren, dass für $k = 4$ die Menge an weniger besuchten Nodes die größere Menge an AABB-Tests noch in den meisten Fällen überkompensiert, während dies ab $k = 8$ nicht mehr der Fall ist. Zur Veranschaulichung dient Abbildung~\ref{fig:aabb-example-collaping} in der man Beispielhaft die Menge an AABB-Tests und Triangle-Tests, bzw. Primärstrahl und Polygon Kollisionen, ablesen kann. 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{results/rq1/hit_ray_analysis_collapse.png}
@@ -805,7 +807,7 @@ Zudem ist wichtig, dass der für $k = 4$ beobachtete Effekt zwar statistisch sig
 \section{Interpretation: K-way splitting gegen collapsing}
 Im Rahmen der Ergebnissvorstellung wurde gezeigt, dass die Messergebnisse für $k = 4$ stark abhängig von der gewählten Szene und dem gewählten Splitting-Algorithmus ausfallen. Die konstante Überlegenheit einer Wide BVH Erzeugungsmethode über alle Kombinationen lässt sich hier nicht erkennen. Interessanter ist das verhalten für steigende $k$. Für untersuchte $k \ge 8$ dominiert das k-way splitting ausnahmslos mit Speedups bis zu einer 6-fachen Geschwindigkeit.
 
-Die naheliegendste Erklärung ist auch hier wieder die die Menge an ausgeführten AABB- und Triange-Tests. Es zeigt sich, dass bei Nutzung vonc collapsing zwar konstant weniger Triangle- bzw. Primitive-Tests durchgeführt werden, es allerdings bei $k = 8$ eine Art Trendumkehrung gibt. Die Menge an eingesparten positiven AABB-Tests reicht nicht mehr aus um die Menge an negativen AABB-Tests und Triangle-Tests zu amortisieren. Beispielhaft lässt sich dies an Abbildung~\ref{fig:aabb-example-mixed} ablesen. Die Nutzung von k-way splitting schein die Menge von negativen AABB-Tests auf kosten von mehr Triangle-Tests konstant niedriger zu halten, während die Menge an negativen AABB-Test fürs collapsing nahezu explodiert. Dies lässt die Vermutung zu, dass collaping deutlich mehr überschneidene AABBs auf hohen Ebenen erzeugt, während es für k-way splitting eher Überschneidungen auf tieferen Ebenen gibt. Da es sehr viel mehr innere Knoten als Primitives gibt, fällt der Effekt deshalb so ungleichmäßig aus. Für $k = 16$ ist der Baum so breit, dass der Effekt auf die Spitze getrieben wird.
+Die naheliegendste Erklärung ist auch hier wieder die die Menge an ausgeführten AABB- und Triange-Tests. Es zeigt sich, dass bei Nutzung von collapsing zwar konstant weniger Triangle- bzw. Primitive-Tests durchgeführt werden, es allerdings bei $k = 8$ eine Art Trendumkehrung gibt. Die Menge an eingesparten positiven AABB-Tests reicht nicht mehr aus um die Menge an negativen AABB-Tests und Triangle-Tests zu amortisieren. Beispielhaft lässt sich dies an Abbildung~\ref{fig:aabb-example-mixed} ablesen. Die Nutzung von k-way splitting schein die Menge von negativen AABB-Tests auf kosten von mehr Triangle-Tests konstant niedriger zu halten, während die Menge an negativen AABB-Test fürs collapsing nahezu explodiert. Dies lässt die Vermutung zu, dass collaping deutlich mehr überschneidene AABBs auf hohen Ebenen erzeugt, während es für k-way splitting eher Überschneidungen auf tieferen Ebenen gibt. Da es sehr viel mehr innere Nodes als Primitives gibt, fällt der Effekt deshalb so ungleichmäßig aus. Für $k = 16$ ist der Baum so breit, dass der Effekt auf die Spitze getrieben wird.
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{results/rq2/hit_ray_analysis_mixed.png}
@@ -815,14 +817,14 @@ Die naheliegendste Erklärung ist auch hier wieder die die Menge an ausgeführte
 Insgesamt lässt sich sagen, dass sich für die Konstruktion von Wide BVH in statischen Szenen k-way splitting empfehlen lässt, auch wenn es für $k = 4$ eher von der gewählten Szene abhängt.  
 
 \section{Interpretation: Dynamisches Modell}
-Für das dynamische Modell wurde gezeigt, dass auch hier $k = 4$ überwiegend bessere Ergebnisse gegenüber der binären Referenz aufzeigt, der Effekt sich allerdings im Durchschnitt mit steigenderm $k$ umzukehren scheint, womit für $k = 8$ und $k = 16$ klar schlechtere Ergebnisse gezeigt werden können. Die einzuige Ausnahme dieser Regel gibt die Verwendung von BSAH in Kombination mit k-way splitting in den beiden größeren untersuchten Szenen, hier in Abbildung~\ref{fig:bsah-example-dynamic} zu sehen. 
+Für das dynamische Modell wurde gezeigt, dass auch hier $k = 4$ überwiegend bessere Ergebnisse gegenüber der binären Referenz aufzeigt, der Effekt sich allerdings im Durchschnitt mit steigenderm $k$ umzukehren scheint, womit für $k = 8$ und $k = 16$ klar schlechtere Ergebnisse gezeigt werden können. Die einzige Ausnahme dieser Regel gibt die Verwendung von BSAH in Kombination mit k-way splitting in den beiden größeren untersuchten Szenen, hier in Abbildung~\ref{fig:bsah-example-dynamic} zu sehen. 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{results/rq3/rq3_bsah_detail.png}
     \caption{Mittelwerte Construction- und Traversal-Time, BSAH, k-way (links) und collapsing (rechts)}
     \label{fig:bsah-example-dynamic}
 \end{figure}
-Bei einem näheren Blick lässt sich erkennen, dass für BSAH unter Verwendung von k-way splitting eine immer kleinere Construction-Time benötigt wird. Gegenüber ist die Construction-Time bei der Nutzung von collapsing über alle Verzweigungsgrade nahezu konstant. Zudem profitiert das k-way splitting von den drastisch kürzeren Traversal-Times für große $k$. Dass die Construction-Times gerade in diesem Fall abnehmen ist logisch, da die verwendete Zeit zur Konstruktion stärker von der gewählten Bin-Größe als von den übrigen Primitiven in der Subszene abhängt. Für größere Verzweigungsgrade werden zwar weniger Konstruktionsiterationen durchgeführt, dafür allerdings häufiger auf größeren Teilmengen der Primitives. Die andern Konstruktionsalgorithmen haben eine stärkere Abhängigkeit von dieser Anzahl. Das collaping wiederum verwendet immer einen Binärbaum als Grundlage, weshalb die Konstruktionszeiten wegen des vergleichsweise sparsamen kollabieren ähnlich bleiben. Da die Konstruktionszeit für kleinere Szenen ohnehin verschwindent gering ist, ist der Effekt hier nicht erkennbar.
+Bei einem näheren Blick lässt sich erkennen, dass für BSAH unter Verwendung von k-way splitting eine immer kleinere Construction-Time benötigt wird. Gegenüber ist die Construction-Time bei der Nutzung von collapsing über alle Verzweigungsgrade nahezu konstant. Zudem profitiert das k-way splitting von den drastisch kürzeren Traversal-Times für große $k$. Dass die Construction-Times gerade in diesem Fall abnehmen ist logisch, da die verwendete Zeit zur Konstruktion stärker von der gewählten Bin-Größe als von den übrigen Primitives in der Subszene abhängt. Für größere Verzweigungsgrade werden zwar weniger Konstruktionsiterationen durchgeführt, dafür allerdings häufiger auf größeren Teilmengen der Primitives. Die anderen Konstruktionsalgorithmen haben eine stärkere Abhängigkeit von dieser Anzahl. Das collaping wiederum verwendet immer einen Binärbaum als Grundlage, weshalb die Konstruktionszeiten wegen des vergleichsweise sparsamen kollabieren ähnlich bleiben. Da die Konstruktionszeit für kleinere Szenen ohnehin verschwindent gering ist, ist der Effekt hier nicht erkennbar.
 
 Zusammenfassend kann man sagen, dass BSAH in Kombination mit k-way splitting die besten Indizien für eine Nutzung in einem dynamischen Kontext vorweist, unabhängig von Verzweigungsgrad, allerdings abhängig von der Szenengröße. Dazu lässt sich eine Empfehlung für $k = 4$ aussprechen, hier ist der Speedup der kombinierten Qualitätsmetrik auf seinem Maximum.
 
@@ -843,22 +845,22 @@ Alle besprochenen Ergebnisse gelten innerhalb der folgenden Annahmen:
 Darüber hinaus sorgt die Menge an lediglich vier untersuchten Szenen, sowie ihre ähnliche Beschaffenheit für eine begrenzte Aussagekraft. Die Verteilung der untersuchten Rays ergibt sich aus der vorgegebenen Kamerafahrt um den Ursprung der Szene und nicht aus der Untersuchung von Sekundärstrahlen durch z.B. die Berechnung von Schatten. Metriken wie AABB- und Triangle-Tests wurde nur für ausgewählte Beispiele erhoben und bieten keine Grundlage für eine ausgiebige Analyse. Für klare Belege der im Diskussionsteil besprochenen Thesen sind weitere messungen und statistische Analyse von nöten. 
 
 \section{Ausblick}
-Fortlaufend bietet es sich an die Stichprobe an Szenen zu erweitern. Mehr und vor allem größere Szenen, sowie komplexere Szenen mit Kameraursprung innerhalb der Szene bieten Forschungsspielraum. Zudem wäre eine Untersuchung, die nicht nur Primärstrahlen überprüft, sondern auch Shadingeffekte, durch z.B. \emph{Ambient Occlusion}, denkbar. Auch wäre eine quantitative Untersuchung der AABB- und Triangle-Tests sinnvoll, um die hier genannten Erklärungen zu untermauern. zudem wäre eine Untersuchung verschiedener Bin-Größen für BSAH von Interesse, sowie unterschiedliche Abbruchkriterien bei der Konstruktion. 
+Fortlaufend bietet es sich an die Stichprobe an Szenen zu erweitern. Mehr und vor allem größere Szenen, sowie komplexere Szenen mit Kameraursprung innerhalb der Szene bieten Forschungsspielraum. Zudem wäre eine Untersuchung, die nicht nur Primärstrahlen überprüft, sondern auch Shadingeffekte, durch z.B. \emph{Ambient Occlusion}, denkbar. Auch wäre eine quantitative Untersuchung der AABB- und Triangle-Tests sinnvoll, um die hier genannten Erklärungen zu untermauern. Auf algoritmischer Ebene wäre eine Untersuchung verschiedener Bin-Größen für BSAH von Interesse, sowie unterschiedliche Abbruchkriterien bei der Konstruktion. 
 
 \newpage
 \chapter{Fazit}
 Der Fokus dieser Arbeit war die analytische Bewertung der Qualität von Top-Down konstruierten Wide BVHs in statischen 3D Szenen aufbauend auf serieller Berechnungen. Dabei gab es das Ziel herauszufinden, ob Wide BVH alleinig auf struktureller bzw. algorithmischer Ebene einen Vorteil gegenüber binärer BVHs innehaben, auch wenn der Vorteil der parallelisierten Berechnung wegfällt.
 
-Im Rahmen der ersten Forschungsfrage zeigten die Messungen, dass $k = 4$ der einzig versuchte Verzweigungsgrad ist, der gegenüber $k = 2$ überhaupt potenzielle verbesserungen in der Traversal-Time aufweist. Allerdings sind diese Ergebnisse nicht universell anwendbar, da die Speedups von leichten einbußen bis hin zu klaren Gewinnen reichen, mit Mittelwerten zwischen $0,932$ und $1,234$, wobei die Ergebnisse zwischen Nutzung von k-way splitting und collapsing variieren. Dabei ist zu erwähnen, dass der Median Split in Kombination mit collapsing für $k = 4$ immer Speedups unter $1$ generiert, während die beiden Heuristiken überwiegend Verbesserungen gegenüber der Referenz aufweisen. Für $k \ge 8$ verschlechtert sich die Traversal-Time konsistent über alle untersuchten konfigurationen hinweg, was Wide BVh mit höheren Verzweigungsgraden insgesamt unattraktiv für die Verwendung in statischen Szenen bei serieller Berechnungen macht.
+Im Rahmen der ersten Forschungsfrage zeigten die Messungen, dass $k = 4$ der einzig versuchte Verzweigungsgrad ist, der gegenüber $k = 2$ überhaupt potenzielle Verbesserungen in der Traversal-Time aufweist. Allerdings sind diese Ergebnisse nicht universell anwendbar, da die Speedups von leichten einbußen bis hin zu klaren Gewinnen reichen, mit Mittelwerten zwischen $0,932$ und $1,234$, wobei die Ergebnisse zwischen Nutzung von k-way splitting und collapsing variieren. Dabei ist zu erwähnen, dass der Median Split in Kombination mit collapsing für $k = 4$ immer Speedups unter $1$ generiert, während die beiden Heuristiken überwiegend Verbesserungen gegenüber der Referenz aufweisen. Für $k \ge 8$ verschlechtert sich die Traversal-Time konsistent über alle untersuchten Konfigurationen hinweg, was Wide BVH mit höheren Verzweigungsgraden insgesamt unattraktiv für die Verwendung in statischen Szenen bei serieller Berechnungen macht.
 
-Die Untersuchung der zweiten Forschungsfrage hat ergeben, dass der Unterschied in der Traversal-Time der gegeben Wide BVH Erzeugungsmethode mit steigenden $k$ stark zunimmt. Insgesamt liegen die Speedups für $k = 4$ im Vergleich nahe bei $1$, sind allerdings abhängig vom gewählten Splitting-Algorithmus. Während k-way splitting durch den Median-Split begünstigt wird, gibt es in den untersuchten Fällen bei der Nutzung von  collapsing einen Vorteil durch BSAH. SAh liefert hier keinen klaren Trend. 
+Die Untersuchung der zweiten Forschungsfrage hat ergeben, dass der Unterschied in der Traversal-Time der gegeben Wide BVH Erzeugungsmethode mit steigenden $k$ stark zunimmt. Insgesamt liegen die Speedups für $k = 4$ im Vergleich nahe bei $1$, sind allerdings abhängig vom gewählten Splitting-Algorithmus. Während k-way splitting durch den Median-Split begünstigt wird, gibt es in den untersuchten Fällen bei der Nutzung von collapsing einen Vorteil durch BSAH. SAH liefert hier keinen klaren Trend. 
 Einen großen Unterschied gibt es für $k \ge 8$, wobei die BVH, die durch k-way splitting erzeugt wurden immer bessere Traversal-Times liefern. Für $k = 16$ spitzt sich dies auf einen bis zu 6-fachen Vorteil zusammen. 
 Damit ist die Empfehlung klar für größere $k$ auf eine durch k-way splitting konstruiierte BVH zu setzen.
 
-Für die Modellierung einer dynamischen Szene durch eine kombinierte Metrik aus \linebreak Construction- und Traversal-Time im Rahmen der letzten Forschungsfrage, zeigt sich ein stark differenziertes Bild. Für $k = 4$ liefert insgesamt im Durchschnitt die beste Verbesserung, wobei im Fall des collapsings der Median-Split ähnlich der ersten Forschungsfrage gegenüber der binären Referenz unterliegt. Für $k \ge 8$ unterliegt collapsing auch im dynamischen Modell konsequent. Für k-way splitting treten allerdings in einzelnen Konfigurationen, namentlich unter der Verwendung von BSAH in größeren Szenen, deutliche verbesserungen gegenüber $k = 2$ auf. Dies lässt sich durch sinkende Construction-Times erklären, die im dynamsichen Modell die Gesamtzeit im Falle von k-way splitting stark beeinflussen.
+Für die Modellierung einer dynamischen Szene durch eine kombinierte Metrik aus \linebreak Construction- und Traversal-Time im Rahmen der letzten Forschungsfrage, zeigt sich ein stark differenziertes Bild. Für $k = 4$ liefert insgesamt im Durchschnitt die beste Verbesserung, wobei im Fall des collapsings der Median-Split ähnlich der ersten Forschungsfrage gegenüber der binären Referenz unterliegt. Für $k \ge 8$ unterliegt collapsing auch im dynamischen Modell konsequent. Für k-way splitting treten allerdings in einzelnen Konfigurationen, namentlich unter der Verwendung von BSAH in größeren Szenen, deutliche Verbesserungen gegenüber $k = 2$ auf. Dies lässt sich durch sinkende Construction-Times erklären, die im dynamsichen Modell die Gesamtzeit im Falle von k-way splitting stark beeinflussen.
 Damit kann man diese spezifische Konfiguration als klaren Gewinner im dynamischen Modell sehen. Währenddessen sollte auch hier die Nutzung von collapsing wegen seiner schlechten Traversal-Times für große $k$ vermieden werden. 
 
-Zusammengefasst lässt sich sagen, dass für die serielle Traversal auf der CPU in statsiche nSzenen $k = 2$ nicht als robuster Standard abgelöst werden kann. Für Szenen oder Splitting-Algorithmen abhängige Algorithmen kann $k = 4$ sinnvoll sein. Allerdings sind $k \ge 8$ allgemein nicht zu empfehlen, genauso wie die Nutzung von collapsing in höheren Verzweigungsgrade. 
+Zusammengefasst lässt sich sagen, dass für die serielle Traversal auf der CPU in statsichen Szenen $k = 2$ nicht als robuster Standard abgelöst werden kann. Für Szenen oder Splitting-Algorithmen abhängige Algorithmen kann $k = 4$ sinnvoll sein. Allerdings sind $k \ge 8$ allgemein nicht zu empfehlen, genauso wie die Nutzung von collapsing in höheren Verzweigungsgraden. 
 
 Ein wichtiger nächster Schritt wäre die Messungen mit einer größeren Menge an Szenen mit höherer Polygonanzahl durchzuführen, um den Zusammenhang zwischen Szenengröße und Verzweigungsgrad näher zu ergründen. Gerade im dynamischen Modell unter Nutzung einer mit BSAH und k-way splitting erzeugten Wide BVH lassen sich noch viele mögliche Forschungsfragen klären.  
 Zudem wäre es interessant das Verhalten der BVHs unter der Nutzung von anderen Ray-Verteilungen durch beispielsweise Shader-Berechnung mit Hilfe von Sekundärstrahlen oder Ähnlichem zu beleuchten.
