@@ -440,30 +440,25 @@ Letztendlich wird eine BVH-Instanz mit dem zuerst berechneten Root-Node und der 
 function build(inputPrimitives, partitionFunction):
     // move input primitives into a single owned list inside the BVH
     ownedPrimitives := copy of inputPrimitives
-
     if ownedPrimitives is empty then
         return BVH(root = emptyRoot, primitives = ownedPrimitives)
     end if
 
     // compute global bounds of all primitives
     box := computeBoundingBox(ownedPrimitives)
-
     // create BVH with a single root node
     rootNode := BVHNode(box       = box,
                        primitives = ownedPrimitives
                        children   = empty list)
     bvh      := BVH(root = rootNode, primitives = ownedPrimitives)
-
     // stack of nodes to process
     nodes := empty list
     push(nodes, bvh.root)
 
     while nodes is not empty do
         node := pop(nodes)
-
         // choose splitting axis based on longest extent
         axis := calculateLongestAxis(node.box)
-
         // Find right subsets according to partitionFunction
         splitIndices      := partitionFunction(primitives, axis)
         if splitIndices is empty then
@@ -478,7 +473,6 @@ function build(inputPrimitives, partitionFunction):
                                     children   = empty list)
             append child to node.children
         end for
-
         // push children onto stack for further splitting
         for each child in node.children do
             push(nodes, reference to child)
@@ -523,7 +517,7 @@ Beim SAH-Split wird zunächst die Menge an behandelten Primitives entlang der l�
 \[
 c(i) = Area(\mathrm{AABB}(P_L)) \cdot |P_L| + Area(\mathrm{AABB}(P_R)) \cdot |P_R|
 \]
-Dabei beschreibt $Area(\cdot)$ den Oberflächeninhalt der AABB der Teilmenge. Gewählt wird Split-Index $i$ für den $c(i)$ minimal ist. Das errechnen der kosten geschieht in $O(n)$
+Dabei beschreibt $Area$ den Oberflächeninhalt der AABB der Teilmenge. Gewählt wird Split-Index $i$ für den $c(i)$ minimal ist. Das errechnen der kosten geschieht in $O(n)$
 
 Für Wide BVHs wird dieser Vorgang \emph{greedily} mehrfach wiederholt, bis der gewünschte Verzweigungsgrad erreicht ist. Dafür wird das Segment, bzw. die Teilmenge an Primitives für den Algorithmus berücksichtig, welches die aktuell höchsten SAH-Kosten entstehen lässt. Insgesamt entstehen dadurch $k - 1$ Split-Indizes, die $k$ Teilmengen definieren. 
 
@@ -584,21 +578,17 @@ Die Kosten für alle möglichen Splits können in diesem Fall in $O(b)$ statt $O
 
 \begin{lstlisting}[style=codestyle,caption={Binned Surface Area Heuristic Partition},mathescape]
     function binnedSahSplit(primitives, axis, degree): 
-    
         Bin_SIZE := 16  // b
-
         count := primitives.size()
         if isLeaf(count, degree) then
             return {}
         end if
-        
         //O(n * log(n))
         sort(set = primitives,
              compare(primitiveA, primitiveB):
                  return center(primitiveA).component(axis) < center(primitiveB).component(axis))
     
         struct Bin {count; bounds}        
-        
         bins := sortPrimitivesIntoBins(primitives, BIN_SIZE) //O(n)
 
         splitIndices := empty list
@@ -611,7 +601,6 @@ Die Kosten für alle möglichen Splits können in diesem Fall in $O(b)$ statt $O
             prefixBoundingBoxes := calculatePrefix(seg)  //O(b)
             // bounds of primitives from segment from index to end (included)
             suffixBoundingBoxes := calculateSuffix(seg) // O(b)
-
             
             segCount := seg.count() 
             split   := segCount / 2 // default
@@ -625,14 +614,12 @@ Die Kosten für alle möglichen Splits können in diesem Fall in $O(b)$ statt $O
                     split   := i
                 end if
             end for
-            
             absoluteSplit := calculateAbsoluteSplit(bins, split)
             push(splitIndices, absoluteSplit)
             erase(segments, seg)
             //push subsets
             push(segments, seg[seg.begin, split])
             push(segments, seg[split, seg.end])
-
         end do
         return splitIndices
     end function
