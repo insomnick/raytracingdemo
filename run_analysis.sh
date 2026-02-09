@@ -56,7 +56,7 @@ fi
 # Check if dependencies are installed
 if ! python -c "import pandas, matplotlib, seaborn, numpy, scipy" 2>/dev/null; then
     echo "Installing dependencies..."
-    if ! pip install -r requirements.txt; then
+    if ! pip install -r scripts/requirements.txt; then
         echo "ERROR: Failed to install Python dependencies!"
         exit 1
     fi
@@ -66,20 +66,18 @@ echo "============================================"
 
 # Validate test data
 echo "Running data validation..."
-if ! python validate_data.py testruns; then
+if ! python scripts/validate_data.py testruns; then
     echo "ERROR: Data validation failed!"
     exit 1
 fi
 
 # Run the analysis
 echo "Running performance analysis..."
-if ! python bvh_analysis.py "$@"; then
+if ! python scripts/bvh_analysis.py "$@"; then
     echo "ERROR: Performance analysis failed!"
     exit 1
 fi
 
 echo "DONE"
 echo "============================================"
-echo "Analysis completed successfully! Check the generated files:"
-echo "performance_key_metrics.png"
-echo "performance_trends.png"
+echo "Analysis completed successfully! Check out other scripst for detailed analysis and visualizations."
