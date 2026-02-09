@@ -39,50 +39,53 @@ static constexpr int SCREEN_HEIGHT = 500;
 static std::vector<Hit> ray_hits(SCREEN_WIDTH * SCREEN_HEIGHT); //positions and normals of hits
 static std::array<std::array<Color, SCREEN_HEIGHT>, SCREEN_WIDTH> screen; // pixel colors
 
-GLFWwindow* window;
+GLFWwindow *window;
 
 void drawScreen();
+
 double mapToScreen(int j, int height);
-void calculateScreen(StackBVH& bvh, Camera& camera);
-static int shadeScreen(const Vector3& camera_pos);
-std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_scale=1.0);
+
+void calculateScreen(StackBVH &bvh, Camera &camera);
+
+static int shadeScreen(const Vector3 &camera_pos);
+
+std::vector<Primitive *> setupScene(const std::string &obj_filename, double obj_scale = 1.0);
+
 int setupOpenGL();
-void runTest(const TestrunConfiguration& config);
+
+void runTest(const TestrunConfiguration &config);
 
 
 int main() {
-
     std::multimap<std::string, int> bvh_algorithms = {
-             //  { "bsah",    2 },
-             // { "bsah",    4 },
-             // { "bsah",    8 },
-             // { "bsah",    16 },
-             // { "bsah-c",    4 },
-             // { "bsah-c",    8 },
-             // { "bsah-c",    16 },
-            //  { "sah",    2 },
-            //  { "sah",    4 },
-            //  { "sah",    8 },
-            //  { "sah",    16 },
-           //{ "median", 2 },
-           //{ "median", 4 },
-           //{ "median", 8 },
-           //{ "median", 16 },
-           //   { "sah-c",    4 },
-           //   { "sah-c",    8 },
-           //   { "sah-c",    16 },
-           //   { "median-c", 4 },
-           //   { "median-c", 8 },
-           //   { "median-c", 16 },
+        {"bsah", 2},
+        {"bsah", 4},
+        {"bsah", 8},
+        {"bsah", 16},
+        {"bsah-c", 4},
+        {"bsah-c", 8},
+        {"bsah-c", 16},
+        {"sah", 2},
+        {"sah", 4},
+        {"sah", 8},
+        {"sah", 16},
+        {"median", 2},
+        {"median", 4},
+        {"median", 8},
+        {"median", 16},
+        {"sah-c", 4},
+        {"sah-c", 8},
+        {"sah-c", 16},
+        {"median-c", 4},
+        {"median-c", 8},
+        {"median-c", 16},
     };
-    std::map<std::string, double> object_files= {
-              { "stanford-bunny.obj", 30.0}
-            , { "teapot.obj",        1.0 }
-            , { "suzanne.obj",       3.0 }
-            , { "armadillo.obj",         0.035 }
+    std::map<std::string, double> object_files = {
+        {"stanford-bunny.obj", 30.0}, {"teapot.obj", 1.0}, {"suzanne.obj", 3.0}, {"armadillo.obj", 0.035}
     };
-    for (int i = 0; i < 10; i++) {  // 10 repetitions
-        for (const auto& [bvh_algorithm, bvh_degree] : bvh_algorithms) {
+    for (int i = 0; i < 10; i++) {
+        // 10 repetitions
+        for (const auto &[bvh_algorithm, bvh_degree]: bvh_algorithms) {
             for (const auto &[object_file, object_scale]: object_files) {
                 constexpr int camera_path_resolution = 36;
                 constexpr bool no_window = true;
@@ -93,7 +96,7 @@ int main() {
                     .bvh_degree = bvh_degree,
                     .camera_path_resolution = camera_path_resolution,
                     .no_window = no_window
-            };
+                };
                 runTest(config);
             };
         }
@@ -101,8 +104,7 @@ int main() {
     return 0;
 }
 
-void runTest(const TestrunConfiguration& config) {
-
+void runTest(const TestrunConfiguration &config) {
     Camera camera{SCREEN_WIDTH, SCREEN_HEIGHT};
 
     Timer timer;
@@ -110,11 +112,11 @@ void runTest(const TestrunConfiguration& config) {
     std::string object_file = config.object_file;
     int bvh_degree = config.bvh_degree;
     std::string algorithm_name = config.bvh_algorithm;
-    std::vector<Primitive*> objects = setupScene(object_file, config.object_scale);
+    std::vector<Primitive *> objects = setupScene(object_file, config.object_scale);
 
     //calculate object center ( center of all centers )
     Vector3 object_center{0.0, 0.0, 0.0};
-    for (auto & obj : objects) {
+    for (auto &obj: objects) {
         object_center = object_center + obj->getCenter();
     }
     object_center = object_center * (1.0 / static_cast<double>(objects.size()));
@@ -122,7 +124,7 @@ void runTest(const TestrunConfiguration& config) {
 
     bool collapse = false;
     std::vector<std::size_t> (*partition_function)(const std::vector<Primitive *>::iterator &begin,
-                                      const std::vector<Primitive *>::iterator &end, const int axis);
+                                                   const std::vector<Primitive *>::iterator &end, const int axis);
     if (algorithm_name == "sah-c") {
         printf("Using SAH with collapse...\n");
         partition_function = StackBVH::sah2Split;
@@ -182,15 +184,15 @@ void runTest(const TestrunConfiguration& config) {
             case 2:
                 printf("Using median-2...\n");
                 partition_function = StackBVH::median2Split;
-            break;
+                break;
             case 4:
                 printf("Using median-4...\n");
                 partition_function = StackBVH::median4Split;
-            break;
+                break;
             case 8:
                 printf("Using median-8...\n");
                 partition_function = StackBVH::median8Split;
-            break;
+                break;
             case 16:
                 printf("Using median-16...\n");
                 partition_function = StackBVH::median16Split;
@@ -198,7 +200,7 @@ void runTest(const TestrunConfiguration& config) {
             default:
                 throw std::invalid_argument("Unsupported bvh degree");
         }
-    }else {
+    } else {
         throw std::out_of_range("Unknown algorithm");
     }
 
@@ -206,7 +208,7 @@ void runTest(const TestrunConfiguration& config) {
     int collapse_iterations = static_cast<int>(std::log2(bvh_degree)) - 1;
 
     std::string algorithm_full_name = algorithm_name + "-" + std::to_string(bvh_degree);
-    std::vector<Primitive*> emp;
+    std::vector<Primitive *> emp;
     StackBVH bvh = StackBVH::build(emp, partition_function);
     //Build BVH time calculation
     double elapsed = 0.0;
@@ -222,7 +224,7 @@ void runTest(const TestrunConfiguration& config) {
         printf("Time build BVH using %s Split: %f \n", algorithm_full_name.c_str(), elapsed);
     }
 
-    if(!config.no_window) {
+    if (!config.no_window) {
         if (setupOpenGL() != 0) {
             std::cerr << "Failed to initialize OpenGL context.\n";
             return;
@@ -230,12 +232,13 @@ void runTest(const TestrunConfiguration& config) {
     }
     //App loop
     int resolution = config.camera_path_resolution;
-    CameraPath camera_path(camera.getPosition() - Vector3{0.0, 0.0, 5.0}, resolution);   //TODO: hacky position change later
+    CameraPath camera_path(camera.getPosition() - Vector3{0.0, 0.0, 5.0}, resolution);
+    //TODO: hacky position change later
     int path_step = 0;
     while (true) {
         //Camera update for path
-        if(path_step >= resolution) {
-            break;  //Testrun end
+        if (path_step >= resolution) {
+            break; //Testrun end
         }
 
         Ray cam_ray = camera_path.circularPath(path_step);
@@ -243,30 +246,32 @@ void runTest(const TestrunConfiguration& config) {
         camera.setDirection(cam_ray.getDirection());
         path_step++;
 
-        if(!config.no_window) {
+        if (!config.no_window) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
 
         timer.reset();
-        calculateScreen(bvh, camera);   //MAGIC: fills ray_hits
+        calculateScreen(bvh, camera); //MAGIC: fills ray_hits
         elapsed = timer.elapsed();
         //printf("Time calculate Screen: %f \n", elapsed);
         bm.saveDataFrame("render_times.csv", object_file, config.object_scale, algorithm_full_name, camera, elapsed);
 
         //calculate hit rays
         const int hitrayCount = shadeScreen(camera.getPosition());
-        bm.saveDataFrame("shading_times.csv", object_file, config.object_scale,algorithm_full_name, camera, static_cast<double>(hitrayCount));
+        bm.saveDataFrame("shading_times.csv", object_file, config.object_scale, algorithm_full_name, camera,
+                         static_cast<double>(hitrayCount));
         //Save image of frame as .ppm
         bm.saveScreen<SCREEN_WIDTH, SCREEN_HEIGHT>(screen);
 
-        if(!config.no_window) {
+        if (!config.no_window) {
             timer.reset();
-            drawScreen();   //just screen drawing (out of scope for now)
+            drawScreen(); //just screen drawing (out of scope for now)
             elapsed = timer.elapsed();
             //printf("Time draw Screen: %f \n", elapsed);
-            bm.saveDataFrame("drawing_times.csv", object_file, config.object_scale, algorithm_full_name, camera, elapsed);
+            bm.saveDataFrame("drawing_times.csv", object_file, config.object_scale, algorithm_full_name, camera,
+                             elapsed);
 
-            if(glfwWindowShouldClose(window)) {
+            if (glfwWindowShouldClose(window)) {
                 break;
             }
             //GLFW magic for screen drawing and events
@@ -274,18 +279,17 @@ void runTest(const TestrunConfiguration& config) {
             glfwPollEvents();
         }
     }
-    if(!config.no_window) {
+    if (!config.no_window) {
         glfwTerminate();
     }
 
     //delete objects TODO: do this smarter later
-    for (auto & obj : objects) {
+    for (auto &obj: objects) {
         delete obj;
     }
 }
 
 int setupOpenGL() {
-
     //Init GLFW
     if (!glfwInit())
         return -1;
@@ -295,28 +299,27 @@ int setupOpenGL() {
         return -1;
     }
     glfwMakeContextCurrent(window);
-    if(!gladLoadGL())
+    if (!gladLoadGL())
         return -1;
 
     return 0;
 }
 
-std::vector<Primitive*> setupScene(const std::string& obj_filename, double obj_scale) {
-
+std::vector<Primitive *> setupScene(const std::string &obj_filename, double obj_scale) {
     std::vector<Triangle> loaded_object;
     auto file = ObjectLoader::loadFromFile("example/" + obj_filename, obj_scale);
     loaded_object.insert(loaded_object.end(), file.begin(), file.end());
     printf("Loaded %zu triangles from OBJ file \'%s\'\n", loaded_object.size(), obj_filename.c_str());
     //convert to ptrs
-    std::vector<Primitive*> loaded_object_ptrs;
+    std::vector<Primitive *> loaded_object_ptrs;
     loaded_object_ptrs.reserve(loaded_object.size());
-    for (auto & obj : loaded_object) {
+    for (auto &obj: loaded_object) {
         loaded_object_ptrs.push_back(new Triangle(obj));
     }
     return loaded_object_ptrs;
 }
 
-void calculateScreen(StackBVH& bvh, Camera& camera) {
+void calculateScreen(StackBVH &bvh, Camera &camera) {
     const Vector3 camera_pos = camera.getPosition();
     const Vector3 camera_dir = camera.getDirection();
     const Vector3 world_up{0.0, 1.0, 0.0};
@@ -345,12 +348,12 @@ void calculateScreen(StackBVH& bvh, Camera& camera) {
     }
 }
 
-static int shadeScreen(const Vector3& camera_pos) {
+static int shadeScreen(const Vector3 &camera_pos) {
     int hitrayCount = 0;
     for (int i = 0; i < SCREEN_WIDTH; ++i) {
         for (int j = 0; j < SCREEN_HEIGHT; ++j) {
             const int idx = j + i * SCREEN_HEIGHT;
-            const Hit& h = ray_hits[idx];
+            const Hit &h = ray_hits[idx];
             if (!h.hit) {
                 screen[i][j] = Color(0.0, 0.0, 0.0);
                 continue;
@@ -381,10 +384,10 @@ static int shadeScreen(const Vector3& camera_pos) {
 void drawScreen() {
     glBegin(GL_POINTS);
     /* Render here */
-    for(int i = 0; i < SCREEN_WIDTH; i++)  {
-        for(int j = 0; j < SCREEN_HEIGHT; j++) {
+    for (int i = 0; i < SCREEN_WIDTH; i++) {
+        for (int j = 0; j < SCREEN_HEIGHT; j++) {
             const auto c = screen[i][j];
-            glColor3d(c.r(),c.g(),c.b());
+            glColor3d(c.r(), c.g(), c.b());
             // invert j so row 0 (treated as top in calculateScreen) is rendered at y=+1
             glVertex2d(mapToScreen(i, SCREEN_WIDTH),
                        mapToScreen(SCREEN_HEIGHT - 1 - j, SCREEN_HEIGHT));
