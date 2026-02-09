@@ -114,7 +114,7 @@ Hiermit erkläre ich, die vorliegende Bachelorarbeit selbstständig verfasst und
 \chapter*{Zusammenfassung}
 Bounding Volume Hierarchies (BVHs) gehören zu den wichtigsten Beschleunigungsdatenstrukturen zur effizienten Berechnung von Ray-Szenen-Schnittpunkten in der Bildprojektion. Während Wide BVHs (Verzweigungsgrad $k > 2$) bereits im Zusammenhang mit Optimierung durch GPU-Berechnung untersucht werden, ist es weniger klar, ob sie auch einen praktischen Vorteil durch ihre Struktur bieten, die über die Parallelisierbarkeit hinausgeht. Falls auch eine Verbesserung bei serieller Berechnung auf der CPU gesehen werden kann, ergibt das neue Einblicke in die Optimierungsmöglichkeiten durch Wide BVH.
 
-Diese Arbeit untersucht Top-Down konstruierte BVH in statischen dreidimensionalen Szenen für Verzweigungsgrade $k \in \{2, 4 ,8 ,16\}$. Dies geschieht unter Berücksichtigung von drei Splitting-Verfahren (Median, Surface Area Heuristic und Binned Surface Area Heuristic), sowie zwei Methoden zur Erzeugung von Wide BVHs (k-way splitting und binary BVH collapse). Dabei steht die Traversal-Time als primäres und die Construction-Time als sekundäres Qualitätsmerkmal im Fokus. Zudem wird durch eine Kombination der beiden Qualitätsmetriken das Szenario einer dynamischer Szene modelliert.
+Diese Arbeit untersucht Top-Down konstruierte BVH in statischen dreidimensionalen Szenen für Verzweigungsgrade $k \in \{2, 4 ,8 ,16\}$. Dies geschieht unter Berücksichtigung von drei Splitting-Verfahren (Median, Surface Area Heuristic und Binned Surface Area Heuristic), sowie zwei Methoden zur Erzeugung von Wide BVHs (k-way splitting und binary BVH collaping). Dabei steht die Traversal-Time als primäres und die Construction-Time als sekundäres Qualitätsmerkmal im Fokus. Zudem wird durch eine Kombination der beiden Qualitätsmetriken das Szenario einer dynamischer Szene modelliert.
 
 Für statische Szenen zeigt $k = 4$ gegenüber der referenz $k = 2$ keinen einheitlichen Trend für alle Kombinationen an Parametern. Abhängig von Splitting-Verfahren und Wide BVH Erzeugungsmethode liegen die dazugehörigen Speedups zwischen $0,932$ und $1,234$. Insbesondere der Median-Split in Kombination mit collapsing erzeugt schlechtere Traversal-times gegenüber der binären Referenz, während SAH und BSAH häufiger Verbesserungen aufzeigen. Für größere Verzweigungsgrade verschlechtern sich die Traversal-Times über alle Konfigurationen mit Speedups zwischen $0,529$ und $0,866$ für $k = 8$, sowie nochmal deutlich schlechtere für $k = 16$ mit Speedups zwischen $0,077$ und $0,666$. Dabei ist die Streuung dieser Werte stark abhängig von der gewählten Wide BVH Erzeugungsmethode.
 
@@ -151,14 +151,14 @@ Die sinnvolle Konstruktion einer BVH ist ein Kernpunkt dieser Arbeit.
 \section{Zielsetzung}
 
 Es existieren Konstruktionsverfahren verschiedener Komplexitätsklassen, deren Endprodukt sich auf die \emph{Traversal-Time (Renderzeit)} auswirkt. Von der \emph{Construction-Time (Konstruktionszeit)} lässt sich die Nutzbarkeit einer BVH in dynamischen Szenen, also Szenen mit bewegten Objekten, ableiten. Die Traversal-Time ist das Hauptqualitätsmerkmal für eine BVH, da sich durch niedrigere Zeiten höhere Auflösungen und Bildwiederholraten, sowohl in statischen wie auch dynamischen Szenen, realisieren lassen.
-Ein genutzter Vorteil der Baumstruktur ist, dass sich sowohl Construction (Konstruktion) als auch Traversal (Durchsuchung) auf GPUs parallelisieren lassen. Dabei spielt auch die Konstruktion mit höheren Verzweigungsgraden eine Rolle, wobei man auch dies durch unterschiedliche Erzeugungsverfahren erreichen kann, wie dem \emph{k-way splitting} oder durch \emph{collapse} (Kollabierung) der Hierarchie. Diese Art von BVH wird \emph{Wide BVH (Weite BVH)} oder auch \emph{BVHk} genannt. 
+Ein genutzter Vorteil der Baumstruktur ist, dass sich sowohl Construction (Konstruktion) als auch Traversal (Durchsuchung) auf GPUs parallelisieren lassen. Dabei spielt auch die Konstruktion mit höheren Verzweigungsgraden eine Rolle, wobei man auch dies durch unterschiedliche Erzeugungsverfahren erreichen kann, wie dem \emph{k-way splitting} oder durch \emph{collapsing} (Kollabierung) der Hierarchie. Diese Art von BVH wird \emph{Wide BVH (Weite BVH)} oder auch \emph{BVHk} genannt. 
 Ziel der Arbeit ist die Analyse verschiedener Konstruktionen von Wide BVHs mit Hinblick auf Einsparung in Traversal- aber auch Construction-Time in statischen Szenen. Diese Art von BVH ist bereits in der parallelisierten Berechnung mit GPUs weiter verbreitet, im Rahmen dieser Arbeit wird allerdings eine serielle Berechnung auf der CPU untersucht und damit die algorithmischen Vor- und Nachteile von Wide BVH. Dabei sollen die Ergebnisse abhängig von dem verwendeten Verfahren der Konstruktion, dem Verzweigungsgrad der Hierarchie und der Primitive-Anzahl der Szene beleuchtet werden. 
 Hieraus haben sich drei Problemfragen ergeben, die den Umfang dieser Arbeit definieren:
 \begin{itemize} 
 \item
 Wie verändert sich die Traversal-Time bei Top-Down-Konstruierten Wide BVHs für Verzweigungsgrade $k \in \{2, 4, 8, 16\}$ in statischen Szenen?
 \item
-Unterscheidet sich die Traversal-Time der BVHs zwischen direktem k-way splitting und collapse einer binären BVH abhängig von der gewählten statischen Szene?
+Unterscheidet sich die Traversal-Time der BVHs zwischen direktem k-way splitting und collapsing einer binären BVH abhängig von der gewählten statischen Szene?
 \item
 Wie verändern sich Construction- und Traversal-Time als kombinierte Qualitätsmetrik für die Modellierung dynamischer Szenen mit Bezug auf das gewählte Splitting-Verfahren jeweils über $k \in \{2, 4, 8, 16\}$?
 \end{itemize}
@@ -220,7 +220,7 @@ Dabei hängt die Qualität einer BVH von der verwendeten Konstruktionsmethode ab
 
 \subsection{Wide Bounding Volume Hierarchy}
 
-Wide BVH werden für das Arbeiten mit Grafikkarten immer interessanter, da sich durch die erweiterte Breite der BVH noch mehr Möglichkeiten für parallelisiertes Arbeiten ergeben. Dabei existiert für die untersuchten Algorithmen immer eine Referenzmethode zur Erstellung von Binärbäumen. Die untersuchten Verzweigungsgrade sind vielfache von Zwei. Dadurch wird die Vergleichbarkeit zwischen den verschiedenen Konstruktionsmethoden gewährleistet, da das collapse-Verfahren in dieser Implementierung auf Binärbäumen basiert.
+Wide BVH werden für das Arbeiten mit Grafikkarten immer interessanter, da sich durch die erweiterte Breite der BVH noch mehr Möglichkeiten für parallelisiertes Arbeiten ergeben. Dabei existiert für die untersuchten Algorithmen immer eine Referenzmethode zur Erstellung von Binärbäumen. Die untersuchten Verzweigungsgrade sind vielfache von Zwei. Dadurch wird die Vergleichbarkeit zwischen den verschiedenen Konstruktionsmethoden gewährleistet, da das Collapse-Verfahren in dieser Implementierung auf Binärbäumen basiert.
 Die direkte Konsequenzen von Wide BVH sind eine geringere Tiefe und mehr Kollisionschecks mit Child-Nodes pro Node. Vor- und Nachteile bezogen auf Construction und Traversal werden innerhalb dieser Arbeit untersucht.
 
 \subsection{Traversal}
@@ -640,7 +640,7 @@ Die Kosten für alle möglichen Splits können in diesem Fall in $O(b)$ statt $O
 
 \subsection{Collapse}
 
-Für das collapse Verfahren wird eine bereits generierte BVH verwendet. Es wird mit einer binären BVH gestartet. Mit jeder Ausführung der Funktion wird der Verzweigungsgrad verdoppelt. Das bedeutet einmalige Ausführung für $k = 4$, zweimalige für $k = 8$ und dreimalige für $k = 16$.  
+Für das Collapse-Verfahren wird eine bereits generierte BVH verwendet. Es wird mit einer binären BVH gestartet. Mit jeder Ausführung der Funktion wird der Verzweigungsgrad verdoppelt. Das bedeutet einmalige Ausführung für $k = 4$, zweimalige für $k = 8$ und dreimalige für $k = 16$.  
 Es wird wieder mit einem Stack gearbeitet, angefangen bei der Root-Node. Für jedes Element auf dem Stack gilt: Falls der behandelte Node über Child-Nodes verfügt, wird für jeden Child-Node überprüft, ob diese selbst Child-Nodes besitzen. Falls ja, werden die Grandchild-Nodes zu den neuen Child-Nodes des behandelten Nodes. Diese werden zuletzt auf den Stack gelegt, um in einem späteren Iterationsschritt behandelt zu werden.   
 
 \begin{lstlisting}[style=codestyle,caption={BVH-Collapsing}]
@@ -729,7 +729,7 @@ Wieder bezeichnet $T_{\mathrm{\mu, traversal}}$ den Mittelwert der, wie im Kapit
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{results/rq2/rq2_heatmap.png}
-    \caption{Traversal-Speedup collapse- gegen k-way-Verfahren \\ (Referenz collapse)}
+    \caption{Traversal-Speedup collapsing gegen k-way splitting \\ (Referenz collapsing)}
     \label{fig:comparison}
 \end{figure}
 
